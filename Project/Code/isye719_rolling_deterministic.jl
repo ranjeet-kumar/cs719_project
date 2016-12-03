@@ -275,7 +275,7 @@ for p in 1:nhours_planning # Starting rolling horizon for mean-value problem
 
     #Load data for all scenarios
     load = loaddata1[(p-1)*nrtm+(1:nrtm_horizon),:];	#Load, MW
-
+    load = reshape(load,nrtm,ndam,NS);
 
     m = Model(solver = GurobiSolver(Threads = 2))
 
