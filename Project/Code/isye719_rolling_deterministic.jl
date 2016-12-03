@@ -193,7 +193,7 @@ for p in 1:nhours_planning # Starting rolling horizon for mean-value problem
 
     ################ Model ##################
 
-    mv = Model(solver = GurobiSolver(Threads = 2,OutputFlag = 1))
+    mv = Model(solver = GurobiSolver(Threads = 2,OutputFlag = 0))
 
     @variable(mv, -P_max <= Prtm[rtm,dam] <= P_max)	                #Net Power sold to the real time market, kW
     @variable(mv, -P_max <= Pdam[dam] <= P_max)    	                #Net Power sold to the day-ahead market, kW
@@ -277,7 +277,7 @@ for p in 1:nhours_planning # Starting rolling horizon for mean-value problem
     load = loaddata1[(p-1)*nrtm+(1:nrtm_horizon),:];	#Load, MW
     load = reshape(load,nrtm,ndam,NS);
 
-    m = Model(solver = GurobiSolver(Threads = 2,OutputFlag = 1))
+    m = Model(solver = GurobiSolver(Threads = 2,OutputFlag = 0))
 
     @variable(m, -P_max <= Prtm[rtm,dam,S] <= P_max)	                #Net Power sold to the real time market, kW
     @variable(m, -P_max <= Pdam[dam,S] <= P_max)    	                #Net Power sold to the day-ahead market, kW
