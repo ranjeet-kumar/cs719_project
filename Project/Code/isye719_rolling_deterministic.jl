@@ -99,14 +99,14 @@ loadNSplanningdata = reshape(loadNSdata,nrtm,ndam,ndays_data,NS);   #kW
 ################################################################
 
 
-load1 = loadNSplanningdata[:,:,1:ndays_planning,:]/1000; #MW
+load1 = loadNSplanningdata/1000; #MW
+loaddata1 = reshape(load1,nrtm*ndam*ndays_data,NS);
 
 load1_mv = mean(load1,4);
-
+loaddata1_mv = reshape(load1_mv,nrtm*ndam*ndays_data);
 
 ######################################################
 
-loaddata1_mv = reshape(load1_mv,nrtm*ndam*ndays_data);
 
 
 dailyprofit = zeros(ndays);
@@ -149,14 +149,27 @@ profitEdam_mv = zeros(nhours_planning);
 profitregupdam_mv = zeros(nhours_planning);
 profitregdowndam_mv = zeros(nhours_planning);
 
+Prtm_realized = zeros(nrtm,nhours_planning);
+unmetload_realized = zeros(nrtm,nhours_planning)
+unmetcost_realized = zeros(nhours_planning);
+profitErtm_realized = zeros(nrtm,nhours_planning);
+profitEdam_realized = zeros(nhours_planning);
+profitE_realized = zeros(nhours_planning);
+profitregupdam_realized = zeros(nhours_planning);
+profitregdowndam_realized = zeros(nhours_planning);                        
+profittotal_realized = zeros(nhours_planning);
+netobjective_realized = zeros(nhours_planning);
 
 
-soc0 = 100;		  #Initial State of charge, 100 means fully charged
+
+
+soc0_mv = 100;		  #Initial State of charge for mean-value problem, 100 means fully charged
+soc0 = 100;               #Initial State of charge for all scenarios, 100 means fully charged
 
 
 
 j=1;
-for p in 1:nhours_planning
+for p in 1:nhours_planning # Starting rolling horizon for mean-value problem
     println("Step = $p")
     
     #Load and price data
@@ -198,7 +211,7 @@ for p in 1:nhours_planning
     @variable(mv, profittotal)# >= 0)		                	#Total profit in the day, USD		
     @variable(mv, unmetcost) 
 
-    @constraint(mv, InitialEnergy, ebat[1,1] == soc0/100*ebat_max - 1/eff*Pnet[1,1]*dtrtm - suppliedload[1,1]*dtrtm)	#Inital energy in the battery
+    @constraint(mv, InitialEnergy, ebat[1,1] == soc0_mv/100*ebat_max - 1/eff*Pnet[1,1]*dtrtm - suppliedload[1,1]*dtrtm)	#Inital energy in the battery
     
     @constraint(mv, DefSOC[i in rtm,k in dam], soc[i,k] == ebat[i,k]/ebat_max*100)			#Define SOC
 
@@ -243,7 +256,7 @@ for p in 1:nhours_planning
 
 ##########################################################################
 
-    soc0 = getvalue(getvariable(m,:soc))[rtm[end],dam[1]];
+    soc0_mv = getvalue(getvariable(m,:soc))[rtm[end],dam[1]];
 
 
     # Store first-stage sollution to be implemented at current step
@@ -257,136 +270,12 @@ for p in 1:nhours_planning
 
 
 
-    
-#=
 
-    println("\nTotal Profits on day ", p, ": ", getValue(profittotal),"\n")
-    dailyprofit[j] = getValue(profittotal);
+   ################ Resolving Stochastic Model For all scenarios to get second-stage ##################
 
-    n2 = [nrtm,ndam]
-
-    loadplot[(j-1)*nrtm+1:j*nrtm] = reshape(load,nrtmpoints);
-    rtmeprplot[(j-1)*nrtm+1:j*nrtm] = reshape(rtmepr,nrtmpoints);
-    dameprplot[j] = reshape(damepr,ndampoints);
-    damregupprplot[j] = reshape(damreguppr,ndampoints);
-    damregdownprplot[j] = reshape(damregdownpr,ndampoints);
-    ebatplot[(j-1)*nrtm+1:j*nrtm] = reshape(convertToArray2(ebat,n2),nrtmpoints);
-    socplot[(j-1)*nrtm+1:j*nrtm] = reshape(convertToArray2(soc,n2),nrtmpoints);
-    Prtmplot[(j-1)*nrtm+1:j*nrtm] = reshape(convertToArray2(Prtm,n2),nrtmpoints);
-    Pdamplot[j] = reshape(convertToArray(Pdam),ndampoints);
-    regupdamplot[j] = reshape(convertToArray(regupdam),ndampoints);
-    regdowndamplot[j] = reshape(convertToArray(regdowndam),ndampoints);
-    rtmeprofitplot[(j-1)*nrtm+1:j*nrtm] = reshape(convertToArray2(profitErtm,n2),nrtmpoints);
-    dameprofitplot[j] = reshape(convertToArray(profitEdam),ndampoints);
-    damregprofitplot[j] = reshape(convertToArray(profitregupdam),ndampoints) + reshape(convertToArray(profitregdowndam),ndampoints);
-
-
-Prtmarray = convertToArray2(Prtm,n2);
-Pdamarray = convertToArray(Pdam);
-regupdamarray = convertToArray(regupdam);
-regdowndamarray = convertToArray(regdowndam);
-
-
-for i in rtm
-    for k in dam
-        totalpower[i,k,j] = Prtmarray[i,k] + Pdamarray[k];
-        totalregup[i,k,j] = regupdamarray[k];
-        totalregdown[i,k,j] = regdowndamarray[k];
-        upperband[i,k,j] = totalpower[i,k,j] + totalregup[i,k,j];
-        lowerband[i,k,j] = totalpower[i,k,j] - totalregdown[i,k,j];
-    end
-end
-
-=#
-
-j = j+1;
-
-end # End rolling horizon mean-value problem
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-dailyprofit = zeros(ndays);
-loadplot = zeros(ndays*nrtmpoints);
-rtmeprplot = zeros(ndays*nrtmpoints);
-dameprplot = zeros(ndays*ndampoints);
-damregupprplot = zeros(ndays*ndampoints);
-damregdownprplot = zeros(ndays*ndampoints);
-ebatplot = zeros(ndays*nrtmpoints);
-socplot = zeros(ndays*nrtmpoints);
-Prtmplot = zeros(ndays*nrtmpoints);
-Pdamplot = zeros(ndays*ndampoints);
-regupdamplot = zeros(ndays*ndampoints);
-regdowndamplot = zeros(ndays*ndampoints);
-rtmeprofitplot = zeros(ndays*nrtmpoints);
-dameprofitplot = zeros(ndays*ndampoints);
-damregprofitplot = zeros(ndays*ndampoints);
-
-totalpower = zeros(nrtm,ndam,ndays);
-totalregup = zeros(nrtm,ndam,ndays);
-totalregdown = zeros(nrtm,ndam,ndays);
-upperband = zeros(nrtm,ndam,ndays);
-lowerband = zeros(nrtm,ndam,ndays);
-totalpowerplot = zeros(nrtm,ndam,ndays);
-upperbandplot = zeros(nrtm,ndam,ndays);
-lowerbandplot = zeros(nrtm,ndam,ndays);
-
-nhours_planning = ndays_planning*ndam;
-nrtm_planning = nhours_planning*nrtm;
-nhours_horizon = ndays_horizon*ndam;
-nrtm_horizon = nhours_horizon*nrtm;
-
-soc0 = 100;		  #Initial State of charge, 100 means fully charged
-
-
-Prtm_realized = zeros(nrtm,nhours_planning);
-unmetload_realized = zeros(nrtm,nhours_planning)
-unmetcost_realized = zeros(nhours_planning);
-profitErtm_realized = zeros(nrtm,nhours_planning);
-profitEdam_realized = zeros(nhours_planning);
-profitE_realized = zeros(nhours_planning);
-profitregupdam_realized = zeros(nhours_planning);
-profitregdowndam_realized = zeros(nhours_planning);                        
-profittotal_realized = zeros(nhours_planning);
-netobjective_realized = zeros(nhours_planning);
-
-
-
-
-j=1;
-for p in 1:nhours_planning
-
-    #Load and price data
+    #Load data for all scenarios
     load = loaddata1[(p-1)*nrtm+(1:nrtm_horizon),:];	#Load, MW
 
-    eprrtm = rtmpricedata[(p-1)*nrtm+(1:nrtm_horizon),4];	    	#Real Time Market price, $/MWh    
-    eprdam = dampricedata[(p-1)+(1:nhours_horizon),4];	    	#Day Ahead Market Selling price, $/MWh    
-    regupprdam = dampricedata[(p-1)+(1:nhours_horizon),5];	    	#Day Ahead Market Regulation up price, $/MWh
-    regdownprdam = dampricedata[(p-1)+(1:nhours_horizon),6]; 	#Day Ahead Market Regulation down price, $/MWh
-
-    #Reshape the data to matrices
-    rtmepr = reshape(eprrtm,nrtm,ndam);
-    damepr = reshape(eprdam,ndam);
-    damreguppr = reshape(regupprdam,ndam);
-    damregdownpr = reshape(regdownprdam,ndam);
-    load = reshape(load,nrtm,ndam,NS);
-
-    #Define sets to be used in the model defVar and addConstraint
-    rtm = 1:nrtm;
-    dam = 1:nhours_horizon;
-
-    ################ Model ##################
 
     m = Model(solver = GurobiSolver(Threads = 2))
 
@@ -445,12 +334,12 @@ for p in 1:nhours_planning
     
     
     # Fixing first stage variables at solutions from rolling horizon with mean-value
-    @constraint(m, Fix_PDAM[k in dam,s in S], Pdam[k,s] == Pdam_mv[p-1+k])
-    @constraint(m, Fix_DAMregup[k in dam,s in S], regupdam[k,s] == regupdam[p-1+k])
-    @constraint(m, Fix_DAMregdown[k in dam,s in S], regdowndam[k,s] == regdowndam[p-1+k])
-    @constraint(m, Fix_ProfitEDAM[k in dam,s in S], profitEdam[k,s] == profitEdam[p-1+k])
-    @constraint(m, Fix_ProfitRegUpDAM[k in dam,s in S], profitregupdam[k,s] == profitregupdam[p-1+k])
-    @constraint(m, Fix_ProfitRegDownDAM[k in dam,s in S], profitregdowndam[k,s] == profitregdowndam[p-1+k])
+    @constraint(m, Fix_PDAM[k in dam[1],s in S], Pdam[k,s] == Pdam_mv[p])
+    @constraint(m, Fix_DAMregup[k in dam[1],s in S], regupdam[k,s] == regupdam[p])
+    @constraint(m, Fix_DAMregdown[k in dam[1],s in S], regdowndam[k,s] == regdowndam[p])
+    @constraint(m, Fix_ProfitEDAM[k in dam[1],s in S], profitEdam[k,s] == profitEdam[p])
+    @constraint(m, Fix_ProfitRegUpDAM[k in dam[1],s in S], profitregupdam[k,s] == profitregupdam[p])
+    @constraint(m, Fix_ProfitRegDownDAM[k in dam[1],s in S], profitregdowndam[k,s] == profitregdowndam[p])
 
     
     
@@ -476,6 +365,11 @@ for p in 1:nhours_planning
 
 
 
+
+
+
+
+    
 #=
 
     println("\nTotal Profits on day ", p, ": ", getValue(profittotal),"\n")
@@ -519,9 +413,13 @@ end
 
 j = j+1;
 
-end # End rolling horizon
+end # End rolling horizon mean-value problem
+
 
 totalcost_after_rolling_dt = sum(netobjective_realized);
+
+
+
 
 
 #= Start comment here
