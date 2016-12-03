@@ -335,11 +335,11 @@ for p in 1:nhours_planning # Starting rolling horizon for mean-value problem
     
     # Fixing first stage variables at solutions from rolling horizon with mean-value
     @constraint(m, Fix_PDAM[k in dam[1],s in S], Pdam[k,s] == Pdam_mv[p])
-    @constraint(m, Fix_DAMregup[k in dam[1],s in S], regupdam[k,s] == regupdam[p])
-    @constraint(m, Fix_DAMregdown[k in dam[1],s in S], regdowndam[k,s] == regdowndam[p])
-    @constraint(m, Fix_ProfitEDAM[k in dam[1],s in S], profitEdam[k,s] == profitEdam[p])
-    @constraint(m, Fix_ProfitRegUpDAM[k in dam[1],s in S], profitregupdam[k,s] == profitregupdam[p])
-    @constraint(m, Fix_ProfitRegDownDAM[k in dam[1],s in S], profitregdowndam[k,s] == profitregdowndam[p])
+    @constraint(m, Fix_DAMregup[k in dam[1],s in S], regupdam[k,s] == regupdam_mv[p])
+    @constraint(m, Fix_DAMregdown[k in dam[1],s in S], regdowndam[k,s] == regdowndam_mv[p])
+    @constraint(m, Fix_ProfitEDAM[k in dam[1],s in S], profitEdam[k,s] == profitEdam_mv[p])
+    @constraint(m, Fix_ProfitRegUpDAM[k in dam[1],s in S], profitregupdam[k,s] == profitregupdam_mv[p])
+    @constraint(m, Fix_ProfitRegDownDAM[k in dam[1],s in S], profitregdowndam[k,s] == profitregdowndam_mv[p])
 
     
     
