@@ -87,7 +87,7 @@ load_estimationdata = loadvec[1:reshape_nrows*reshape_ncolumns];
 load_weekly = reshape(load_estimationdata,reshape_nrows,reshape_ncolumns);
 
 
-
+#=
 # Using Ledoit-Wolfe Sample Covariance Estimator
 (p,n) = size(load_weekly);
 load_weeklymean = mean(load_weekly,2);
@@ -124,6 +124,23 @@ loadNSplanningdata = reshape(loadNSdata,nrtm,ndam,ndays_data,NS);   #kW
 load1 = loadNSplanningdata/1000;   #MW
 loaddata1 = reshape(load1,nrtm*ndam*ndays_data,NS);
 
+=#
+
+
+# Loading the NS scenarios for weekly load profiles in kW generated from the fullproblem_stochastic code
+nweeks_planning = Int64(ceil((ndays_planning/reshape_ndays)));
+
+loadNSdata = readcsv("loads_scenarios_month.csv")
+
+
+ndays_data = (nweeks_planning+1)*reshape_ndays;
+loadNSplanningdata = reshape(loadNSdata,nrtm,ndam,ndays_data,NS);   #kW
+
+################################################################
+
+
+load1 = loadNSplanningdata/1000; #MW
+loaddata1 = reshape(load1,nrtm*ndam*ndays_data,NS);
 
 
 
@@ -159,7 +176,21 @@ nrtm_planning = nhours_planning*nrtm;
 nhours_horizon = ndays_horizon*ndam;
 nrtm_horizon = nhours_horizon*nrtm;
 
-soc0 = 100*ones(NS);		  #Initial State of charge, 100 means fully charged
+soc0 = 100;		  #Initial State of charge, 100 means fully charged
+realized_sequence = rand(S,nhours_planning);
+
+Prtm_realized = zeros(rtm[end],nhours_planning);
+unmetload_realized = zeros(rtm[end],nhours_planning)
+unmetcost_realized = zeros(nhours_planning);
+profitErtm_realized = zeros(rtm[end],nhours_planning);
+profitEdam_realized = zeros(nhours_planning);
+profitE_realized = zeros(nhours_planning);
+profitregupdam_realized = zeros(nhours_planning);
+profitregdowndam_realized = zeros(nhours_planning);                        
+profittotal_realized = zeros(nhours_planning);
+netobjective_realized = zeros(nhours_planning);
+
+
 
 j=1;
 for p in 1:nhours_planning
@@ -251,14 +282,24 @@ for p in 1:nhours_planning
     
     
     @objective(m, Min, (1/NS)*sum{-profittotal[s] + unmetcost[s], s in S})
-    
+
     #    print(m)
 
     status = solve(m)
 
 ##########################################################################
 
-    soc0 = getvalue(getvariable(m,:soc))[rtm[end],dam[1],:];
+    soc0 = getvalue(getvariable(m,:soc))[rtm[end],dam[1],realized_sequence[p]];
+    Prtm_realized[:,p] = getvalue(getvariable(m,:Prtm))[1:rtm[end],dam[1],realized_sequence[p]];
+    unmetload_realized[:,p] = getvalue(getvariable(m,:unmetload))[1:rtm[end],dam[1],realized_sequence[p]];
+    unmetcost_realized[p] = sum(unmetload_realized.*eprrtm[1:rtm[end]]);
+    profitErtm_realized[:,p] = getvalue(getvariable(m,:profitErtm))[1:rtm[end],dam[1],realized_sequence[p]];
+    profitEdam_realized[p] = getvalue(getvariable(m,:profitErtm))[dam[1],realized_sequence[p]];
+    profitE_realized[p] = sum(profitErtm_realized[:,p]) + profitEdam_realized[p];
+    profitregupdam_realized[p] = getvalue(getvariable(m,:profitregupdam))[dam[1],realized_sequence[p]];
+    profitregdowndam_realized[p] = getvalue(getvariable(m,:profitregupdam))[dam[1],realized_sequence[p]];                        
+    profittotal_realized[p] = profitE_realized[p] + profitregupdam_realized[p] + profitregdowndam_realized[p];
+    netobjective_realized[p] = unmetcost_realized[p] - profittotal_realized[p];
 
 #=
 
@@ -304,6 +345,11 @@ end
 j = j+1;
 
 end # End rolling horizon
+
+
+totalcost_after_rolling_st = sum(netobjective_realized);
+
+
 
 #= Start comment here
 
