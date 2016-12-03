@@ -179,10 +179,10 @@ nrtm_horizon = nhours_horizon*nrtm;
 soc0 = 100;		  #Initial State of charge, 100 means fully charged
 realized_sequence = rand(S,nhours_planning);
 
-Prtm_realized = zeros(rtm[end],nhours_planning);
-unmetload_realized = zeros(rtm[end],nhours_planning)
+Prtm_realized = zeros(nrtm,nhours_planning);
+unmetload_realized = zeros(nrtm,nhours_planning)
 unmetcost_realized = zeros(nhours_planning);
-profitErtm_realized = zeros(rtm[end],nhours_planning);
+profitErtm_realized = zeros(nrtm,nhours_planning);
 profitEdam_realized = zeros(nhours_planning);
 profitE_realized = zeros(nhours_planning);
 profitregupdam_realized = zeros(nhours_planning);
