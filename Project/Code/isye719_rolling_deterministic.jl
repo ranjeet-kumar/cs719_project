@@ -256,7 +256,7 @@ for p in 1:nhours_planning # Starting rolling horizon for mean-value problem
 
 ##########################################################################
 
-    soc0_mv = getvalue(getvariable(m,:soc))[rtm[end],dam[1]];
+    soc0_mv = getvalue(getvariable(mv,:soc))[rtm[end],dam[1]];
 
 
     # Store first-stage sollution to be implemented at current step
