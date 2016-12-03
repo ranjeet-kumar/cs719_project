@@ -185,7 +185,7 @@ for p in 1:nhours_planning # Starting rolling horizon for mean-value problem
     damepr = reshape(eprdam,ndam);
     damreguppr = reshape(regupprdam,ndam);
     damregdownpr = reshape(regdownprdam,ndam);
-    load = reshape(load_mv,nrtm,ndam);
+    load_mv = reshape(load_mv,nrtm,ndam);
 
     #Define sets to be used in the model defVar and addConstraint
     rtm = 1:nrtm;
