@@ -294,10 +294,10 @@ for p in 1:nhours_planning
     unmetload_realized[:,p] = getvalue(getvariable(m,:unmetload))[1:rtm[end],dam[1],realized_sequence[p]];
     unmetcost_realized[p] = sum(unmetload_realized.*eprrtm[1:rtm[end]]);
     profitErtm_realized[:,p] = getvalue(getvariable(m,:profitErtm))[1:rtm[end],dam[1],realized_sequence[p]];
-    profitEdam_realized[p] = getvalue(getvariable(m,:profitErtm))[dam[1],realized_sequence[p]];
+    profitEdam_realized[p] = getvalue(getvariable(m,:profitEdam))[dam[1],realized_sequence[p]];
     profitE_realized[p] = sum(profitErtm_realized[:,p]) + profitEdam_realized[p];
     profitregupdam_realized[p] = getvalue(getvariable(m,:profitregupdam))[dam[1],realized_sequence[p]];
-    profitregdowndam_realized[p] = getvalue(getvariable(m,:profitregupdam))[dam[1],realized_sequence[p]];                        
+    profitregdowndam_realized[p] = getvalue(getvariable(m,:profitregdowndam))[dam[1],realized_sequence[p]];                        
     profittotal_realized[p] = profitE_realized[p] + profitregupdam_realized[p] + profitregdowndam_realized[p];
     netobjective_realized[p] = unmetcost_realized[p] - profittotal_realized[p];
 
