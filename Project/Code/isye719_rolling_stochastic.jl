@@ -194,7 +194,8 @@ netobjective_realized = zeros(nhours_planning);
 
 j=1;
 for p in 1:nhours_planning
-
+    println("Step = $p")
+    
     #Load and price data
     load = loaddata1[(p-1)*nrtm+(1:nrtm_horizon),:];	#Load, MW
 
@@ -216,7 +217,7 @@ for p in 1:nhours_planning
 
     ################ Model ##################
 
-    m = Model(solver = GurobiSolver(Threads = 2))
+    m = Model(solver = GurobiSolver(Threads = 2, OutputFlag = 0))
 
     @variable(m, -P_max <= Prtm[rtm,dam,S] <= P_max)	                #Net Power sold to the real time market, kW
     @variable(m, -P_max <= Pdam[dam,S] <= P_max)    	                #Net Power sold to the day-ahead market, kW
