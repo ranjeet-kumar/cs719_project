@@ -102,7 +102,7 @@ load_estimationdata = loadvec[1:reshape_nrows*reshape_ncolumns];
 load_weekly = reshape(load_estimationdata,reshape_nrows,reshape_ncolumns);
 
 
-
+#=
 
 # Using Ledoit-Wolfe Sample Covariance Estimator
 (p,n) = size(load_weekly);
@@ -139,6 +139,25 @@ loadNSplanningdata = reshape(loadNSdata,nrtm,ndam,ndays_data,NS);   #kW
 
 
 load = loadNSplanningdata[:,:,1:ndays_planning,:]/1000; #MW
+
+=#
+
+
+# Loading the NS scenarios for weekly load profiles in kW generated from the fullproblem_stochastic code
+nweeks_planning = Int64(ceil((ndays_planning/reshape_ndays)));
+
+loadNSdata = readcsv("loads_scenarios_month.csv")
+
+
+ndays_data = (nweeks_planning+1)*reshape_ndays;
+loadNSplanningdata = reshape(loadNSdata,nrtm,ndam,ndays_data,NS);   #kW
+
+################################################################
+
+
+load = loadNSplanningdata[:,:,1:ndays_planning,:]/1000; #MW
+
+
 
 #Define sets to be used in the model defVar and addConstraint
 rtm = 1:nrtm;

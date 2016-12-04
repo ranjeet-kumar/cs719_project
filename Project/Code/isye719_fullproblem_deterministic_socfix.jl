@@ -289,7 +289,7 @@ m = Model(solver = GurobiSolver(Threads=2))
     @constraint(m, Fix_ProfitEDAM[k in dam,l in day,s in S], profitEdam[k,l,s] == profitEdam_mv[k,l])
     @constraint(m, Fix_ProfitRegUpDAM[k in dam,l in day,s in S], profitregupdam[k,l,s] == profitregupdam_mv[k,l])
     @constraint(m, Fix_ProfitRegDownDAM[k in dam,l in day,s in S], profitregdowndam[k,l,s] == profitregdowndam_mv[k,l])
-    @constraint(m, Fix_SOCHourEnd[i in rtm[end], k in dam,l in day,s in S], soc[i,k,l,s] == soc_mv[i,k,l])
+    @constraint(m, Fix_SOCHourEnd[i in rtm[end], k in dam,l in day,s in S], soc[i,k,l,s] == soc_mv[1,k,l])
 
     @objective(m, Min, (1/NS)*sum{-profittotal[s] + unmetcost[s], s in S})
 
