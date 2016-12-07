@@ -128,7 +128,7 @@ day = 1:ndays_planning;
 
 
 ################ Mean Value Model ##################
-
+tic()
 mv = Model(solver = GurobiSolver(Threads=2))
 
     @variable(mv, -P_max <= Prtm[rtm,dam,day] <= P_max)	                #Power sold to the real time market, kW
@@ -296,7 +296,7 @@ m = Model(solver = GurobiSolver(Threads=2))
 #    print(m)
 
     status = solve(m)
-
+time_taken = toc();
 ###############################################################
 
 println("\nExpected Objective with Mean Value first stage solution ", getobjectivevalue(m),"\n" )

@@ -169,6 +169,7 @@ soc0 = 100;               #Initial State of charge for all scenarios, 100 means 
 realized_sequence = readcsv("realized_sequence.csv")
 
 j=1;
+tic()
 for p in 1:nhours_planning # Starting rolling horizon for mean-value problem
     println("Step = $p")
     
@@ -414,7 +415,7 @@ end
 j = j+1;
 
 end # End rolling horizon mean-value problem
-
+time_taken = toc();
 
 totalcost_after_rolling_dt = sum(netobjective_realized);
 

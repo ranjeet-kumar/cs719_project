@@ -177,8 +177,15 @@ nhours_horizon = ndays_horizon*ndam;
 nrtm_horizon = nhours_horizon*nrtm;
 
 soc0 = 100;		  #Initial State of charge, 100 means fully charged
+
+#=
 realized_sequence = rand(S,nhours_planning);
 writecsv("realized_sequence.csv",realized_sequence)
+=#
+
+# realized_sequence = readcsv("realized_sequence.csv")
+realized_sequence = ones(nhours_planning);
+
 
 Prtm_realized = zeros(nrtm,nhours_planning);
 unmetload_realized = zeros(nrtm,nhours_planning)
@@ -347,7 +354,7 @@ end
 j = j+1;
 
 end # End rolling horizon
-
+time_taken = toc()
 
 totalcost_after_rolling_st = sum(netobjective_realized);
 
