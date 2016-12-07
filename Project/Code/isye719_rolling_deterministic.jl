@@ -166,7 +166,7 @@ netobjective_realized = zeros(nhours_planning);
 soc0_mv = 100;		  #Initial State of charge for mean-value problem, 100 means fully charged
 soc0 = 100;               #Initial State of charge for all scenarios, 100 means fully charged
 
-
+realized_sequence = readcsv("realized_sequence.csv")
 
 j=1;
 for p in 1:nhours_planning # Starting rolling horizon for mean-value problem

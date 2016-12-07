@@ -178,6 +178,7 @@ nrtm_horizon = nhours_horizon*nrtm;
 
 soc0 = 100;		  #Initial State of charge, 100 means fully charged
 realized_sequence = rand(S,nhours_planning);
+writecsv("realized_sequence.csv",realized_sequence)
 
 Prtm_realized = zeros(nrtm,nhours_planning);
 unmetload_realized = zeros(nrtm,nhours_planning)
