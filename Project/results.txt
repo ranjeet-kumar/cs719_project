@@ -7,6 +7,9 @@ obj_dt_fp
 obj_st_fp_socfix
 -1254.7038129019606
 
+obj_dt_fp_socfix
++infinity (Infeasible)
+
 expected_obj_st_rh
 
 
@@ -30,7 +33,10 @@ obj_st_rh_S1
 
 
 
-Screen 29110: rolling_stochastic
-Screen 11488: rolling_deterministic
+Screen 29110: rolling_stochastic Wrong Running
+Screen 12127: rolling_stochastic Correct Running 
+Screen 11488: rolling_deterministic Wrong Done Corrected running
 Screen 11818: fullproblem_stochastic_socfix Done
 Screen 32   : rolling_stochastic with only scenario 1 Done
+Screen 13116: fullproblem_stochastic_socfix Done
+

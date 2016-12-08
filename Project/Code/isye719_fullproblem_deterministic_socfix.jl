@@ -126,7 +126,7 @@ day = 1:ndays_planning;
 
 
 
-
+tic()
 ################ Mean Value Model ##################
 
 mv = Model(solver = GurobiSolver(Threads=2))
@@ -196,6 +196,8 @@ mv = Model(solver = GurobiSolver(Threads=2))
 #    print(mv)
 
 status = solve(mv)
+time_taken_dt_fp_socfix = toc();
+
 
 Pdam_mv = getvalue(getvariable(mv,:Pdam))
 regupdam_mv = getvalue(getvariable(mv,:regupdam))
