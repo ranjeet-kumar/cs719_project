@@ -163,8 +163,6 @@ netobjective_realized = zeros(nhours_planning);
 
 
 
-soc0_mv = 100;		  #Initial State of charge for mean-value problem, 100 means fully charged
-soc0 = 100;               #Initial State of charge for all scenarios, 100 means fully charged
 
 #=
 realized_sequence = rand(S,nhours_planning);
@@ -178,6 +176,8 @@ obj_dt_rh_NS = Vector()
 
 for k in S # Loop to evaluate cost along each scenario
 
+soc0_mv = 100;		  #Initial State of charge for mean-value problem, 100 means fully charged
+soc0 = 100;               #Initial State of charge for all scenarios, 100 means fully charged
 
 realized_sequence = Vector{Int64}(k*ones(nhours_planning));
 

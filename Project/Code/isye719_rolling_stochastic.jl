@@ -176,7 +176,6 @@ nrtm_planning = nhours_planning*nrtm;
 nhours_horizon = ndays_horizon*ndam;
 nrtm_horizon = nhours_horizon*nrtm;
 
-soc0 = 100;		  #Initial State of charge, 100 means fully charged
 
 #=
 realized_sequence = rand(S,nhours_planning);
@@ -190,7 +189,9 @@ obj_st_rh_NS = Vector()
 
 for k in S # Loop to evaluate cost along each scenario
 
+soc0 = 100;		  #Initial State of charge, 100 means fully charged
 
+    
 realized_sequence = Vector{Int64}(k*ones(nhours_planning));
 
 
