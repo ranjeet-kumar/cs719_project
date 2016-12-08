@@ -172,7 +172,7 @@ writecsv("realized_sequence.csv",realized_sequence)
 =#
 
 # realized_sequence = readcsv("realized_sequence.csv")
-realized_sequence = ones(nhours_planning);
+realized_sequence = Vector{Int64}(ones(nhours_planning));
 
 
 j=1;
