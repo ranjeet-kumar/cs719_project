@@ -166,7 +166,14 @@ netobjective_realized = zeros(nhours_planning);
 soc0_mv = 100;		  #Initial State of charge for mean-value problem, 100 means fully charged
 soc0 = 100;               #Initial State of charge for all scenarios, 100 means fully charged
 
-realized_sequence = readcsv("realized_sequence.csv")
+#=
+realized_sequence = rand(S,nhours_planning);
+writecsv("realized_sequence.csv",realized_sequence)
+=#
+
+# realized_sequence = readcsv("realized_sequence.csv")
+realized_sequence = ones(nhours_planning);
+
 
 j=1;
 tic()
