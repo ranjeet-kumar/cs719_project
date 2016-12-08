@@ -296,10 +296,14 @@ m = Model(solver = GurobiSolver(Threads=2))
 #    print(m)
 
     status = solve(m)
-time_taken = toc();
+
+time_taken_dt_fullproblem = toc();
 ###############################################################
 
 println("\nExpected Objective with Mean Value first stage solution ", getobjectivevalue(m),"\n" )
+
+obj_dt_fp = getobjectivevalue(m);
+
 
 #    println("\nTotal Profits ", getvalue(profittotal),"\n" )
 

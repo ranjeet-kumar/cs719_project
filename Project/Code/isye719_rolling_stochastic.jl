@@ -354,11 +354,11 @@ end
 j = j+1;
 
 end # End rolling horizon
-time_taken = toc()
+time_taken_st_rolling = toc();
 
 totalcost_after_rolling_st = sum(netobjective_realized);
 
-
+obj_st_rh = totalcost_after_rolling_st;
 
 #= Start comment here
 

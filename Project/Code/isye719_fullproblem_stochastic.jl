@@ -165,7 +165,7 @@ dam = 1:ndam;
 day = 1:ndays_planning;
 
 ################ Model ##################
-
+tic()
 m = Model(solver = GurobiSolver(Threads=2))
 
     @variable(m, -P_max <= Prtm[rtm,dam,day,S] <= P_max)	                #Power sold to the real time market, kW
@@ -242,7 +242,11 @@ m = Model(solver = GurobiSolver(Threads=2))
 
     status = solve(m)
 
+time_taken_st_fullproblem = toc();
+
 ###############################################################
+
+obj_st_fp = getobjectivevalue(m);
 
 #    println("\nTotal Profits ", getvalue(profittotal),"\n" )
 

@@ -415,10 +415,11 @@ end
 j = j+1;
 
 end # End rolling horizon mean-value problem
-time_taken = toc();
+time_taken_st_rolling = toc();
 
 totalcost_after_rolling_dt = sum(netobjective_realized);
 
+obj_dt_rh = totalcost_after_rolling_dt;
 
 
 
