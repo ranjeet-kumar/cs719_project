@@ -184,7 +184,14 @@ writecsv("realized_sequence.csv",realized_sequence)
 =#
 
 # realized_sequence = readcsv("realized_sequence.csv")
-realized_sequence = Vector{Int64}(ones(nhours_planning));
+# realized_sequence = Vector{Int64}(ones(nhours_planning));
+
+obj_st_rh_NS = Vector()
+
+for k in S # Loop to evaluate cost along each scenario
+
+
+realized_sequence = Vector{Int64}(k*ones(nhours_planning));
 
 
 Prtm_realized = zeros(nrtm,nhours_planning);
@@ -199,7 +206,7 @@ profittotal_realized = zeros(nhours_planning);
 netobjective_realized = zeros(nhours_planning);
 
 
-
+tic()
 j=1;
 for p in 1:nhours_planning
     println("Step = $p")
@@ -354,11 +361,22 @@ end
 j = j+1;
 
 end # End rolling horizon
-time_taken_st_rolling = toc();
+
 
 totalcost_after_rolling_st = sum(netobjective_realized);
 
 obj_st_rh = totalcost_after_rolling_st;
+
+push!(obj_st_rh_NS,obj_st_rh)
+
+end
+
+time_taken_st_rolling = toc();
+
+expected_obj_st_rh = mean(obj_st_rh_NS);
+
+
+
 
 #= Start comment here
 
