@@ -209,7 +209,7 @@ netobjective_realized = zeros(nhours_planning);
 tic()
 j=1;
 for p in 1:nhours_planning
-    println("Step = $p")
+    println("Scenario $k, Step $p")
     
     #Load and price data
     load = loaddata1[(p-1)*nrtm+(1:nrtm_horizon),:];	#Load, MW

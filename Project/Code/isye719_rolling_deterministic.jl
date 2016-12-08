@@ -185,7 +185,7 @@ realized_sequence = Vector{Int64}(k*ones(nhours_planning));
 j=1;
 tic()
 for p in 1:nhours_planning # Starting rolling horizon for mean-value problem
-    println("Step = $p")
+    println("Scenario $k, Step $p")
     
     #Load and price data
     load_mv = loaddata1_mv[(p-1)*nrtm+(1:nrtm_horizon)];	#Load, MW
