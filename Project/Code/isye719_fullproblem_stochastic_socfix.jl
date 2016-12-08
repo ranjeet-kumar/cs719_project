@@ -244,6 +244,8 @@ m = Model(solver = GurobiSolver(Threads=2))
 
 ###############################################################
 
+obj_st_fp_socfix = getobjectivevalue(m);
+
 #    println("\nTotal Profits ", getvalue(profittotal),"\n" )
 
 #=
