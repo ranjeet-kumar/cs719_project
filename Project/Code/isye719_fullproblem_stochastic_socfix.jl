@@ -246,7 +246,6 @@ obj_st_fp_socfix = getobjectivevalue(m);
 
 ###############################################################
 
-obj_st_fp_socfix = getobjectivevalue(m);
 
 #    println("\nTotal Profits ", getvalue(profittotal),"\n" )
 
