@@ -174,7 +174,7 @@ writecsv("realized_sequence.csv",realized_sequence)
 # realized_sequence = readcsv("realized_sequence.csv")
 # realized_sequence = Vector{Int64}(ones(nhours_planning));
 
-obj_st_rh_NS = Vector()
+obj_dt_rh_NS = Vector()
 
 for k in S # Loop to evaluate cost along each scenario
 
@@ -435,13 +435,13 @@ totalcost_after_rolling_dt = sum(netobjective_realized);
 obj_dt_rh = totalcost_after_rolling_dt;
 
 
-push!(obj_st_rh_NS,obj_st_rh)
+push!(obj_dt_rh_NS,obj_dt_rh)
 
 end
 
 time_taken_dt_rolling = toc();
 
-expected_obj_st_rh = mean(obj_st_rh_NS);
+expected_obj_dt_rh = mean(obj_dt_rh_NS);
 
 
 

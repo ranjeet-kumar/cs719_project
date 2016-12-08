@@ -4,3 +4,28 @@ obj_st_fp
 obj_dt_fp
 -1242.020286985789
 
+obj_st_fp_socfix
+-1254.7038129019606
+
+expected_obj_st_rh
+
+
+expected_obj_dt_rh
+
+
+
+
+
+
+
+obj_st_rh_S1
+-826.3833626091658
+
+
+
+
+
+Screen 29110: rolling_stochastic
+Screen 11488: rolling_deterministic
+Screen 11818: fullproblem_stochastic_socfix Done
+Screen 32   : rolling_stochastic with only scenario 1 Done
