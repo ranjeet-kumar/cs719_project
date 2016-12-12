@@ -250,7 +250,7 @@ r = 5;
 n3 = [ndam,ndays_planning,NS];
 eprdamplot = eprdam[1:nhours_planning];
 push!(eprdamplot,eprdamplot[end]);
-Pdamarray = convertToArray3(getvalue(getvariable(m_sf_st,:Pdam)),n3);
+Pdamarray = convertToArray3(getvalue(getvariable(m_sf,:Pdam)),n3);
 Pdamplot = reshape(Pdamarray[:,:,1],nhours_planning);
 push!(Pdamplot,Pdamplot[end]);
 xplot = 0:dtdam:dtdam*nhours_planning;
