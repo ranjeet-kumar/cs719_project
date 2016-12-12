@@ -74,8 +74,6 @@ ndampoints = ndam;			#Total number of points in hourly data in one day
 #Model Parameters
 ebat_max = 0.5;	          #Battery capacity, MWh
 P_max = 1;	          #Maximum power, MW
-regup_max = P_max;    #Regulation Up Capacity, MW
-regdown_max = P_max;  #Regulation Up Capacity, MW
 rampmin = -0.5*P_max;	          #Lower bound for ramp discharge, MW/5min
 rampmax = 0.5*P_max;  	  #Upper bound for ramp discharge, MW/5min
 eff = 1;                  #Discharging Efficiency of battery
@@ -97,15 +95,10 @@ load = Matrix{Float64}(loaddata[2:nrtmpoints+1,2+(1:ndays)]);	#Load, MW
 
 eprrtm = rtmpricedata[1:nrtmpoints*ndays,4];	    	#Real Time Market price, $/MWh
 eprdam = dampricedata[1:ndampoints*ndays,4];	    	#Day Ahead Market Selling price, $/MWh
-regupprdam = dampricedata[1:ndampoints*ndays,5];	    	#Day Ahead Market Regulation up price, $/MWh
-regdownprdam = dampricedata[1:ndampoints*ndays,6]; 		#Day Ahead Market Regulation down price, $/MWh
-
 
 #Reshape the data to matrices
 rtmepr = reshape(eprrtm,nrtm,ndam,ndays);
 damepr = reshape(eprdam,ndam,ndays);
-damreguppr = reshape(regupprdam,ndam,ndays);
-damregdownpr = reshape(regdownprdam,ndam,ndays);
 load = reshape(load,nrtm,ndam,ndays);
 loadvec = vec(load);
 
@@ -261,6 +254,7 @@ savefig(string("cs719figures/loads_scenarios.pdf"))
 close("all")
 =#
 
+r = 5;
 # Plot of Pdam
 n3 = [ndam,ndays_planning,NS];
 eprdamplot = eprdam[1:nhours_planning];
@@ -311,7 +305,7 @@ tick_params(labelsize=14)
 #legend(loc="upper right",fancybox="True", shadow="True", fontsize = 15)
 subplot(2,1,2)
 hold(true)
-for s in S[1]
+for s in S[r]
 	plot(xplot,Prtmplot[:,s],  drawstyle="steps-post");
 end
 grid()
@@ -335,7 +329,7 @@ xplot = 0:dtrtm:dtrtm*nrtm_planning;
 figure()
 plt[:get_current_fig_manager]()[:full_screen_toggle]()
 hold(true)
-for s in S[1]
+for s in S[r]
 	plot(xplot,suppliedloadplot[:,s], drawstyle="steps-post", color = "green", label="Supplied");
 	plot(xplot,unmetloadplot[:,s], drawstyle="steps-post", color = "red", label="Unmet");
 end
@@ -358,7 +352,7 @@ xplot = 0:dtrtm:dtrtm*nrtm_planning;
 figure()
 plt[:get_current_fig_manager]()[:full_screen_toggle]()
 hold(true)
-for s in S[1]
+for s in S[r]
 	plot(xplot,socplot[:,s], drawstyle="steps-post");
 end
 grid()
@@ -382,7 +376,7 @@ for i in rtm
         end
 end
 netpowerplot = reshape(netpower,nrtm_planning,NS);
-netpowerplot = [netpowerplot;netpowerplot[end,:]]
+netpowerplot = [netpowerplot;netpowerplot[end,:]];
 
 # Plot of netpower
 n4 = [nrtm,ndam,ndays_planning,NS];
@@ -390,7 +384,7 @@ xplot = 0:dtrtm:dtrtm*nrtm_planning;
 figure()
 plt[:get_current_fig_manager]()[:full_screen_toggle]()
 hold(true)
-for s in S[1]
+for s in S[r]
 	plot(xplot,netpowerplot[:,s], drawstyle="steps-post", color = "blue", label="Net discharge");
 end
 grid()
