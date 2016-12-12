@@ -220,7 +220,7 @@ m_sfd = Model(solver = GurobiSolver(Threads=2))
 		@constraint(m_sfd, UnmetCost[s in S], unmetcost[s] == sum{rtmepr[i,k,l]*unmetload[i,k,l,s], i in rtm, k in dam, l in day})
     # Fixing first stage variables at mean-value solution
 		@constraint(m_sfd, Fix_PDAM[k in dam,l in day,s in S], Pdam[k,l,s] == Pdam_mv_sf[k,l])
-		@constraint(m, Fix_EbatHourEnd[i in rtm[end], k in dam,l in day,s in S], ebat[i,k,l,s] == ebat_mv_sf[1,k,l])
+		@constraint(m_sfd, Fix_EbatHourEnd[i in rtm[end], k in dam,l in day,s in S], ebat[i,k,l,s] == ebat_mv_sf[1,k,l])
     @objective(m_sfd, Min, (1/NS)*sum{-profittotal[s] + unmetcost[s], s in S})
 #    print(m)
     status = solve(m_sfd)
