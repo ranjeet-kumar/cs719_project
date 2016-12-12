@@ -290,6 +290,7 @@ xlim(0,nhours_planning)
 ylabel("Loads (kW)",size = 24)
 xlabel("Time (hours)",size = 24)
 tick_params(labelsize=14)
+#legend(loc="upper right",fancybox="True", shadow="True", fontsize = 15)
 savefig(string("cs719figures/loads_scenarios.pdf"))
 close("all")
 
@@ -310,6 +311,7 @@ grid()
 xlim(0,nhours_planning)
 ylabel("Energy price (\$/kWh)",size = 24)
 tick_params(labelsize=14)
+#legend(loc="upper right",fancybox="True", shadow="True", fontsize = 15)
 subplot(2,1,2)
 hold(true)
 plot(xplot,Pdamplot, color="blue", drawstyle="steps-post");
@@ -318,6 +320,7 @@ xlim(0,nhours_planning)
 ylabel("Net Power (kW)",size = 24)
 xlabel("Time (hours)",size = 24)
 tick_params(labelsize=14)
+#legend(loc="upper right",fancybox="True", shadow="True", fontsize = 15)
 savefig(string("cs719figures/Pdam_fp_st.pdf"))
 close("all")
 
@@ -338,6 +341,7 @@ grid()
 xlim(0,nhours_planning)
 ylabel("Energy price (\$/kWh)",size = 24)
 tick_params(labelsize=14)
+#legend(loc="upper right",fancybox="True", shadow="True", fontsize = 15)
 subplot(2,1,2)
 hold(true)
 for s in S
@@ -348,8 +352,35 @@ xlim(0,nhours_planning)
 ylabel("Net Power (kW)",size = 24)
 xlabel("Time (hours)",size = 24)
 tick_params(labelsize=14)
+#legend(loc="upper right",fancybox="True", shadow="True", fontsize = 15)
 savefig(string("cs719figures/Prtm_fp_st.pdf"))
 close("all")
+
+# Plot of supplied load and unmet load
+n4 = [nrtm,ndam,ndays_planning,NS];
+suppliedloadarray = convertToArray4(getvalue(getvariable(m,:suppliedload)),n4);
+suppliedloadplot = reshape(suppliedloadarray,nrtm_planning,NS);
+suppliedloadplot = [suppliedloadplot;suppliedloadplot[end,:]];
+unmetloadarray = convertToArray4(getvalue(getvariable(m,:unmetload)),n4);
+unmetloadplot = reshape(unmetloadarray,nrtm_planning,NS);
+unmetloadplot = [unmetloadplot;suppliedloadplot[end,:]];
+xplot = 0:dtrtm:dtrtm*nrtm_planning;
+figure()
+plt[:get_current_fig_manager]()[:full_screen_toggle]()
+hold(true)
+for s in S[1]
+	plot(xplot,suppliedloadplot[:,s], drawstyle="steps-post", color = "green", label="Supplied");
+	plot(xplot,unmetloadplot[:,s], drawstyle="steps-post", color = "red", label="Unmet");
+end
+grid()
+xlim(0,nhours_planning)
+ylabel("Supplied & unmet loads (kW)",size = 24)
+xlabel("Time (hours)",size = 24)
+tick_params(labelsize=14)
+#legend(loc="upper right",fancybox="True", shadow="True", fontsize = 15)
+savefig(string("cs719figures/supp_unmet_fp_st.pdf"))
+close("all")
+
 
 # Plot of SOC
 n4 = [nrtm,ndam,ndays_planning,NS];
@@ -361,13 +392,14 @@ figure()
 plt[:get_current_fig_manager]()[:full_screen_toggle]()
 hold(true)
 for s in S[1]
-	plot(xplot,socplot[:,s],  drawstyle="steps-post");
+	plot(xplot,socplot[:,s], drawstyle="steps-post");
 end
 grid()
 xlim(0,nhours_planning)
 ylabel("State of charge",size = 24)
 xlabel("Time (hours)",size = 24)
 tick_params(labelsize=14)
+#legend(loc="upper right",fancybox="True", shadow="True", fontsize = 15)
 savefig(string("cs719figures/soc_fp_st.pdf"))
 close("all")
 
@@ -394,6 +426,7 @@ grid()
 xlim(0,nhours_planning)
 ylabel("Regulation prices (\$/kWh)",size = 24)
 tick_params(labelsize=14)
+#legend(loc="upper right",fancybox="True", shadow="True", fontsize = 15)
 subplot(2,1,2)
 hold(true)
 plot(xplot,regupdamplot, color="blue", drawstyle="steps-post", label="Reg up");
@@ -403,6 +436,7 @@ xlim(0,nhours_planning)
 ylabel("Regulation capacity (kW)",size = 24)
 xlabel("Time (hours)",size = 24)
 tick_params(labelsize=14)
+#legend(loc="upper right",fancybox="True", shadow="True", fontsize = 15)
 savefig(string("cs719figures/reg_fp_st.pdf"))
 close("all")
 
@@ -414,7 +448,7 @@ for i in rtm
         for k in dam
             for l in day
 							for s in S
-                netpower[i,k,l,s] = Prtmarray[i,k,l,s] + Pdamarray[k,l,s];
+                netpower[i,k,l,s] = Prtmarray[i,k,l,s] + Pdamarray[k,l,s] + suppliedloadarray[i,k,l,s];
                 upband[i,k,l,s] = netpower[i,k,l,s] + regupdamarray[k,l,s];
                 downband[i,k,l,s] = netpower[i,k,l,s] - regdowndamarray[k,l,s];
 							end
@@ -427,6 +461,29 @@ downbandplot = reshape(downband,nrtm_planning,NS);
 netpowerplot = [netpowerplot;netpowerplot[end,:]]
 upbandplot = [upbandplot;upbandplot[end,:]]
 downbandplot = [downbandplot;downbandplot[end,:]]
+
+# Plot of netpower and up & down band
+# Plot of SOC
+n4 = [nrtm,ndam,ndays_planning,NS];
+xplot = 0:dtrtm:dtrtm*nrtm_planning;
+figure()
+plt[:get_current_fig_manager]()[:full_screen_toggle]()
+hold(true)
+for s in S[1]
+	plot(xplot,netpowerplot[:,s], drawstyle="steps-post", color = "blue", label="Net discharge");
+	plot(xplot,upbandplot[:,s], drawstyle="steps-post", color = "green", label="Up band");
+	plot(xplot,downbandplot[:,s], drawstyle="steps-post", color = "green", label="Down band");
+end
+grid()
+xlim(0,nhours_planning)
+ylabel("Net discharge & bands (kW)",size = 24)
+xlabel("Time (hours)",size = 24)
+tick_params(labelsize=14)
+#legend(loc="upper right",fancybox="True", shadow="True", fontsize = 15)
+savefig(string("cs719figures/bands_fp_st.pdf"))
+close("all")
+
+
 
 #=
 
