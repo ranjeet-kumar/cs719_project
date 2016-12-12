@@ -399,14 +399,14 @@ close("all")
 # Pnet, regulation bands calculation
 netpower = zeros(nrtm,ndam,ndays_planning,NS);
 upband = zeros(nrtm,ndam,ndays_planning,NS);
-lowband = zeros(nrtm,ndam,ndays_planning,NS);
+downband = zeros(nrtm,ndam,ndays_planning,NS);
 for i in rtm
         for k in dam
             for l in day
 							for s in S
                 netpower[i,k,l,s] = Prtmarray[i,k,l,s] + Pdamarray[k,l,s];
                 upband[i,k,l,s] = netpower[i,k,l,s] + regupdamarray[k,l,s];
-                lowband[i,k,l,s] = netpower[i,k,l,s] - regdowndamarray[k,l,s];
+                downband[i,k,l,s] = netpower[i,k,l,s] - regdowndamarray[k,l,s];
 							end
             end
         end
