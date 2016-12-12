@@ -463,7 +463,6 @@ upbandplot = [upbandplot;upbandplot[end,:]]
 downbandplot = [downbandplot;downbandplot[end,:]]
 
 # Plot of netpower and up & down band
-# Plot of SOC
 n4 = [nrtm,ndam,ndays_planning,NS];
 xplot = 0:dtrtm:dtrtm*nrtm_planning;
 figure()
@@ -472,7 +471,7 @@ hold(true)
 for s in S[1]
 	plot(xplot,netpowerplot[:,s], drawstyle="steps-post", color = "blue", label="Net discharge");
 	plot(xplot,upbandplot[:,s], drawstyle="steps-post", color = "green", label="Up band");
-	plot(xplot,downbandplot[:,s], drawstyle="steps-post", color = "green", label="Down band");
+	plot(xplot,downbandplot[:,s], drawstyle="steps-post", color = "red", label="Down band");
 end
 grid()
 xlim(0,nhours_planning)
