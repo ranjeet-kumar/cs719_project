@@ -207,9 +207,9 @@ for p in 1:nhours_planning
     eprdam = dampricedata[(p-1)+(1:nhours_horizon),4];	    	#Day Ahead Market Selling price, $/MWh
 
     #Reshape the data to matrices
-    rtmepr = reshape(eprrtm,nrtm,ndam);
-    damepr = reshape(eprdam,ndam);
-    load = reshape(load,nrtm,ndam,NS);
+    rtmepr = reshape(eprrtm,nrtm,nhours_horizon);
+    damepr = reshape(eprdam,nhours_horizon);
+    load = reshape(load,nrtm,nhours_horizon,NS);
 
     #Define sets to be used in the model defVar and addConstraint
     rtm = 1:nrtm;
