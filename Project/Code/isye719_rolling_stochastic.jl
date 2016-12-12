@@ -70,7 +70,7 @@ ndays = 365;              #Number of days data is available for
 ndays_planning = 7;       #Number of days you want to plan for
 nhours_planning = ndays_planning*ndam;
 nrtm_planning = nhours_planning*nrtm;
-nhours_horizon = 12;
+nhours_horizon = 2;
 nrtm_horizon = nhours_horizon*nrtm;
 
 NS = 50; # Number of scenarios you want to sample from the distrbution
