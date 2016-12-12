@@ -79,8 +79,8 @@ regdown_max = 0.5*P_max;  #Regulation Up Capacity, MW
 rampmin = -0.5*P_max;	          #Lower bound for ramp discharge, MW/5min
 rampmax = 0.5*P_max;  	  #Upper bound for ramp discharge, MW/5min
 eff = 1;                  #Discharging Efficiency of battery
-soc0 = 100;		  #Initial State of charge, 100 means fully charged
-socend = 100;		  #State of charge at the end of the day
+ebat0 = ebat_max;		   #Initial State of charge
+ebatend = ebat_max;		  #State of charge at the end of the day
 ndays = 365;              #Number of days data is available for
 ndays_planning = 7;       #Number of days you want to plan for
 nhours_planning = ndays_planning*ndam;
@@ -188,7 +188,6 @@ m = Model(solver = GurobiSolver(Threads=2))
     @variable(m, -P_max <= Pdam[dam,day,S] <= P_max)    	                #Power sold to the day ahead market, kW
     @expression(m, Pnet[i in rtm,k in dam,l in day,s in S], Prtm[i,k,l,s] + Pdam[k,l,s])    #Net power discharged from battery in all 5-min interval, kW
     @variable(m, 0 <= ebat[rtm,dam,day,S] <= ebat_max)      	#Energy stored in the battery at the end of each real time interval
-    @variable(m, 0 <= soc[rtm,dam,day,S] <= 100)		        #SOC of the battery at the end of each real time interval
     @variable(m, 0 <= regupdam[dam,day,S] <= regup_max)                 #Amount of regulation up, kW
     @variable(m, 0 <= regdowndam[dam,day,S] <= regdown_max)             #Amount of regulation down, kW
     @variable(m, suppliedload[rtm,dam,day,S] >= 0)
@@ -202,9 +201,7 @@ m = Model(solver = GurobiSolver(Threads=2))
 
 
 
-    @constraint(m, InitialEnergy[s in S], ebat[1,1,1,s] == soc0/100*ebat_max - 1/eff*Pnet[1,1,1,s]*dtrtm - suppliedload[1,1,1,s]*dtrtm)	#Inital energy in the battery
-
-    @constraint(m, DefSOC[i in rtm,k in dam,l in day,s in S], soc[i,k,l,s] == ebat[i,k,l,s]/ebat_max*100)			#Define SOC
+    @constraint(m, InitialEnergy[s in S], ebat[1,1,1,s] == ebat0 - 1/eff*Pnet[1,1,1,s]*dtrtm - suppliedload[1,1,1,s]*dtrtm)	#Inital energy in the battery
 
 #    @constraint(m, EndSOC[i in rtm,k in dam,l in day,s in S], soc[i,k,l,s] >= socend)		#Constraint on SOC at the end of the day
 
@@ -250,12 +247,8 @@ m = Model(solver = GurobiSolver(Threads=2))
     @constraint(m, Nonant_PDAM[k in dam,l in day,s in S], Pdam[k,l,s] == (1/NS)*sum{Pdam[k,l,s], s in S})
     @constraint(m, Nonant_DAMregup[k in dam,l in day,s in S], regupdam[k,l,s] == (1/NS)*sum{regupdam[k,l,s], s in S})
     @constraint(m, Nonant_DAMregdown[k in dam,l in day,s in S], regdowndam[k,l,s] == (1/NS)*sum{regdowndam[k,l,s], s in S})
-    @constraint(m, Nonant_ProfitEDAM[k in dam,l in day,s in S], profitEdam[k,l,s] == (1/NS)*sum{profitEdam[k,l,s], s in S})
-    @constraint(m, Nonant_ProfitRegUpDAM[k in dam,l in day,s in S], profitregupdam[k,l,s] == (1/NS)*sum{profitregupdam[k,l,s], s in S})
-    @constraint(m, Nonant_ProfitRegDownDAM[k in dam,l in day,s in S], profitregdowndam[k,l,s] == (1/NS)*sum{profitregdowndam[k,l,s], s in S})
 
     @objective(m, Min, (1/NS)*sum{-profittotal[s] + unmetcost[s], s in S})
-
 
 #    print(m)
 
@@ -403,8 +396,27 @@ tick_params(labelsize=14)
 savefig(string("cs719figures/reg_fp_st.pdf"))
 close("all")
 
-
-
+# Pnet, regulation bands calculation
+netpower = zeros(nrtm,ndam,ndays_planning,NS);
+upband = zeros(nrtm,ndam,ndays_planning,NS);
+lowband = zeros(nrtm,ndam,ndays_planning,NS);
+for i in rtm
+        for k in dam
+            for l in day
+							for s in S
+                netpower[i,k,l,s] = Prtmarray[i,k,l,s] + Pdamarray[k,l,s];
+                upband[i,k,l,s] = netpower[i,k,l,s] + regupdamarray[k,l,s];
+                lowband[i,k,l,s] = netpower[i,k,l,s] - regdowndamarray[k,l,s];
+							end
+            end
+        end
+end
+netpowerplot = reshape(netpower,nrtm_planning,NS);
+upbandplot = reshape(upband,nrtm_planning,NS);
+downbandplot = reshape(downband,nrtm_planning,NS);
+netpowerplot = [netpowerplot;netpowerplot[end,:]]
+upbandplot = [upbandplot;upbandplot[end,:]]
+downbandplot = [downbandplot;downbandplot[end,:]]
 
 #=
 
