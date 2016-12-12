@@ -185,37 +185,35 @@ for p in 1:nhours_planning # Starting rolling horizon for mean-value problem
     ################ Mean-value Model ##################
 
     mv_rol = Model(solver = GurobiSolver(Threads = 2, OutputFlag = 0))
-        @variable(mv_rol, -P_max <= Prtm[rtm,dam,S] <= P_max)	                #Power sold to the real time market, kW
-        @variable(mv_rol, -P_max <= Pdam[dam,S] <= P_max)    	                #Power sold to the day ahead market, kW
-        @variable(mv_rol, 0 <= ebat[rtm,dam,S] <= ebat_max)      	#Energy stored in the battery at the end of each real time interval, kWh
-        @variable(mv_rol, suppliedload[rtm,dam,S] >= 0)
-        @variable(mv_rol, unmetload[rtm,dam,S] >= 0)
-    		@expression(mv_rol, Pnet[i in rtm,k in dam,s in S], Prtm[i,k,s] + Pdam[k,s] + suppliedload[i,k,s])    #Net power discharged from battery in all 5-min interval, kW
-    		@variable(mv_rol, profitErtm[rtm,dam,S])# >= 0)				        #Profit from the real time market, USD
-        @variable(mv_rol, profitEdam[dam,S])# >= 0)	        			#Profit from the day ahead market, USD
-        @variable(mv_rol, profittotal[S])# >= 0)		        	#Total profit in the day, USD
-        @variable(mv_rol, unmetcost[S])
+        @variable(mv_rol, -P_max <= Prtm[rtm,dam] <= P_max)	                #Power sold to the real time market, kW
+        @variable(mv_rol, -P_max <= Pdam[dam] <= P_max)    	                #Power sold to the day ahead market, kW
+        @variable(mv_rol, 0 <= ebat[rtm,dam] <= ebat_max)      	#Energy stored in the battery at the end of each real time interval, kWh
+        @variable(mv_rol, suppliedload[rtm,dam] >= 0)
+        @variable(mv_rol, unmetload[rtm,dam] >= 0)
+    		@expression(mv_rol, Pnet[i in rtm,k in dam], Prtm[i,k] + Pdam[k] + suppliedload[i,k])    #Net power discharged from battery in all 5-min interval, kW
+    		@variable(mv_rol, profitErtm[rtm,dam])# >= 0)				        #Profit from the real time market, USD
+        @variable(mv_rol, profitEdam[dam])# >= 0)	        			#Profit from the day ahead market, USD
+        @variable(mv_rol, profittotal)# >= 0)		        	#Total profit in the day, USD
+        @variable(mv_rol, unmetcost)
 
-        @constraint(mv_rol, InitialEnergy[s in S], ebat[1,1,s] == ebat0 - 1/eff*Pnet[1,1,s]*dtrtm)	#Inital energy in the battery
-    #    @constraint(mv_rol, EndSOC[i in rtm,k in dam,s in S], soc[i,k,s] >= socend)		#Constraint on SOC at the end of the day
-        @constraint(mv_rol, rtmEBalance[i in rtm[2:end],k in dam,s in S], ebat[i,k,s] == ebat[i-1,k,s] - 1/eff*Pnet[i,k,s]*dtrtm)	#Dynamics constraint
-        @constraint(mv_rol, damEBalance[i=rtm[1],k in dam[2:end],iend=rtm[end],s in S], ebat[i,k,s] == ebat[iend,k-1,s] - 1/eff*Pnet[i,k,s]*dtrtm)	#Dynamics constraint
-        @constraint(mv_rol, UnmetLoad[i in rtm,k in dam,s in S], suppliedload[i,k,s] + unmetload[i,k,s] >=  load_mv[i,k,s])
-        @constraint(mv_rol, BoundSupplied[i in rtm,k in dam,s in S], suppliedload[i,k,s] <= load_mv[i,k,s])
-        @constraint(mv_rol, BoundUnmet[i in rtm,k in dam,s in S], unmetload[i,k,s] <= load_mv[i,k,s])
-    #=    @constraint(mv_rol, RTMRamp1[i in rtm[2:end],k in dam,s in S], Pnet[i,k,s]  - Pnet[i-1,k,s] <= rampmax*dtrtm)   #Ramp discharge constraint at each time
-    		@constraint(mv_rol, RTMRamp2[i in rtm[2:end],k in dam,s in S], Pnet[i,k,s]  - Pnet[i-1,k,s] >= -rampmax*dtrtm)   #Ramp discharge constraint at each time
-    		@constraint(mv_rol, DAMRamp1[i in rtm[1],k in dam[2:end],iend=rtm[end],s in S], Pnet[i,k,s] - Pnet[iend,k-1,s] <= rampmax*dtrtm)   #Ramp discharge constraint at each time
-    		@constraint(mv_rol, DAMRamp2[i in rtm[1],k in dam[2:end],iend=rtm[end],s in S], Pnet[i,k,s] - Pnet[iend,k-1,s] >= -rampmax*dtrtm)   #Ramp discharge constraint at each time
+        @constraint(mv_rol, InitialEnergy, ebat[1,1] == ebat0 - 1/eff*Pnet[1,1]*dtrtm)	#Inital energy in the battery
+    #    @constraint(mv_rol, EndSOC[i in rtm,k in dam], soc[i,k] >= socend)		#Constraint on SOC at the end of the day
+        @constraint(mv_rol, rtmEBalance[i in rtm[2:end],k in dam], ebat[i,k] == ebat[i-1,k] - 1/eff*Pnet[i,k]*dtrtm)	#Dynamics constraint
+        @constraint(mv_rol, damEBalance[i=rtm[1],k in dam[2:end],iend=rtm[end]], ebat[i,k] == ebat[iend,k-1] - 1/eff*Pnet[i,k]*dtrtm)	#Dynamics constraint
+        @constraint(mv_rol, UnmetLoad[i in rtm,k in dam], suppliedload[i,k] + unmetload[i,k] >=  load_mv[i,k])
+        @constraint(mv_rol, BoundSupplied[i in rtm,k in dam], suppliedload[i,k] <= load_mv[i,k])
+        @constraint(mv_rol, BoundUnmet[i in rtm,k in dam], unmetload[i,k] <= load_mv[i,k])
+    #=    @constraint(mv_rol, RTMRamp1[i in rtm[2:end],k in dam], Pnet[i,k,s]  - Pnet[i-1,k] <= rampmax*dtrtm)   #Ramp discharge constraint at each time
+    		@constraint(mv_rol, RTMRamp2[i in rtm[2:end],k in dam], Pnet[i,k,s]  - Pnet[i-1,k] >= -rampmax*dtrtm)   #Ramp discharge constraint at each time
+    		@constraint(mv_rol, DAMRamp1[i in rtm[1],k in dam[2:end],iend=rtm[end]], Pnet[i,k] - Pnet[iend,k-1] <= rampmax*dtrtm)   #Ramp discharge constraint at each time
+    		@constraint(mv_rol, DAMRamp2[i in rtm[1],k in dam[2:end],iend=rtm[end]], Pnet[i,k] - Pnet[iend,k-1] >= -rampmax*dtrtm)   #Ramp discharge constraint at each time
     =#
-    		@constraint(mv_rol, RTMEProfits[i in rtm,k in dam,s in S], profitErtm[i,k,s] == rtmepr[i,k]*Prtm[i,k,s]*dtrtm)	#Economic calculation
-        @constraint(mv_rol, DAMEProfits[k in dam,s in S], profitEdam[k,s] == damepr[k]*Pdam[k,s]*dtdam)	#Economic calculation
-        @constraint(mv_rol, TotalProfit[s in S], profittotal[s] ==
-                            sum{profitErtm[i,k,s], i in rtm, k in dam} + sum{profitEdam[k,s], k in dam})
-        @constraint(mv_rol, UnmetCost[s in S], unmetcost[s] == sum{rtmepr[i,k]*unmetload[i,k,s], i in rtm, k in dam})
-        # Non-anticipativity constraints for first stage variables
-        @constraint(mv_rol, Nonant_PDAM[k in dam,s in S], Pdam[k,s] == (1/NS)*sum{Pdam[k,s], s in S})
-        @objective(mv_rol, Min, (1/NS)*sum{-profittotal[s] + unmetcost[s], s in S})
+    		@constraint(mv_rol, RTMEProfits[i in rtm,k in dam], profitErtm[i,k] == rtmepr[i,k]*Prtm[i,k]*dtrtm)	#Economic calculation
+        @constraint(mv_rol, DAMEProfits[k in dam], profitEdam[k] == damepr[k]*Pdam[k]*dtdam)	#Economic calculation
+        @constraint(mv_rol, TotalProfit, profittotal ==
+                            sum{profitErtm[i,k], i in rtm, k in dam} + sum{profitEdam[k], k in dam})
+        @constraint(mv_rol, UnmetCost, unmetcost == sum{rtmepr[i,k]*unmetload[i,k], i in rtm, k in dam})
+        @objective(mv_rol, Min, -profittotal + unmetcost)
         #    print(mv_rol)
         status = solve(mv_rol)
 
