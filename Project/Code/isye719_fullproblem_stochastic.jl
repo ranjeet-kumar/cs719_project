@@ -186,13 +186,13 @@ m = Model(solver = GurobiSolver(Threads=2))
 
     @variable(m, -P_max <= Prtm[rtm,dam,day,S] <= P_max)	                #Power sold to the real time market, kW
     @variable(m, -P_max <= Pdam[dam,day,S] <= P_max)    	                #Power sold to the day ahead market, kW
-    @expression(m, Pnet[i in rtm,k in dam,l in day,s in S], Prtm[i,k,l,s] + Pdam[k,l,s])    #Net power discharged from battery in all 5-min interval, kW
-    @variable(m, 0 <= ebat[rtm,dam,day,S] <= ebat_max)      	#Energy stored in the battery at the end of each real time interval
+    @variable(m, 0 <= ebat[rtm,dam,day,S] <= ebat_max)      	#Energy stored in the battery at the end of each real time interval, kWh
     @variable(m, 0 <= regupdam[dam,day,S] <= regup_max)                 #Amount of regulation up, kW
     @variable(m, 0 <= regdowndam[dam,day,S] <= regdown_max)             #Amount of regulation down, kW
     @variable(m, suppliedload[rtm,dam,day,S] >= 0)
     @variable(m, unmetload[rtm,dam,day,S] >= 0)
-    @variable(m, profitErtm[rtm,dam,day,S])# >= 0)				        #Profit from the real time market, USD
+		@expression(m, Pnet[i in rtm,k in dam,l in day,s in S], Prtm[i,k,l,s] + Pdam[k,l,s] + suppliedload[i,k,l,s])    #Net power discharged from battery in all 5-min interval, kW
+		@variable(m, profitErtm[rtm,dam,day,S])# >= 0)				        #Profit from the real time market, USD
     @variable(m, profitEdam[dam,day,S])# >= 0)	        			#Profit from the day ahead market, USD
     @variable(m, profitregupdam[dam,day,S])# >= 0)			        #Profit from the day ahead market, USD
     @variable(m, profitregdowndam[dam,day,S])# >= 0)	        		#Profit from the day ahead market, USD
@@ -201,15 +201,15 @@ m = Model(solver = GurobiSolver(Threads=2))
 
 
 
-    @constraint(m, InitialEnergy[s in S], ebat[1,1,1,s] == ebat0 - 1/eff*Pnet[1,1,1,s]*dtrtm - suppliedload[1,1,1,s]*dtrtm)	#Inital energy in the battery
+    @constraint(m, InitialEnergy[s in S], ebat[1,1,1,s] == ebat0 - 1/eff*Pnet[1,1,1,s]*dtrtm)	#Inital energy in the battery
 
 #    @constraint(m, EndSOC[i in rtm,k in dam,l in day,s in S], soc[i,k,l,s] >= socend)		#Constraint on SOC at the end of the day
 
-    @constraint(m, rtmEBalance[i in rtm[2:end],k in dam,l in day,s in S], ebat[i,k,l,s] == ebat[i-1,k,l,s] - 1/eff*Pnet[i,k,l,s]*dtrtm - suppliedload[i,k,l,s]*dtrtm)	#Dynamics constraint
+    @constraint(m, rtmEBalance[i in rtm[2:end],k in dam,l in day,s in S], ebat[i,k,l,s] == ebat[i-1,k,l,s] - 1/eff*Pnet[i,k,l,s]*dtrtm)	#Dynamics constraint
 
-    @constraint(m, damEBalance[i=rtm[1],k in dam[2:end],iend=rtm[end],l in day,s in S], ebat[i,k,l,s] == ebat[iend,k-1,l,s] - 1/eff*Pnet[i,k,l,s]*dtrtm - suppliedload[i,k,l,s]*dtrtm)	#Dynamics constraint
+    @constraint(m, damEBalance[i=rtm[1],k in dam[2:end],iend=rtm[end],l in day,s in S], ebat[i,k,l,s] == ebat[iend,k-1,l,s] - 1/eff*Pnet[i,k,l,s]*dtrtm)	#Dynamics constraint
 
-    @constraint(m, dayEBalance[i=rtm[1],k=dam[1],iend=rtm[end],kend=dam[end],l in day[2:end],s in S], ebat[i,k,l,s] == ebat[iend,kend,l-1,s] - 1/eff*Pnet[i,k,l,s]*dtrtm - suppliedload[i,k,l,s]*dtrtm)	#Dynamics constraint
+    @constraint(m, dayEBalance[i=rtm[1],k=dam[1],iend=rtm[end],kend=dam[end],l in day[2:end],s in S], ebat[i,k,l,s] == ebat[iend,kend,l-1,s] - 1/eff*Pnet[i,k,l,s]*dtrtm)	#Dynamics constraint
 
     @constraint(m, UnmetLoad[i in rtm,k in dam,l in day, s in S], suppliedload[i,k,l,s] + unmetload[i,k,l,s] >=  load[i,k,l,s])
 
