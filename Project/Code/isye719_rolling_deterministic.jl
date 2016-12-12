@@ -266,7 +266,7 @@ for p in 1:nhours_planning # Starting rolling horizon for mean-value problem
 
 ##########################################################################
 
-    soc0 = getvalue(getvariable(m_rold,:soc))[rtm[end],dam[1],realized_sequence[p]];
+    ebat0 = getvalue(getvariable(m_rold,:ebat))[rtm[end],dam[1],realized_sequence[p]];
     Prtm_realized[:,p] = getvalue(getvariable(m_rold,:Prtm))[1:rtm[end],dam[1],realized_sequence[p]];
     unmetload_realized[:,p] = getvalue(getvariable(m_rold,:unmetload))[1:rtm[end],dam[1],realized_sequence[p]];
     unmetcost_realized[p] = sum(unmetload_realized.*eprrtm[1:rtm[end]]);
