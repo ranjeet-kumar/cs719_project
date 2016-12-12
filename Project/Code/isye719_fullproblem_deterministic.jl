@@ -278,6 +278,7 @@ hold(true)
 plot(xplot,Pdamplot, color="blue", drawstyle="steps-post");
 grid()
 xlim(0,nhours_planning)
+ylim(-1.02,1.02)
 ylabel("Net Power (kW)",size = 24)
 xlabel("Time (hours)",size = 24)
 tick_params(labelsize=14)
@@ -310,6 +311,7 @@ for s in S[r]
 end
 grid()
 xlim(0,nhours_planning)
+ylim(-1.02,1.02)
 ylabel("Net Power (kW)",size = 24)
 xlabel("Time (hours)",size = 24)
 tick_params(labelsize=14)
@@ -345,7 +347,7 @@ close("all")
 
 # Plot of SOC
 n4 = [nrtm,ndam,ndays_planning,NS];
-socarray = convertToArray4(getvalue(getvariable(m_d,:ebat)),n4)/ebat_max;
+socarray = convertToArray4(getvalue(getvariable(m_d,:ebat)),n4)/ebat_max*100;
 socplot = reshape(socarray,nrtm_planning,NS);
 socplot = [socplot;socplot[end,:]];
 xplot = 0:dtrtm:dtrtm*nrtm_planning;
@@ -357,7 +359,8 @@ for s in S[r]
 end
 grid()
 xlim(0,nhours_planning)
-ylabel("State of charge",size = 24)
+ylim(-0.02,100.02)
+ylabel("State of charge (%)",size = 24)
 xlabel("Time (hours)",size = 24)
 tick_params(labelsize=14)
 #legend(loc="upper right",fancybox="True", shadow="True", fontsize = 15)
@@ -389,6 +392,7 @@ for s in S[r]
 end
 grid()
 xlim(0,nhours_planning)
+ylim(-1.02,1.02)
 ylabel("Net discharge (kW)",size = 24)
 xlabel("Time (hours)",size = 24)
 tick_params(labelsize=14)
