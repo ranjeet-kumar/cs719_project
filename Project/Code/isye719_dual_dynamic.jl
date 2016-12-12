@@ -18,29 +18,29 @@ function convertToArray(x)
     return a
 end
 
-function convertToArray2(A,n)	
-    AA = getvalue(A)	
+function convertToArray2(A,n)
+    AA = getvalue(A)
     m = (n[1],n[2])
-    B = zeros(m)	
+    B = zeros(m)
     for i in 1:n[1]
 	for j in 1:n[2]
 	    B[i,j] = AA[i,j]
 	end
-    end	
+    end
     return B
 end
 
 function convertToArray3(A,n)
-    AA = getvalue(A)	
+    AA = getvalue(A)
     m = (n[1],n[2],n[3])
-    B = zeros(m)	
+    B = zeros(m)
     for i in 1:n[1]
 	for j in 1:n[2]
 	    for k in 1:n[3]
 		B[i,j,k] = AA[i,j,k]
 	    end
 	end
-    end	
+    end
     return B
 end
 
@@ -56,7 +56,7 @@ dtrtm = 5/60;				#time interval of each real time interval [hour]
 nrtm = Int64(dtdam/dtrtm);		#No. of real time intervals in each quarter-hour [hour]
 
 nrtmpoints = ndam*nrtm;		        #Total number of points in RTM data
-ndampoints = ndam;			#Total number of points in hourly data	
+ndampoints = ndam;			#Total number of points in hourly data
 
 #Model Parameters
 ebat_max = 0.5;	          #Battery capacity, MWh
@@ -68,7 +68,7 @@ rampmax = 100;  	  #Upper bound for ramp discharge, MW/s
 eff = 0.9;                #Discharging Efficiency of battery
 socend = 100;		  #State of charge at the end of the day
 ndays = 365;              #Number of days data is available for
-ndays_planning = 7;       #Number of days you want to plan for 
+ndays_planning = 7;       #Number of days you want to plan for
 ndays_horizon = 1;        #Number of days in the horizon at every step
 
 NS = 50; # Number of scenarios you want to sample from the distrbution
@@ -110,7 +110,7 @@ nweeks_planning = Int64(ceil((ndays_planning/reshape_ndays)));
 loadNSdata = zeros(reshape_nrows*(nweeks_planning+1),NS);
 R = chol(Snstar);
 for j in 1:nweeks_planning+1
-    loadNSdata[(j-1)*reshape_nrows+(1:reshape_nrows),:]  = repmat(load_weeklymean,1,NS) + R'*randn(p,NS); 
+    loadNSdata[(j-1)*reshape_nrows+(1:reshape_nrows),:]  = repmat(load_weeklymean,1,NS) + R'*randn(p,NS);
 end
 loadNSdata[loadNSdata.<=0] = minimum(loadvec);
 writecsv("loads_scenarios_month.csv",loadNSdata)
@@ -193,38 +193,35 @@ writecsv("realized_sequence.csv",realized_sequence)
 
 
 
-function forwardmodel(soc0,s_realized)
+function forwardmodel(ebat0,s_realized)
 
     m = Model(solver = GurobiSolver(Threads = 2, OutputFlag = 0))
-    
+
     @variable(m, -P_max <= Prtm[rtm] <= P_max)	                #Net Power sold to the real time market, kW
     @variable(m, -P_max <= Pdam <= P_max)    	                #Net Power sold to the day-ahead market, kW
-    @expression(m, Pnet[i in rtm], Prtm[i] + Pdam)              #Net power discharged from battery in all 5-min interval, kW 
+    @expression(m, Pnet[i in rtm], Prtm[i] + Pdam)              #Net power discharged from battery in all 5-min interval, kW
     @variable(m, 0 <= ebat[rtm] <= ebat_max)                	#Energy stored in the battery at the end of each real time interval
-    @variable(m, 0 <= soc[rtm] <= 100)		                #SOC of the battery at the end of each real time interval      
     @variable(m, 0 <= regupdam <= regup_max)                       #Amount of regulation up, kW
     @variable(m, 0 <= regdowndam <= regdown_max)                   #Amount of regulation down, kW
-    @variable(m, suppliedload[rtm] >= 0) 
-    @variable(m, unmetload[rtm] >= 0) 
+    @variable(m, suppliedload[rtm] >= 0)
+    @variable(m, unmetload[rtm] >= 0)
     @variable(m, profitErtm[rtm])# >= 0)				#Profit from the real time market, USD
-    @variable(m, profitEdam)# >= 0)	        		#Profit from the day ahead market, USD		
+    @variable(m, profitEdam)# >= 0)	        		#Profit from the day ahead market, USD
     @variable(m, profitregupdam)# >= 0)			        #Profit from the day ahead market, USD
     @variable(m, profitregdowndam)# >= 0)	        		#Profit from the day ahead market, USD
-    @variable(m, profittotal)# >= 0)		                	#Total profit in the day, USD		
-    @variable(m, unmetcost) 
+    @variable(m, profittotal)# >= 0)		                	#Total profit in the day, USD
+    @variable(m, unmetcost)
     @variable(m, theta >= 0)
-    @constraint(m, InitialEnergy, ebat[1] == soc0/100*ebat_max - 1/eff*Pnet[1]*dtrtm - suppliedload[1]*dtrtm)	#Inital energy in the battery
-    
-    @constraint(m, DefSOC[i in rtm], soc[i] == ebat[i]/ebat_max*100)			#Define SOC
+    @constraint(m, InitialEnergy, ebat[1] == ebat0 - 1/eff*Pnet[1]*dtrtm - suppliedload[1]*dtrtm)	#Inital energy in the battery
 
     #    @constraint(m, EndSOC[i=rtm[end]], soc[i] >= socend)		#Constraint on SOC at the end of the day
 
     @constraint(m, rtmEBalance[i in rtm[2:end]], ebat[i] == ebat[i-1] - 1/eff*Pnet[i]*dtrtm - suppliedload[i]*dtrtm)	#Dynamics constraint
-    
-    # @constraint(m, RTMRamp[i in rtm[2:end],k in dam, s in S], rampmin*dtrtm <= Pnet[i,k,s]  - Pnet[i-1,k,s] <= rampmax*dtrtm)   #Ramp discharge constraint at each time        
 
-   # @constraint(m, DAMRamp[i=rtm[1],k in dam[2:end],iend=rtm[end],s in S], rampmin*dtrtm <= Pnet[i,k,s] - Pnet[iend,k-1,s] <= rampmax*dtrtm)   #Ramp discharge constraint at each time    
-    
+    # @constraint(m, RTMRamp[i in rtm[2:end],k in dam, s in S], rampmin*dtrtm <= Pnet[i,k,s]  - Pnet[i-1,k,s] <= rampmax*dtrtm)   #Ramp discharge constraint at each time
+
+   # @constraint(m, DAMRamp[i=rtm[1],k in dam[2:end],iend=rtm[end],s in S], rampmin*dtrtm <= Pnet[i,k,s] - Pnet[iend,k-1,s] <= rampmax*dtrtm)   #Ramp discharge constraint at each time
+
     @constraint(m, RegUp[i in rtm], Pnet[i] + regupdam <= P_max)	#Constraint on total power
 
     @constraint(m, RegDown[i in rtm], Pnet[i] - regdowndam >= -P_max)	#Constraint on total power
@@ -235,9 +232,9 @@ function forwardmodel(soc0,s_realized)
 
     @constraint(m, BoundUnmet[i in rtm], unmetload[i] <= load[i,s_realized][1])
 
-    @constraint(m, RTMEProfits[i in rtm], profitErtm[i] == rtmepr[i]*Prtm[i]*dtrtm)	#Economic calculation    
+    @constraint(m, RTMEProfits[i in rtm], profitErtm[i] == rtmepr[i]*Prtm[i]*dtrtm)	#Economic calculation
     @constraint(m, DAMEProfits, profitEdam == damepr*Pdam*dtdam)        	#Economic calculation
-    
+
     @constraint(m, DAMregupProfits, profitregupdam == damreguppr*regupdam)
     @constraint(m, DAMregdownProfits, profitregdowndam == damregdownpr*regdowndam)
 
@@ -256,38 +253,35 @@ end
 
 
 
-function scenariosubproblem(soc0,s,dual,obj)
+function scenariosubproblem(ebat0,s)
 
     m = Model(solver = GurobiSolver(Threads = 2, OutputFlag = 0))
-    
+
     @variable(m, -P_max <= Prtm[rtm] <= P_max)	                #Net Power sold to the real time market, kW
     @variable(m, -P_max <= Pdam <= P_max)    	                #Net Power sold to the day-ahead market, kW
-    @expression(m, Pnet[i in rtm], Prtm[i] + Pdam)              #Net power discharged from battery in all 5-min interval, kW 
+    @expression(m, Pnet[i in rtm], Prtm[i] + Pdam)              #Net power discharged from battery in all 5-min interval, kW
     @variable(m, 0 <= ebat[rtm] <= ebat_max)                	#Energy stored in the battery at the end of each real time interval
-    @variable(m, 0 <= soc[rtm] <= 100)		                #SOC of the battery at the end of each real time interval      
     @variable(m, 0 <= regupdam <= regup_max)                       #Amount of regulation up, kW
     @variable(m, 0 <= regdowndam <= regdown_max)                   #Amount of regulation down, kW
-    @variable(m, suppliedload[rtm] >= 0) 
-    @variable(m, unmetload[rtm] >= 0) 
+    @variable(m, suppliedload[rtm] >= 0)
+    @variable(m, unmetload[rtm] >= 0)
     @variable(m, profitErtm[rtm])# >= 0)				#Profit from the real time market, USD
-    @variable(m, profitEdam)# >= 0)	        		#Profit from the day ahead market, USD		
+    @variable(m, profitEdam)# >= 0)	        		#Profit from the day ahead market, USD
     @variable(m, profitregupdam)# >= 0)			        #Profit from the day ahead market, USD
     @variable(m, profitregdowndam)# >= 0)	        		#Profit from the day ahead market, USD
-    @variable(m, profittotal)# >= 0)		                	#Total profit in the day, USD		
-    @variable(m, unmetcost) 
+    @variable(m, profittotal)# >= 0)		                	#Total profit in the day, USD
+    @variable(m, unmetcost)
     @variable(m, theta >= 0)
-    @constraint(m, InitialEnergy, ebat[1] == soc0/100*ebat_max - 1/eff*Pnet[1]*dtrtm - suppliedload[1]*dtrtm)	#Inital energy in the battery
-    
-    @constraint(m, DefSOC[i in rtm], soc[i] == ebat[i]/ebat_max*100)			#Define SOC
+    @constraint(m, InitialEnergy, ebat[1] == ebat0 - 1/eff*Pnet[1]*dtrtm - suppliedload[1]*dtrtm)	#Inital energy in the battery
 
     #    @constraint(m, EndSOC[i=rtm[end]], soc[i] >= socend)		#Constraint on SOC at the end of the day
 
     @constraint(m, rtmEBalance[i in rtm[2:end]], ebat[i] == ebat[i-1] - 1/eff*Pnet[i]*dtrtm - suppliedload[i]*dtrtm)	#Dynamics constraint
-    
-    # @constraint(m, RTMRamp[i in rtm[2:end],k in dam, s in S], rampmin*dtrtm <= Pnet[i,k,s]  - Pnet[i-1,k,s] <= rampmax*dtrtm)   #Ramp discharge constraint at each time        
 
-   # @constraint(m, DAMRamp[i=rtm[1],k in dam[2:end],iend=rtm[end],s in S], rampmin*dtrtm <= Pnet[i,k,s] - Pnet[iend,k-1,s] <= rampmax*dtrtm)   #Ramp discharge constraint at each time    
-    
+    # @constraint(m, RTMRamp[i in rtm[2:end],k in dam, s in S], rampmin*dtrtm <= Pnet[i,k,s]  - Pnet[i-1,k,s] <= rampmax*dtrtm)   #Ramp discharge constraint at each time
+
+   # @constraint(m, DAMRamp[i=rtm[1],k in dam[2:end],iend=rtm[end],s in S], rampmin*dtrtm <= Pnet[i,k,s] - Pnet[iend,k-1,s] <= rampmax*dtrtm)   #Ramp discharge constraint at each time
+
     @constraint(m, RegUp[i in rtm], Pnet[i] + regupdam <= P_max)	#Constraint on total power
 
     @constraint(m, RegDown[i in rtm], Pnet[i] - regdowndam >= -P_max)	#Constraint on total power
@@ -298,9 +292,9 @@ function scenariosubproblem(soc0,s,dual,obj)
 
     @constraint(m, BoundUnmet[i in rtm], unmetload[i] <= load[i,s][1])
 
-    @constraint(m, RTMEProfits[i in rtm], profitErtm[i] == rtmepr[i]*Prtm[i]*dtrtm)	#Economic calculation    
+    @constraint(m, RTMEProfits[i in rtm], profitErtm[i] == rtmepr[i]*Prtm[i]*dtrtm)	#Economic calculation
     @constraint(m, DAMEProfits, profitEdam == damepr*Pdam*dtdam)        	#Economic calculation
-    
+
     @constraint(m, DAMregupProfits, profitregupdam == damreguppr*regupdam)
     @constraint(m, DAMregdownProfits, profitregdowndam == damregdownpr*regdowndam)
 
@@ -339,60 +333,110 @@ end
 rtm = 1:nrtm;
 dam = 1:nhours_horizon;
 
-rtmepr = Vector(nrtm);	    	#Real Time Market price, $/MWh    
+rtmepr = Vector(nrtm);	    	#Real Time Market price, $/MWh
 damepr = nothing;
 damreguppr = nothing;
 damregdownpr = nothing;
 
 
-soc0 = 100;		  #Initial State of charge, 100 means fully charged
+ebat0 = ebat_max;		  #Initial State of charge, 100 means fully charged
 m_f = Array{JuMP.Model}(nhours_planning)
 m_b = Array{JuMP.Model}(NS,nhours_planning)
 dual = Vector(NS);
-
+obj = Vector(NS)
+v = Vector(NS)
+lowerbound = 0; upperbound = 1e10;
+policy_cost = Vector();
 
 tic()
 j=1;
-for p in 1:nhours_planning-1
+for p in 1:nhours_planning
     println("Step $p")
-    
     #Load and price data
     load = loaddata1[(p-1)*nrtm+(1:nrtm),:];	#Load, MW
-
-    rtmepr = rtmpricedata[(p-1)*nrtm+(1:nrtm),4];	    	#Real Time Market price, $/MWh    
-    damepr = dampricedata[p,4];	    	#Day Ahead Market Selling price, $/MWh    
+    rtmepr = rtmpricedata[(p-1)*nrtm+(1:nrtm),4];	    	#Real Time Market price, $/MWh
+    damepr = dampricedata[p,4];	    	#Day Ahead Market Selling price, $/MWh
     damreguppr = dampricedata[p,5];	    	#Day Ahead Market Regulation up price, $/MWh
     damregdownpr = dampricedata[p,6]; 	#Day Ahead Market Regulation down price, $/MWh
-
-    s_realized = rand(S,1);
-    m_f[p] = forwardmodel(soc0,s_realized);
+    s_realized = rand(S);
+    m_f[p] = forwardmodel(ebat0,s_realized);
     status = solve(m_f[p]);
-    soc0 = getvalue(getvariable(m_f[p],:soc))[rtm[end]];
-
+    ebat0 = getvalue(getvariable(m_f[p],:ebat))[rtm[end]];
 end # End forward pass
+lowerbound = getobjectivevalue(m_f[1]);
+cost_hourly = Vector(nhours_planning);
+for i in 1:nhours_planning
+  cost_hourly[i] = getobjectivevalue(m_f[i])-getvalue(getvariable(m_f[i],:theta))
+end
+push!(policy_cost, sum(cost_hourly));
+upperbound = mean(policy_cost);
 
 
 println("Backward pass starting")
 
+v_avg = 0; pi_avg = 0;
+
 for p in nhours_planning:-1:2
-    soc0_b = getvalue(getvariable(m_f[p-1],:soc))[end];
+    ebat0_b = getvalue(getvariable(m_f[p-1],:ebat))[rtm[end]];
     for s in S
         println("Hour $p, Scenario $s")
-        m_b[s,p] = scenariosubproblem(soc0_b,s);
-        status = solve(m_b);
+        m_b[s,p] = scenariosubproblem(ebat0_b,s);
+        theta = getvariable(m_b[s,p],:theta)
+        ebat = getvariable(m_b[s,p],:ebat)
+        @constraint(m_b[s,p], ThetaConst, theta >= v_avg + pi_avg*ebat[rtm[end]])
+        status = solve(m_b[s,p]);
         dual[s] = getdual(getconstraint(m_b[s,p],:rtmEBalance))[rtm[end]];
         obj[s] = getobjectivevalue(m_b[s,p]);
-        v[s] = obj[s] - dual[s]*soc0_b;
+        v[s] = obj[s] - dual[s]*ebat0_b;
     end
-    
+    v_avg = (1/NS)*(sum(v));
+    pi_avg = (1/NS)*(sum(dual));
 end
 
+#=
+j=2;
+p = 1;
+s_realized = rand(S);
+for i in rtm
+  JuMP.setRHS(getconstraint(m_f[p],:UnmetLoad)[i],load[i,s_realized][1])
+  JuMP.setRHS(getconstraint(m_f[p],:BoundSupplied)[i],load[i,s_realized][1])
+  JuMP.setRHS(getconstraint(m_f[p],:BoundUnmet)[i],load[i,s_realized][1])
+end
+theta = getvariable(m_f[p],:theta)
+ebat = getvariable(m_f[p],:ebat)
+@constraint(m_f[p], ThetaConst, theta >= v_avg + pi_avg*ebat[rtm[end]])
+status = solve(m_f[p]);
+ebat0 = getvalue(getvariable(m_f[p],:ebat))[rtm[end]];
 
+for p in 2:nhours_planning
+    println("Step $p")
 
+    #Load and price data
+    load = loaddata1[(p-1)*nrtm+(1:nrtm),:];	#Load, MW
 
+    rtmepr = rtmpricedata[(p-1)*nrtm+(1:nrtm),4];	    	#Real Time Market price, $/MWh
+    damepr = dampricedata[p,4];	    	#Day Ahead Market Selling price, $/MWh
+    damreguppr = dampricedata[p,5];	    	#Day Ahead Market Regulation up price, $/MWh
+    damregdownpr = dampricedata[p,6]; 	#Day Ahead Market Regulation down price, $/MWh
 
-        
-        time_taken_st_rolling = toc();
+    s_realized = rand(S);
+    m_f[p] = m_b[s_realized,p];
+    JuMP.setRHS(getconstraint(m_f[p],:InitialEnergy), ebat0)
+    status = solve(m_f[p]);
+    ebat0 = getvalue(getvariable(m_f[p],:ebat))[rtm[end]];
+
+end # End forward pass
+lowerbound = getobjectivevalue(m_f[1]);
+cost_hourly = Vector(nhours_planning);
+for i in 1:nhours_planning
+  cost_hourly[i] = getobjectivevalue(m_f[i])-getvalue(getvariable(m_f[i],:theta))
+end
+push!(policy_cost, sum(cost_hourly));
+upperbound = mean(policy_cost);
+
+=#
+
+time_taken_st_rolling = toc();
 
 
 
@@ -435,7 +479,7 @@ println("Total Profits: ", sum(dailyprofit),"\n")
 
 
 
-totalpowerplot = reshape(totalpower,nrtmpoints*ndays);    
+totalpowerplot = reshape(totalpower,nrtmpoints*ndays);
 upperbandplot = reshape(upperband,nrtmpoints*ndays);
 lowerbandplot = reshape(lowerband,nrtmpoints*ndays);
 
@@ -483,7 +527,7 @@ function cumul(A)
     return C;
 end
 
-function damtortm(A) 
+function damtortm(A)
     A = A[1:ndampoints*ndays]
     B = zeros(nrtmpoints*ndays);
     for i in 1:ndampoints*ndays
@@ -491,7 +535,7 @@ function damtortm(A)
     end
     B = push!(B,B[end])
     return B
-end    
+end
 
 rtmeprofitplot = cumul(rtmeprofitplot);
 dameprofitplot = cumul(dameprofitplot);
@@ -643,7 +687,7 @@ grid();tick_params(labelsize=18);#xlim(0,370)
 
 
 #End comment here
-=# 
+=#
 
 
 
