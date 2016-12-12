@@ -397,7 +397,7 @@ tick_params(labelsize=14)
 subplot(2,1,2)
 hold(true)
 plot(xplot,regupdamplot, color="blue", drawstyle="steps-post", label="Reg up");
-plot(xplot,regdowndamplot, color="blue", drawstyle="steps-post", label="Reg down");
+plot(xplot,regdowndamplot, color="red", drawstyle="steps-post", label="Reg down");
 grid()
 xlim(0,nhours_planning)
 ylabel("Regulation capacity (kW)",size = 24)
