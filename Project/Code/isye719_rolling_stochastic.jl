@@ -194,7 +194,7 @@ profitE_realized = zeros(nhours_planning);
 profittotal_realized = zeros(nhours_planning);
 netobjective_realized = zeros(nhours_planning);
 
-
+m_rol = nothing;
 tic()
 j=1;
 for p in 1:nhours_planning
