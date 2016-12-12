@@ -1,0 +1,39 @@
+obj_st_fp
+-737.05
+
+obj_dt_fp
+-719.63
+
+obj_st_fp_socfix
+-724.98
+
+obj_dt_fp_socfix
++infinity (Infeasible)
+
+expected_obj_st_rh_2hr horizon
+139.94
+
+expected_obj_dt_rh_2hr horizon
+16848.51
+
+
+
+expected_obj_st_rh_24hr horizon
+
+All obj_st_rh_24hr horizon
+
+time_taken_st_rolling_24hr horizon
+
+
+
+expected_obj_dt_rh_24hr horizon
+
+All obj_dt_rh_24hr horizon
+
+time_taken_dt_rolling
+
+
+
+NEW MODELS:
+Screen 13116: rolling_stochastic Running
+Screen 12127: rolling_deterministic Running
