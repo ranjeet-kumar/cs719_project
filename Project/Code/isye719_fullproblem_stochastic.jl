@@ -74,8 +74,8 @@ ndampoints = ndam;			#Total number of points in hourly data in one day
 #Model Parameters
 ebat_max = 0.5;	          #Battery capacity, MWh
 P_max = 1;	          #Maximum power, MW
-regup_max = 0.5*P_max;    #Regulation Up Capacity, MW
-regdown_max = 0.5*P_max;  #Regulation Up Capacity, MW
+regup_max = P_max;    #Regulation Up Capacity, MW
+regdown_max = P_max;  #Regulation Up Capacity, MW
 rampmin = -0.5*P_max;	          #Lower bound for ramp discharge, MW/5min
 rampmax = 0.5*P_max;  	  #Upper bound for ramp discharge, MW/5min
 eff = 1;                  #Discharging Efficiency of battery
@@ -217,7 +217,7 @@ m = Model(solver = GurobiSolver(Threads=2))
 
     @constraint(m, BoundUnmet[i in rtm,k in dam,l in day,s in S], unmetload[i,k,l,s] <= load[i,k,l,s])
 
-    @constraint(m, RTMRamp1[i in rtm[2:end],k in dam,l in day,s in S], Pnet[i,k,l,s]  - Pnet[i-1,k,l,s] <= rampmax*dtrtm)   #Ramp discharge constraint at each time
+#=    @constraint(m, RTMRamp1[i in rtm[2:end],k in dam,l in day,s in S], Pnet[i,k,l,s]  - Pnet[i-1,k,l,s] <= rampmax*dtrtm)   #Ramp discharge constraint at each time
 		@constraint(m, RTMRamp2[i in rtm[2:end],k in dam,l in day,s in S], Pnet[i,k,l,s]  - Pnet[i-1,k,l,s] >= -rampmax*dtrtm)   #Ramp discharge constraint at each time
 
 		@constraint(m, DAMRamp1[i in rtm[1],k in dam[2:end],iend=rtm[end],l in day,s in S], Pnet[i,k,l,s] - Pnet[iend,k-1,l,s] <= rampmax*dtrtm)   #Ramp discharge constraint at each time
@@ -225,7 +225,7 @@ m = Model(solver = GurobiSolver(Threads=2))
 
 		@constraint(m, DAYRamp1[i=rtm[1],k=dam[1],iend=rtm[end],kend=dam[end],l in day[2:end],s in S], Pnet[i,k,l,s] - Pnet[iend,kend,l-1,s] <= rampmax*dtrtm)   #Ramp discharge constraint at each time
 		@constraint(m, DAYRamp2[i=rtm[1],k=dam[1],iend=rtm[end],kend=dam[end],l in day[2:end],s in S], Pnet[i,k,l,s] - Pnet[iend,kend,l-1,s] >= -rampmax*dtrtm)   #Ramp discharge constraint at each time
-
+=#
 		@constraint(m, RegUp[i in rtm,k in dam,l in day,s in S], Pnet[i,k,l,s] + regupdam[k,l,s] <= P_max)	#Constraint on total power
 
     @constraint(m, RegDown[i in rtm,k in dam,l in day,s in S], Pnet[i,k,l,s] - regdowndam[k,l,s] >= -P_max)	#Constraint on total power
