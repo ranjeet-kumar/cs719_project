@@ -173,7 +173,7 @@ mv = Model(solver = GurobiSolver(Threads=2))
 		@constraint(mv, DAYRamp1[i=rtm[1],k=dam[1],iend=rtm[end],kend=dam[end],l in day[2:end]], Pnet[i,k,l] - Pnet[iend,kend,l-1] <= rampmax*dtrtm)   #Ramp discharge constraint at each time
 		@constraint(mv, DAYRamp2[i=rtm[1],k=dam[1],iend=rtm[end],kend=dam[end],l in day[2:end]], Pnet[i,k,l] - Pnet[iend,kend,l-1] >= -rampmax*dtrtm)   #Ramp discharge constraint at each time
 		=#
-		@constraint(mv, RTMEProfits[i in rtm,k in dam,l in day], profitErtm[i,k,l,s] == rtmepr[i,k,l]*Prtm[i,k,l,s]*dtrtm)	#Economic calculation
+		@constraint(mv, RTMEProfits[i in rtm,k in dam,l in day], profitErtm[i,k,l] == rtmepr[i,k,l]*Prtm[i,k,l]*dtrtm)	#Economic calculation
 		@constraint(mv, DAMEProfits[k in dam,l in day], profitEdam[k,l] == damepr[k,l]*Pdam[k,l]*dtdam)	#Economic calculation
 		@constraint(mv, TotalProfit, profittotal ==
 												sum{profitErtm[i,k,l], i in rtm, k in dam, l in day} + sum{profitEdam[k,l], k in dam, l in day})
