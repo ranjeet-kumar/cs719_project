@@ -300,7 +300,7 @@ tick_params(labelsize=14)
 #legend(loc="upper right",fancybox="True", shadow="True", fontsize = 15)
 subplot(2,1,2)
 hold(true)
-for s in S
+for s in S[1]
 	plot(xplot,Prtmplot[:,s],  drawstyle="steps-post");
 end
 grid()
