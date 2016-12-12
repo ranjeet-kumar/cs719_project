@@ -249,7 +249,7 @@ for p in 1:nhours_planning
     # Non-anticipativity constraints for first stage variables
     @constraint(m_rol, Nonant_PDAM[k in dam,s in S], Pdam[k,s] == (1/NS)*sum{Pdam[k,s], s in S})
     @objective(m_rol, Min, (1/NS)*sum{-profittotal[s] + unmetcost[s], s in S})
-    #    print(m)
+    #    print(m_rol)
     status = solve(m_rol)
 
 ##########################################################################
