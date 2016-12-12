@@ -175,6 +175,8 @@ writecsv("realized_sequence.csv",realized_sequence)
 # realized_sequence = readcsv("realized_sequence.csv")
 # realized_sequence = Vector{Int64}(ones(nhours_planning));
 
+m_rol = nothing;
+
 obj_st_rh_NS = Vector()
 
 for k in S # Loop to evaluate cost along each scenario
@@ -194,7 +196,6 @@ profitE_realized = zeros(nhours_planning);
 profittotal_realized = zeros(nhours_planning);
 netobjective_realized = zeros(nhours_planning);
 
-m_rol = nothing;
 tic()
 j=1;
 for p in 1:nhours_planning
