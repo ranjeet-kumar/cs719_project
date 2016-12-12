@@ -187,40 +187,81 @@ m = Model(solver = GurobiSolver(Threads=2))
     @variable(m, -P_max <= Prtm[rtm,dam,day,S] <= P_max)	                #Power sold to the real time market, kW
     @variable(m, -P_max <= Pdam[dam,day,S] <= P_max)    	                #Power sold to the day ahead market, kW
     @variable(m, 0 <= ebat[rtm,dam,day,S] <= ebat_max)      	#Energy stored in the battery at the end of each real time interval, kWh
+    @variable(m, 0 <= regupdam[dam,day,S] <= regup_max)                 #Amount of regulation up, kW
+    @variable(m, 0 <= regdowndam[dam,day,S] <= regdown_max)             #Amount of regulation down, kW
     @variable(m, suppliedload[rtm,dam,day,S] >= 0)
     @variable(m, unmetload[rtm,dam,day,S] >= 0)
 		@expression(m, Pnet[i in rtm,k in dam,l in day,s in S], Prtm[i,k,l,s] + Pdam[k,l,s] + suppliedload[i,k,l,s])    #Net power discharged from battery in all 5-min interval, kW
 		@variable(m, profitErtm[rtm,dam,day,S])# >= 0)				        #Profit from the real time market, USD
     @variable(m, profitEdam[dam,day,S])# >= 0)	        			#Profit from the day ahead market, USD
+    @variable(m, profitregupdam[dam,day,S])# >= 0)			        #Profit from the day ahead market, USD
+    @variable(m, profitregdowndam[dam,day,S])# >= 0)	        		#Profit from the day ahead market, USD
     @variable(m, profittotal[S])# >= 0)		        	#Total profit in the day, USD
     @variable(m, unmetcost[S])
 
 
 
     @constraint(m, InitialEnergy[s in S], ebat[1,1,1,s] == ebat0 - 1/eff*Pnet[1,1,1,s]*dtrtm)	#Inital energy in the battery
+
 #    @constraint(m, EndSOC[i in rtm,k in dam,l in day,s in S], soc[i,k,l,s] >= socend)		#Constraint on SOC at the end of the day
+
     @constraint(m, rtmEBalance[i in rtm[2:end],k in dam,l in day,s in S], ebat[i,k,l,s] == ebat[i-1,k,l,s] - 1/eff*Pnet[i,k,l,s]*dtrtm)	#Dynamics constraint
+
     @constraint(m, damEBalance[i=rtm[1],k in dam[2:end],iend=rtm[end],l in day,s in S], ebat[i,k,l,s] == ebat[iend,k-1,l,s] - 1/eff*Pnet[i,k,l,s]*dtrtm)	#Dynamics constraint
+
     @constraint(m, dayEBalance[i=rtm[1],k=dam[1],iend=rtm[end],kend=dam[end],l in day[2:end],s in S], ebat[i,k,l,s] == ebat[iend,kend,l-1,s] - 1/eff*Pnet[i,k,l,s]*dtrtm)	#Dynamics constraint
+
     @constraint(m, UnmetLoad[i in rtm,k in dam,l in day, s in S], suppliedload[i,k,l,s] + unmetload[i,k,l,s] >=  load[i,k,l,s])
+
     @constraint(m, BoundSupplied[i in rtm,k in dam,l in day,s in S], suppliedload[i,k,l,s] <= load[i,k,l,s])
+
     @constraint(m, BoundUnmet[i in rtm,k in dam,l in day,s in S], unmetload[i,k,l,s] <= load[i,k,l,s])
+
 #=    @constraint(m, RTMRamp1[i in rtm[2:end],k in dam,l in day,s in S], Pnet[i,k,l,s]  - Pnet[i-1,k,l,s] <= rampmax*dtrtm)   #Ramp discharge constraint at each time
 		@constraint(m, RTMRamp2[i in rtm[2:end],k in dam,l in day,s in S], Pnet[i,k,l,s]  - Pnet[i-1,k,l,s] >= -rampmax*dtrtm)   #Ramp discharge constraint at each time
+
 		@constraint(m, DAMRamp1[i in rtm[1],k in dam[2:end],iend=rtm[end],l in day,s in S], Pnet[i,k,l,s] - Pnet[iend,k-1,l,s] <= rampmax*dtrtm)   #Ramp discharge constraint at each time
 		@constraint(m, DAMRamp2[i in rtm[1],k in dam[2:end],iend=rtm[end],l in day,s in S], Pnet[i,k,l,s] - Pnet[iend,k-1,l,s] >= -rampmax*dtrtm)   #Ramp discharge constraint at each time
+
 		@constraint(m, DAYRamp1[i=rtm[1],k=dam[1],iend=rtm[end],kend=dam[end],l in day[2:end],s in S], Pnet[i,k,l,s] - Pnet[iend,kend,l-1,s] <= rampmax*dtrtm)   #Ramp discharge constraint at each time
 		@constraint(m, DAYRamp2[i=rtm[1],k=dam[1],iend=rtm[end],kend=dam[end],l in day[2:end],s in S], Pnet[i,k,l,s] - Pnet[iend,kend,l-1,s] >= -rampmax*dtrtm)   #Ramp discharge constraint at each time
 =#
-		@constraint(m, RTMEProfits[i in rtm,k in dam,l in day,s in S], profitErtm[i,k,l,s] == rtmepr[i,k,l]*Prtm[i,k,l,s]*dtrtm)	#Economic calculation
+		@constraint(m, RegUp[i in rtm,k in dam,l in day,s in S], Pnet[i,k,l,s] + regupdam[k,l,s] <= P_max)	#Constraint on total power
+
+    @constraint(m, RegDown[i in rtm,k in dam,l in day,s in S], Pnet[i,k,l,s] - regdowndam[k,l,s] >= -P_max)	#Constraint on total power
+
+		@constraint(m, EnsureRegUp1[s in S], ebat0 - dtrtm*(Pnet[1,1,1,s] + regupdam[1,1,s]) >= 0)
+		@constraint(m, EnsureRegDown1[s in S], ebat0 - dtrtm*(Pnet[1,1,1,s] - regupdam[1,1,s]) <= ebat_max)
+		@constraint(m, EnsureRegUp2[i in rtm[2:end],k in dam,l in day,s in S], ebat[i-1,k,l,s] - dtrtm*(Pnet[i,k,l,s] + regupdam[k,l,s]) >= 0)
+		@constraint(m, EnsureRegDown2[i in rtm[2:end],k in dam,l in day,s in S], ebat[i-1,k,l,s] - dtrtm*(Pnet[i,k,l,s] - regupdam[k,l,s]) <= ebat_max)
+		@constraint(m, EnsureRegUp3[i in rtm[1],k in dam[2:end],iend=rtm[end],l in day,s in S], ebat[iend,k-1,l,s] - dtrtm*(Pnet[i,k,l,s] + regupdam[k,l,s]) >= 0)
+		@constraint(m, EnsureRegDown3[i in rtm[1],k in dam[2:end],iend=rtm[end],l in day,s in S], ebat[iend,k-1,l,s] - dtrtm*(Pnet[i,k,l,s] - regupdam[k,l,s]) <= ebat_max)
+		@constraint(m, EnsureRegUp4[i=rtm[1],k=dam[1],iend=rtm[end],kend=dam[end],l in day[2:end],s in S], ebat[iend,kend,l-1,s] - dtrtm*(Pnet[i,k,l,s] + regupdam[k,l,s]) >= 0)
+		@constraint(m, EnsureRegDown4[i=rtm[1],k=dam[1],iend=rtm[end],kend=dam[end],l in day[2:end],s in S], ebat[iend,kend,l-1,s] - dtrtm*(Pnet[i,k,l,s] - regupdam[k,l,s]) <= ebat_max)
+
+
+    @constraint(m, RTMEProfits[i in rtm,k in dam,l in day,s in S], profitErtm[i,k,l,s] == rtmepr[i,k,l]*Prtm[i,k,l,s]*dtrtm)	#Economic calculation
     @constraint(m, DAMEProfits[k in dam,l in day,s in S], profitEdam[k,l,s] == damepr[k,l]*Pdam[k,l,s]*dtdam)	#Economic calculation
+
+    @constraint(m, DAMregupProfits[k in dam,l in day,s in S], profitregupdam[k,l,s] == damreguppr[k,l]*regupdam[k,l,s])
+    @constraint(m, DAMregdownProfits[k in dam,l in day,s in S], profitregdowndam[k,l,s] == damregdownpr[k,l]*regdowndam[k,l,s])
+
     @constraint(m, TotalProfit[s in S], profittotal[s] ==
-                        sum{profitErtm[i,k,l,s], i in rtm, k in dam, l in day} + sum{profitEdam[k,l,s], k in dam, l in day})
+                        sum{profitErtm[i,k,l,s], i in rtm, k in dam, l in day} + sum{profitEdam[k,l,s], k in dam, l in day}
+                        + sum{profitregupdam[k,l,s], k in dam, l in day} + sum{profitregdowndam[k,l,s], k in dam, l in day})
+
     @constraint(m, UnmetCost[s in S], unmetcost[s] == sum{rtmepr[i,k,l]*unmetload[i,k,l,s], i in rtm, k in dam, l in day})
+
+
     # Non-anticipativity constraints for first stage variables
     @constraint(m, Nonant_PDAM[k in dam,l in day,s in S], Pdam[k,l,s] == (1/NS)*sum{Pdam[k,l,s], s in S})
+    @constraint(m, Nonant_DAMregup[k in dam,l in day,s in S], regupdam[k,l,s] == (1/NS)*sum{regupdam[k,l,s], s in S})
+    @constraint(m, Nonant_DAMregdown[k in dam,l in day,s in S], regdowndam[k,l,s] == (1/NS)*sum{regdowndam[k,l,s], s in S})
+
     @objective(m, Min, (1/NS)*sum{-profittotal[s] + unmetcost[s], s in S})
+
 #    print(m)
+
     status = solve(m)
 
 time_taken_st_fullproblem = toc();
@@ -362,21 +403,66 @@ tick_params(labelsize=14)
 savefig(string("cs719figures/soc_fp_st.pdf"))
 close("all")
 
+# Plot of regup and regdown
+n3 = [ndam,ndays_planning,NS];
+regupprdamplot = regupprdam[1:nhours_planning];
+regdownprdamplot = regdownprdam[1:nhours_planning];
+push!(regupprdamplot,regupprdamplot[end]);
+push!(regdownprdamplot,regdownprdamplot[end]);
+regupdamarray = convertToArray3(getvalue(getvariable(m,:regupdam)),n3);
+regupdamplot = reshape(regupdamarray[:,:,1],nhours_planning);
+push!(regupdamplot,regupdamplot[end]);
+regdowndamarray = convertToArray3(getvalue(getvariable(m,:regdowndam)),n3);
+regdowndamplot = reshape(regdowndamarray[:,:,1],nhours_planning);
+push!(regdowndamplot,regdowndamplot[end]);
+xplot = 0:dtdam:dtdam*nhours_planning;
+figure()
+plt[:get_current_fig_manager]()[:full_screen_toggle]()
+subplot(2,1,1)
+hold(true)
+plot(xplot,regupprdamplot, color="blue", drawstyle="steps-post", label="Reg up");
+plot(xplot,regdownprdamplot, color="red", drawstyle="steps-post", label="Reg down");
+grid()
+xlim(0,nhours_planning)
+ylabel("Regulation prices (\$/kWh)",size = 24)
+tick_params(labelsize=14)
+#legend(loc="upper right",fancybox="True", shadow="True", fontsize = 15)
+subplot(2,1,2)
+hold(true)
+plot(xplot,regupdamplot, color="blue", drawstyle="steps-post", label="Reg up");
+plot(xplot,regdowndamplot, color="red", drawstyle="steps-post", label="Reg down");
+grid()
+xlim(0,nhours_planning)
+ylabel("Regulation capacity (kW)",size = 24)
+xlabel("Time (hours)",size = 24)
+tick_params(labelsize=14)
+#legend(loc="upper right",fancybox="True", shadow="True", fontsize = 15)
+savefig(string("cs719figures/reg_fp_st.pdf"))
+close("all")
+
 # Pnet, regulation bands calculation
 netpower = zeros(nrtm,ndam,ndays_planning,NS);
+upband = zeros(nrtm,ndam,ndays_planning,NS);
+downband = zeros(nrtm,ndam,ndays_planning,NS);
 for i in rtm
         for k in dam
             for l in day
 							for s in S
                 netpower[i,k,l,s] = Prtmarray[i,k,l,s] + Pdamarray[k,l,s] + suppliedloadarray[i,k,l,s];
+                upband[i,k,l,s] = netpower[i,k,l,s] + regupdamarray[k,l,s];
+                downband[i,k,l,s] = netpower[i,k,l,s] - regdowndamarray[k,l,s];
 							end
             end
         end
 end
 netpowerplot = reshape(netpower,nrtm_planning,NS);
+upbandplot = reshape(upband,nrtm_planning,NS);
+downbandplot = reshape(downband,nrtm_planning,NS);
 netpowerplot = [netpowerplot;netpowerplot[end,:]]
+upbandplot = [upbandplot;upbandplot[end,:]]
+downbandplot = [downbandplot;downbandplot[end,:]]
 
-# Plot of netpower
+# Plot of netpower and up & down band
 n4 = [nrtm,ndam,ndays_planning,NS];
 xplot = 0:dtrtm:dtrtm*nrtm_planning;
 figure()
@@ -384,14 +470,16 @@ plt[:get_current_fig_manager]()[:full_screen_toggle]()
 hold(true)
 for s in S[1]
 	plot(xplot,netpowerplot[:,s], drawstyle="steps-post", color = "blue", label="Net discharge");
+	plot(xplot,upbandplot[:,s], drawstyle="steps-post", color = "green", label="Up band");
+	plot(xplot,downbandplot[:,s], drawstyle="steps-post", color = "red", label="Down band");
 end
 grid()
 xlim(0,nhours_planning)
-ylabel("Net discharge (kW)",size = 24)
+ylabel("Net discharge & bands (kW)",size = 24)
 xlabel("Time (hours)",size = 24)
 tick_params(labelsize=14)
 #legend(loc="upper right",fancybox="True", shadow="True", fontsize = 15)
-savefig(string("cs719figures/netpower_fp_st.pdf"))
+savefig(string("cs719figures/bands_fp_st.pdf"))
 close("all")
 
 
