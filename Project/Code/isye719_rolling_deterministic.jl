@@ -128,15 +128,13 @@ totalpowerplot = zeros(nrtm,ndam,ndays);
 
 
 
-Pdam_mv = zeros(nhours_planning);
-profitEdam_mv = zeros(nhours_planning);
+Pdam_mv_rol = zeros(nhours_planning);
 
 Prtm_realized = zeros(nrtm,nhours_planning);
 unmetload_realized = zeros(nrtm,nhours_planning)
 unmetcost_realized = zeros(nhours_planning);
 profitErtm_realized = zeros(nrtm,nhours_planning);
 profitEdam_realized = zeros(nhours_planning);
-profitE_realized = zeros(nhours_planning);
 profittotal_realized = zeros(nhours_planning);
 netobjective_realized = zeros(nhours_planning);
 
