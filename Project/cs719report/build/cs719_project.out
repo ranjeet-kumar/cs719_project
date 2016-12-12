@@ -1,0 +1,9 @@
+\BOOKMARK [1][-]{section.1}{Problem Statement}{}% 1
+\BOOKMARK [1][-]{section.2}{Optimization problem formulation}{}% 2
+\BOOKMARK [1][-]{section.3}{Results}{}% 3
+\BOOKMARK [2][-]{subsection.3.1}{Simutaneous approach}{section.3}% 4
+\BOOKMARK [2][-]{subsection.3.2}{Rolling \(1 day\) horizon approach}{section.3}% 5
+\BOOKMARK [1][-]{section.4}{Discussion}{}% 6
+\BOOKMARK [2][-]{subsection.4.1}{Analysis of the results}{section.4}% 7
+\BOOKMARK [2][-]{subsection.4.2}{Comparison of the two approaches}{section.4}% 8
+\BOOKMARK [2][-]{subsection.4.3}{Future work}{section.4}% 9
