@@ -230,7 +230,7 @@ time_taken_dt_fullproblem = toc();
 
 println("\nExpected Objective with Mean Value first stage solution ", getobjectivevalue(m_sfd),"\n" )
 
-obj_dt_fp = getobjectivevalue(m_sfd);
+obj_dt_fp_socfix = getobjectivevalue(m_sfd);
 
 
 ################# PLOTTING #################
