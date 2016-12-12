@@ -230,6 +230,9 @@ m = Model(solver = GurobiSolver(Threads=2))
 
     @constraint(m, RegDown[i in rtm,k in dam,l in day,s in S], Pnet[i,k,l,s] - regdowndam[k,l,s] >= -P_max)	#Constraint on total power
 
+		@constraint(m, EnsureRegUp[i in rtm,k in dam,l in day,s in S], ebat[i,k,l,s] - dtrtm*(Pnet[i,k,l,s] + regupdam[k,l,s]) >= 0)
+		@constraint(m, EnsureRegDown[i in rtm,k in dam,l in day,s in S], ebat[i,k,l,s] - dtrtm*(Pnet[i,k,l,s] - regupdam[k,l,s]) <= ebat_max)
+
     @constraint(m, RTMEProfits[i in rtm,k in dam,l in day,s in S], profitErtm[i,k,l,s] == rtmepr[i,k,l]*Prtm[i,k,l,s]*dtrtm)	#Economic calculation
     @constraint(m, DAMEProfits[k in dam,l in day,s in S], profitEdam[k,l,s] == damepr[k,l]*Pdam[k,l,s]*dtdam)	#Economic calculation
 
