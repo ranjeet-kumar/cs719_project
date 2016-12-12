@@ -159,7 +159,7 @@ mv = Model(solver = GurobiSolver(Threads=2))
 		@variable(mv, unmetcost)
 
 		@constraint(mv, InitialEnergy[s in S], ebat[1,1,1] == ebat0 - 1/eff*Pnet[1,1,1]*dtrtm)	#Inital energy in the battery
-		#    @constraint(mv, EndSOC[i in rtm,k in dam,l in day,s in S], soc[i,k,l,s] >= socend)		#Constraint on SOC at the end of the day
+		#    @constraint(mv, EndSOC[i in rtm,k in dam,l in day], soc[i,k,l] >= socend)		#Constraint on SOC at the end of the day
 		@constraint(mv, rtmEBalance[i in rtm[2:end],k in dam,l in day], ebat[i,k,l] == ebat[i-1,k,l] - 1/eff*Pnet[i,k,l]*dtrtm)	#Dynamics constraint
 		@constraint(mv, damEBalance[i=rtm[1],k in dam[2:end],iend=rtm[end],l in day], ebat[i,k,l] == ebat[iend,k-1,l] - 1/eff*Pnet[i,k,l]*dtrtm)	#Dynamics constraint
 		@constraint(mv, dayEBalance[i=rtm[1],k=dam[1],iend=rtm[end],kend=dam[end],l in day[2:end]], ebat[i,k,l] == ebat[iend,kend,l-1] - 1/eff*Pnet[i,k,l]*dtrtm)	#Dynamics constraint
@@ -180,7 +180,7 @@ mv = Model(solver = GurobiSolver(Threads=2))
 		@constraint(mv, UnmetCost, unmetcost == sum{rtmepr[i,k,l]*unmetload[i,k,l], i in rtm, k in dam, l in day})
 		# Non-anticipativity constraints for first stage variables
 		@constraint(mv, Nonant_PDAM[k in dam,l in day], Pdam[k,l] == Pdam[k,l])
-		@objective(mv, Min, -profittotal + unmetcost[s])
+		@objective(mv, Min, -profittotal + unmetcost)
 #    print(mv)
 status = solve(mv)
 Pdam_mv = getvalue(getvariable(mv,:Pdam))
