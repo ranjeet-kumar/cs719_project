@@ -232,8 +232,13 @@ m = Model(solver = GurobiSolver(Threads=2))
 
 		@constraint(m, EnsureRegUp1[s in S], ebat0 - dtrtm*(Pnet[1,1,1,s] + regupdam[1,1,s]) >= 0)
 		@constraint(m, EnsureRegDown1[s in S], ebat0 - dtrtm*(Pnet[1,1,1,s] - regupdam[1,1,s]) <= ebat_max)
-		@constraint(m, EnsureRegUp[i in rtm[2:end],k in dam,l in day,s in S], ebat[i-1,k,l,s] - dtrtm*(Pnet[i,k,l,s] + regupdam[k,l,s]) >= 0)
-		@constraint(m, EnsureRegDown[i in rtm[2:end],k in dam,l in day,s in S], ebat[i-1,k,l,s] - dtrtm*(Pnet[i,k,l,s] - regupdam[k,l,s]) <= ebat_max)
+		@constraint(m, EnsureRegUp2[i in rtm[2:end],k in dam,l in day,s in S], ebat[i-1,k,l,s] - dtrtm*(Pnet[i,k,l,s] + regupdam[k,l,s]) >= 0)
+		@constraint(m, EnsureRegDown2[i in rtm[2:end],k in dam,l in day,s in S], ebat[i-1,k,l,s] - dtrtm*(Pnet[i,k,l,s] - regupdam[k,l,s]) <= ebat_max)
+		@constraint(m, EnsureRegUp3[i in rtm[1],k in dam[2:end],iend=rtm[end],l in day,s in S], ebat[iend,k-1,l,s] - dtrtm*(Pnet[i,k,l,s] + regupdam[k,l,s]) >= 0)
+		@constraint(m, EnsureRegDown3[i in rtm[1],k in dam[2:end],iend=rtm[end],l in day,s in S], ebat[iend,k-1,l,s] - dtrtm*(Pnet[i,k,l,s] - regupdam[k,l,s]) <= ebat_max)
+		@constraint(m, EnsureRegUp4[i=rtm[1],k=dam[1],iend=rtm[end],kend=dam[end],l in day[2:end],s in S], ebat[iend,kend,l-1,s] - dtrtm*(Pnet[i,k,l,s] + regupdam[k,l,s]) >= 0)
+		@constraint(m, EnsureRegDown4[i=rtm[1],k=dam[1],iend=rtm[end],kend=dam[end],l in day[2:end],s in S], ebat[iend,kend,l-1,s] - dtrtm*(Pnet[i,k,l,s] - regupdam[k,l,s]) <= ebat_max)
+
 
     @constraint(m, RTMEProfits[i in rtm,k in dam,l in day,s in S], profitErtm[i,k,l,s] == rtmepr[i,k,l]*Prtm[i,k,l,s]*dtrtm)	#Economic calculation
     @constraint(m, DAMEProfits[k in dam,l in day,s in S], profitEdam[k,l,s] == damepr[k,l]*Pdam[k,l,s]*dtdam)	#Economic calculation
