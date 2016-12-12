@@ -68,10 +68,9 @@ ebat0 = ebat_max;		   #Initial State of charge
 ebatend = ebat_max;		  #State of charge at the end of the day
 ndays = 365;              #Number of days data is available for
 ndays_planning = 7;       #Number of days you want to plan for
-ndays_horizon = 1;        #Number of days in the horizon at every step
 nhours_planning = ndays_planning*ndam;
 nrtm_planning = nhours_planning*nrtm;
-nhours_horizon = ndays_horizon*ndam;
+nhours_horizon = 12;
 nrtm_horizon = nhours_horizon*nrtm;
 
 NS = 50; # Number of scenarios you want to sample from the distrbution
