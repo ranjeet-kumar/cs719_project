@@ -171,12 +171,10 @@ function forwardmodel(ebat0,L)
     m = Model(solver = GurobiSolver(Threads = 2, OutputFlag = 0))
     @variable(m, -P_max <= Prtm[rtm] <= P_max)	                #Net Power sold to the real time market, kW
     @variable(m, -P_max <= Pdam <= P_max)    	                #Net Power sold to the day-ahead market, kW
-    @expression(m, Pnet[i in rtm], Prtm[i] + Pdam)              #Net power discharged from battery in all 5-min interval, kW
     @variable(m, 0 <= ebat[rtm] <= ebat_max)                	#Energy stored in the battery at the end of each real time interval
-    @variable(m, 0 <= regupdam <= regup_max)                       #Amount of regulation up, kW
-    @variable(m, 0 <= regdowndam <= regdown_max)                   #Amount of regulation down, kW
     @variable(m, suppliedload[rtm] >= 0)
     @variable(m, unmetload[rtm] >= 0)
+    @expression(m, Pnet[i in rtm], Prtm[i] + Pdam + suppliedload[i])              #Net power discharged from battery in all 5-min interval, kW
     @variable(m, profitErtm[rtm])# >= 0)				#Profit from the real time market, USD
     @variable(m, profitEdam)# >= 0)	        		#Profit from the day ahead market, USD
     @variable(m, profitregupdam)# >= 0)			        #Profit from the day ahead market, USD
@@ -184,38 +182,19 @@ function forwardmodel(ebat0,L)
     @variable(m, profittotal)# >= 0)		                	#Total profit in the day, USD
     @variable(m, unmetcost)
     @variable(m, theta >= thetalimit)
-    @constraint(m, InitialEnergy, ebat[1] == ebat0 - 1/eff*Pnet[1]*dtrtm - suppliedload[1]*dtrtm)	#Inital energy in the battery
-
-    #    @constraint(m, EndSOC[i=rtm[end]], soc[i] >= socend)		#Constraint on SOC at the end of the day
-
-    @constraint(m, rtmEBalance[i in rtm[2:end]], ebat[i] == ebat[i-1] - 1/eff*Pnet[i]*dtrtm - suppliedload[i]*dtrtm)	#Dynamics constraint
-
-    # @constraint(m, RTMRamp[i in rtm[2:end],k in dam, s in S], rampmin*dtrtm <= Pnet[i,k,s]  - Pnet[i-1,k,s] <= rampmax*dtrtm)   #Ramp discharge constraint at each time
-
-    # @constraint(m, DAMRamp[i=rtm[1],k in dam[2:end],iend=rtm[end],s in S], rampmin*dtrtm <= Pnet[i,k,s] - Pnet[iend,k-1,s] <= rampmax*dtrtm)   #Ramp discharge constraint at each time
-
-    @constraint(m, RegUp[i in rtm], Pnet[i] + regupdam <= P_max)	#Constraint on total power
-
-    @constraint(m, RegDown[i in rtm], Pnet[i] - regdowndam >= -P_max)	#Constraint on total power
-
-    @constraint(m, UnmetLoad[i in rtm], suppliedload[i] + unmetload[i] >=  L[i][1])#load[i,s_realized][1])
-
+    @constraint(m, InitialEnergy, ebat[1] == ebat0 - 1/eff*Pnet[1]*dtrtm)	#Inital energy in the battery
+    @constraint(m, rtmEBalance[i in rtm[2:end]], ebat[i] == ebat[i-1] - 1/eff*Pnet[i]*dtrtm)	#Dynamics constraint
+    #=  Commenting ramping constraints
+        @constraint(m, RTMRamp1[i in rtm[2:end]], Pnet[i]  - Pnet[i-1] <= rampmax*dtrtm)   #Ramp discharge constraint at each time
+    		@constraint(m, RTMRamp2[i in rtm[2:end]], Pnet[i]  - Pnet[i-1] >= -rampmax*dtrtm)   #Ramp discharge constraint at each time
+    =#
+    @constraint(m, UnmetLoad[i in rtm], suppliedload[i] + unmetload[i] >=  L[i][1])
     @constraint(m, BoundSupplied[i in rtm], suppliedload[i] <= L[i][1])
-
     @constraint(m, BoundUnmet[i in rtm], unmetload[i] <= L[i][1])
-
     @constraint(m, RTMEProfits[i in rtm], profitErtm[i] == rtmepr[i]*Prtm[i]*dtrtm)	#Economic calculation
     @constraint(m, DAMEProfits, profitEdam == damepr*Pdam*dtdam)        	#Economic calculation
-
-    @constraint(m, DAMregupProfits, profitregupdam == damreguppr*regupdam)
-    @constraint(m, DAMregdownProfits, profitregdowndam == damregdownpr*regdowndam)
-
-    @constraint(m, TotalProfit, profittotal ==
-                        sum{profitErtm[i], i in rtm} + profitEdam
-                        + profitregupdam + profitregdowndam)
-
+    @constraint(m, TotalProfit, profittotal == sum{profitErtm[i], i in rtm} + profitEdam)
     @constraint(m, UnmetCost, unmetcost == sum{rtmepr[i]*unmetload[i], i in rtm})
-
     @objective(m, Min, -profittotal + unmetcost + theta)
 
     return m;
@@ -228,80 +207,42 @@ function scenariosubproblem(ebat0,s)
     m = Model(solver = GurobiSolver(Threads = 2, OutputFlag = 0))
     @variable(m, -P_max <= Prtm[rtm] <= P_max)	                #Net Power sold to the real time market, kW
     @variable(m, -P_max <= Pdam <= P_max)    	                #Net Power sold to the day-ahead market, kW
-    @expression(m, Pnet[i in rtm], Prtm[i] + Pdam)              #Net power discharged from battery in all 5-min interval, kW
     @variable(m, 0 <= ebat[rtm] <= ebat_max)                	#Energy stored in the battery at the end of each real time interval
-    @variable(m, 0 <= regupdam <= regup_max)                       #Amount of regulation up, kW
-    @variable(m, 0 <= regdowndam <= regdown_max)                   #Amount of regulation down, kW
     @variable(m, suppliedload[rtm] >= 0)
     @variable(m, unmetload[rtm] >= 0)
+    @expression(m, Pnet[i in rtm], Prtm[i] + Pdam + suppliedload[i])              #Net power discharged from battery in all 5-min interval, kW
     @variable(m, profitErtm[rtm])# >= 0)				#Profit from the real time market, USD
     @variable(m, profitEdam)# >= 0)	        		#Profit from the day ahead market, USD
-    @variable(m, profitregupdam)# >= 0)			        #Profit from the day ahead market, USD
-    @variable(m, profitregdowndam)# >= 0)	        		#Profit from the day ahead market, USD
     @variable(m, profittotal)# >= 0)		                	#Total profit in the day, USD
     @variable(m, unmetcost)
     @variable(m, theta >= thetalimit)
-    @constraint(m, InitialEnergy, ebat[1] == ebat0 - 1/eff*Pnet[1]*dtrtm - suppliedload[1]*dtrtm)	#Inital energy in the battery
-
-    #    @constraint(m, EndSOC[i=rtm[end]], soc[i] >= socend)		#Constraint on SOC at the end of the day
-
-    @constraint(m, rtmEBalance[i in rtm[2:end]], ebat[i] == ebat[i-1] - 1/eff*Pnet[i]*dtrtm - suppliedload[i]*dtrtm)	#Dynamics constraint
-
-    # @constraint(m, RTMRamp[i in rtm[2:end],k in dam, s in S], rampmin*dtrtm <= Pnet[i,k,s]  - Pnet[i-1,k,s] <= rampmax*dtrtm)   #Ramp discharge constraint at each time
-
-   # @constraint(m, DAMRamp[i=rtm[1],k in dam[2:end],iend=rtm[end],s in S], rampmin*dtrtm <= Pnet[i,k,s] - Pnet[iend,k-1,s] <= rampmax*dtrtm)   #Ramp discharge constraint at each time
-
-    @constraint(m, RegUp[i in rtm], Pnet[i] + regupdam <= P_max)	#Constraint on total power
-
-    @constraint(m, RegDown[i in rtm], Pnet[i] - regdowndam >= -P_max)	#Constraint on total power
-
+    @constraint(m, InitialEnergy, ebat[1] == ebat0 - 1/eff*Pnet[1]*dtrtm)	#Inital energy in the battery
+    @constraint(m, rtmEBalance[i in rtm[2:end]], ebat[i] == ebat[i-1] - 1/eff*Pnet[i]*dtrtm)	#Dynamics constraint
+    #=  Commenting ramping constraints
+        @constraint(m, RTMRamp1[i in rtm[2:end]], Pnet[i]  - Pnet[i-1] <= rampmax*dtrtm)   #Ramp discharge constraint at each time
+    		@constraint(m, RTMRamp2[i in rtm[2:end]], Pnet[i]  - Pnet[i-1] >= -rampmax*dtrtm)   #Ramp discharge constraint at each time
+    =#
     @constraint(m, UnmetLoad[i in rtm], suppliedload[i] + unmetload[i] >=  load[i,s][1])
-
     @constraint(m, BoundSupplied[i in rtm], suppliedload[i] <= load[i,s][1])
-
     @constraint(m, BoundUnmet[i in rtm], unmetload[i] <= load[i,s][1])
-
     @constraint(m, RTMEProfits[i in rtm], profitErtm[i] == rtmepr[i]*Prtm[i]*dtrtm)	#Economic calculation
     @constraint(m, DAMEProfits, profitEdam == damepr*Pdam*dtdam)        	#Economic calculation
-
-    @constraint(m, DAMregupProfits, profitregupdam == damreguppr*regupdam)
-    @constraint(m, DAMregdownProfits, profitregdowndam == damregdownpr*regdowndam)
-
-    @constraint(m, TotalProfit, profittotal ==
-                        sum{profitErtm[i], i in rtm} + profitEdam
-                        + profitregupdam + profitregdowndam)
-
+    @constraint(m, TotalProfit, profittotal == sum{profitErtm[i], i in rtm} + profitEdam)
     @constraint(m, UnmetCost, unmetcost == sum{rtmepr[i]*unmetload[i], i in rtm})
-
-
     @objective(m, Min, -profittotal + unmetcost + theta)
-
     return m;
 
 end
 
-
-
-
-
-
-
-
 #Define sets to be used in the model defVar and addConstraint
 rtm = 1:nrtm;
 dam = 1:nhours_horizon;
-
 rtmepr = Vector(nrtm);	    	#Real Time Market price, $/MWh
 damepr = nothing;
-damreguppr = nothing;
-damregdownpr = nothing;
 
 
-ebat0 = ebat_max;		  #Initial State of charge, 100 means fully charged
 m_f = Array{JuMP.Model}(nhours_planning)
 m_b = Array{JuMP.Model}(NS,nhours_planning)
-
-
 dual = Vector(NS);
 obj = Vector(NS)
 v = Vector(NS)
@@ -309,6 +250,7 @@ lowerbound = 0; upperbound = 1e10;
 policy_cost = Vector();
 
 # Solving root node to bigin forward pass for first iteration
+ebat0 = ebat_max;		  #Initial State of charge, 100 means fully charged
 node0problem = Model(solver = GurobiSolver(OutputFlag=0,Threads=2));
 @variable(node0problem, theta >= thetalimit)
 @objective(node0problem, Min, theta)
@@ -326,8 +268,6 @@ for p in 1:nhours_planning # Forward pass
     load = loaddata1[(p-1)*nrtm+(1:nrtm),:];	#Load, MW
     rtmepr = rtmpricedata[(p-1)*nrtm+(1:nrtm),4];	    	#Real Time Market price, $/MWh
     damepr = dampricedata[p,4];	    	#Day Ahead Market Selling price, $/MWh
-    damreguppr = dampricedata[p,5];	    	#Day Ahead Market Regulation up price, $/MWh
-    damregdownpr = dampricedata[p,6]; 	#Day Ahead Market Regulation down price, $/MWh
     s_realized = rand(S);
     m_f[p] = forwardmodel(ebat0,load[:,s_realized]);
     status = solve(m_f[p]);
@@ -349,8 +289,6 @@ for p in nhours_planning:-1:1 # Backward pass
   load = loaddata1[(p-1)*nrtm+(1:nrtm),:];	#Load, MW
   rtmepr = rtmpricedata[(p-1)*nrtm+(1:nrtm),4];	    	#Real Time Market price, $/MWh
   damepr = dampricedata[p,4];	    	#Day Ahead Market Selling price, $/MWh
-  damreguppr = dampricedata[p,5];	    	#Day Ahead Market Regulation up price, $/MWh
-  damregdownpr = dampricedata[p,6]; 	#Day Ahead Market Regulation down price, $/MWh
   if p ==1
     ebat0_b = ebat_max;
   else
@@ -368,7 +306,7 @@ for p in nhours_planning:-1:1 # Backward pass
     end
     v_avg = (1/NS)*(sum(v));
     pi_avg = (1/NS)*(sum(dual));
-end # Backward pass
+end # Backward pass end
 
 theta = getvariable(node0problem,:theta);
 @constraint(node0problem, ThetaConst, theta >= v_avg + pi_avg*ebat_max)
