@@ -187,7 +187,6 @@ m = Model(solver = GurobiSolver(Threads=2))
     @variable(m, unmetcost[S])
 
     @constraint(m, InitialEnergy[s in S], ebat[1,1,1,s] == ebat0 - 1/eff*Pnet[1,1,1,s]*dtrtm)	#Inital energy in the battery
-#    @constraint(m, EndSOC[i in rtm,k in dam,l in day,s in S], soc[i,k,l,s] >= socend)		#Constraint on SOC at the end of the day
     @constraint(m, rtmEBalance[i in rtm[2:end],k in dam,l in day,s in S], ebat[i,k,l,s] == ebat[i-1,k,l,s] - 1/eff*Pnet[i,k,l,s]*dtrtm)	#Dynamics constraint
     @constraint(m, damEBalance[i=rtm[1],k in dam[2:end],iend=rtm[end],l in day,s in S], ebat[i,k,l,s] == ebat[iend,k-1,l,s] - 1/eff*Pnet[i,k,l,s]*dtrtm)	#Dynamics constraint
     @constraint(m, dayEBalance[i=rtm[1],k=dam[1],iend=rtm[end],kend=dam[end],l in day[2:end],s in S], ebat[i,k,l,s] == ebat[iend,kend,l-1,s] - 1/eff*Pnet[i,k,l,s]*dtrtm)	#Dynamics constraint
@@ -209,7 +208,6 @@ m = Model(solver = GurobiSolver(Threads=2))
     # Non-anticipativity constraints for first stage variables
     @constraint(m, Nonant_PDAM[k in dam,l in day,s in S], Pdam[k,l,s] == (1/NS)*sum{Pdam[k,l,s], s in S})
     @objective(m, Min, (1/NS)*sum{-profittotal[s] + unmetcost[s], s in S})
-#    print(m)
     status = solve(m)
 
 time_taken_st_fullproblem = toc();
@@ -217,8 +215,6 @@ time_taken_st_fullproblem = toc();
 ###############################################################
 
 obj_st_fp = getobjectivevalue(m);
-
-#    println("\nTotal Profits ", getvalue(profittotal),"\n" )
 
 
 ################# PLOTTING #################
