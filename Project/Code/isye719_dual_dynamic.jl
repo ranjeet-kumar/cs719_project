@@ -2,43 +2,7 @@ using JuMP
 using Gurobi
 using PyPlot
 
-############# Funtions to convert JuMP returned variables to arrays ################
-function convertToArray(x)
-    y = getvalue(x)
-    n = length(y)
-    a = zeros(n)
-    for i = 1:n
-	a[i] = y[i]
-    end
-    return a
-end
-
-function convertToArray2(A,n)
-    AA = getvalue(A)
-    m = (n[1],n[2])
-    B = zeros(m)
-    for i in 1:n[1]
-	for j in 1:n[2]
-	    B[i,j] = AA[i,j]
-	end
-    end
-    return B
-end
-
-function convertToArray3(A,n)
-    AA = getvalue(A)
-    m = (n[1],n[2],n[3])
-    B = zeros(m)
-    for i in 1:n[1]
-	for j in 1:n[2]
-	    for k in 1:n[3]
-		B[i,j,k] = AA[i,j,k]
-	    end
-	end
-    end
-    return B
-end
-
+include("helper_functions.jl")
 #############################################################################################################
 
 loaddata = readcsv("DATARCoast.csv");

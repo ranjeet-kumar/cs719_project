@@ -1,9 +1,9 @@
-This is pdfTeX, Version 3.14159265-2.6-1.40.17 (TeX Live 2016) (preloaded format=pdflatex 2016.8.2)  15 DEC 2016 19:45
+This is pdfTeX, Version 3.14159265-2.6-1.40.17 (TeX Live 2016) (preloaded format=pdflatex 2016.8.2)  15 DEC 2016 23:39
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
-**cs719_project.tex
-(./cs719_project.tex
+**cs719paper.tex
+(./cs719paper.tex
 LaTeX2e <2016/03/31> patch level 3
 Babel <3.9r> and hyphenation patterns for 83 language(s) loaded.
 (/usr/local/texlive/2016/texmf-dist/tex/latex/base/article.cls
@@ -390,8 +390,26 @@ Package caption Info: hyperref package is loaded.
 \c@subfigure=\count123
 \c@subtable=\count124
 )
-(build/cs719_project.aux)
-\openout1 = `cs719_project.aux'.
+(/usr/local/texlive/2016/texmf-dist/tex/latex/lineno/lineno.sty
+Package: lineno 2005/11/02 line numbers on paragraphs v4.41
+\linenopenalty=\count125
+\output=\toks25
+\linenoprevgraf=\count126
+\linenumbersep=\dimen141
+\linenumberwidth=\dimen142
+\c@linenumber=\count127
+\c@pagewiselinenumber=\count128
+\c@LN@truepage=\count129
+\c@internallinenumber=\count130
+\c@internallinenumbers=\count131
+\quotelinenumbersep=\dimen143
+\bframerule=\dimen144
+\bframesep=\dimen145
+\bframebox=\box38
+LaTeX Info: Redefining \\ on input line 3056.
+)
+(build/cs719paper.aux)
+\openout1 = `cs719paper.aux'.
 
 LaTeX Font Info:    Checking defaults for OML/cmm/m/it on input line 40.
 LaTeX Font Info:    ... okay on input line 40.
@@ -414,17 +432,17 @@ File: ot1ppl.fd 2001/06/04 font definitions for OT1/ppl.
 )
 (/usr/local/texlive/2016/texmf-dist/tex/context/base/mkii/supp-pdf.mkii
 [Loading MPS to PDF converter (version 2006.09.02).]
-\scratchcounter=\count125
-\scratchdimen=\dimen141
-\scratchbox=\box38
-\nofMPsegments=\count126
-\nofMParguments=\count127
-\everyMPshowfont=\toks25
-\MPscratchCnt=\count128
-\MPscratchDim=\dimen142
-\MPnumerator=\count129
-\makeMPintoPDFobject=\count130
-\everyMPtoPDFconversion=\toks26
+\scratchcounter=\count132
+\scratchdimen=\dimen146
+\scratchbox=\box39
+\nofMPsegments=\count133
+\nofMParguments=\count134
+\everyMPshowfont=\toks26
+\MPscratchCnt=\count135
+\MPscratchDim=\dimen147
+\MPnumerator=\count136
+\makeMPintoPDFobject=\count137
+\everyMPtoPDFconversion=\toks27
 ) (/usr/local/texlive/2016/texmf-dist/tex/latex/oberdiek/epstopdf-base.sty
 Package: epstopdf-base 2016/05/15 v2.6 Base part for package epstopdf
 
@@ -476,7 +494,7 @@ e
 * \@reversemarginfalse
 * (1in=72.27pt=25.4mm, 1cm=28.453pt)
 
-\AtBeginShipoutBox=\box39
+\AtBeginShipoutBox=\box40
 Package hyperref Info: Link coloring ON on input line 40.
 (/usr/local/texlive/2016/texmf-dist/tex/latex/hyperref/nameref.sty
 Package: nameref 2016/05/21 v2.44 Cross-referencing by name of section
@@ -484,69 +502,138 @@ Package: nameref 2016/05/21 v2.44 Cross-referencing by name of section
 (/usr/local/texlive/2016/texmf-dist/tex/generic/oberdiek/gettitlestring.sty
 Package: gettitlestring 2016/05/16 v1.5 Cleanup title references (HO)
 )
-\c@section@level=\count131
+\c@section@level=\count138
 )
 LaTeX Info: Redefining \ref on input line 40.
 LaTeX Info: Redefining \pageref on input line 40.
 LaTeX Info: Redefining \nameref on input line 40.
 
-(build/cs719_project.out) (build/cs719_project.out)
+(build/cs719paper.out) (build/cs719paper.out)
 \@outlinefile=\write3
-\openout3 = `cs719_project.out'.
+\openout3 = `cs719paper.out'.
 
 Package caption Info: Begin \AtBeginDocument code.
 Package caption Info: End \AtBeginDocument code.
-LaTeX Font Info:    Try loading font information for U+msa on input line 42.
+LaTeX Font Info:    Try loading font information for U+msa on input line 49.
 
 (/usr/local/texlive/2016/texmf-dist/tex/latex/amsfonts/umsa.fd
 File: umsa.fd 2013/01/14 v3.01 AMS symbols A
 )
-LaTeX Font Info:    Try loading font information for U+msb on input line 42.
+LaTeX Font Info:    Try loading font information for U+msb on input line 49.
 
 (/usr/local/texlive/2016/texmf-dist/tex/latex/amsfonts/umsb.fd
 File: umsb.fd 2013/01/14 v3.01 AMS symbols B
 )
+LaTeX Font Info:    Font shape `OT1/ppl/bx/n' in size <12> not available
+(Font)              Font shape `OT1/ppl/b/n' tried instead on input line 49.
+LaTeX Font Info:    Font shape `OT1/ppl/bx/it' in size <12> not available
+(Font)              Font shape `OT1/ppl/b/it' tried instead on input line 49.
+LaTeX Font Info:    Font shape `OT1/ppl/bx/n' in size <10> not available
+(Font)              Font shape `OT1/ppl/b/n' tried instead on input line 50.
 LaTeX Font Info:    Font shape `OT1/ppl/bx/n' in size <14.4> not available
-(Font)              Font shape `OT1/ppl/b/n' tried instead on input line 43.
+(Font)              Font shape `OT1/ppl/b/n' tried instead on input line 57.
+LaTeX Font Info:    Font shape `OT1/ppl/bx/n' in size <10.95> not available
+(Font)              Font shape `OT1/ppl/b/n' tried instead on input line 59.
 
-<Figures/damprices.pdf, id=41, 578.16pt x 433.62pt>
+
+LaTeX Warning: Citation `banakar2008impacts' on page 1 undefined on input line 
+59.
+
+
+LaTeX Warning: Citation `Valadez2008' on page 1 undefined on input line 59.
+
+
+LaTeX Warning: Citation `Hao2012' on page 1 undefined on input line 59.
+
+
+LaTeX Warning: Citation `Fares2014' on page 1 undefined on input line 59.
+
+[1
+
+{/usr/local/texlive/2016/texmf-var/fonts/map/pdftex/updmap/pdftex.map}]
+
+LaTeX Warning: Reference `fig:market_control_structure' on page 2 undefined on 
+input line 63.
+
+
+LaTeX Warning: Reference `fig:energy_AS_prices' on page 2 undefined on input li
+ne 63.
+
+
+LaTeX Warning: Reference `tab:caiso_products' on page 2 undefined on input line
+ 63.
+
+
+LaTeX Warning: Reference `fig:CAISO_prices2' on page 2 undefined on input line 
+63.
+
+
+LaTeX Warning: Citation `Jaleeli1992' on page 2 undefined on input line 65.
+
+
+LaTeX Warning: Reference `fig:reg_mileage' on page 2 undefined on input line 65
+.
+
+
+LaTeX Warning: Citation `Walling2008' on page 2 undefined on input line 65.
+
+
+LaTeX Warning: Citation `RTO_Insider' on page 2 undefined on input line 65.
+
+
+LaTeX Warning: Citation `Kirby2011' on page 2 undefined on input line 65.
+
+
+LaTeX Warning: Reference `fig:DR_classifications' on page 2 undefined on input 
+line 67.
+
+
+LaTeX Warning: Citation `Kirby2011' on page 2 undefined on input line 67.
+
+
+LaTeX Warning: Citation `Todd2009' on page 2 undefined on input line 67.
+
+
+LaTeX Warning: Citation `Todd2013' on page 2 undefined on input line 67.
+
+
+LaTeX Warning: Citation `Todd2013' on page 2 undefined on input line 67.
+
+[2] <Figures/damprices.pdf, id=54, 578.16pt x 433.62pt>
 File: Figures/damprices.pdf Graphic file (type pdf)
 
 <use Figures/damprices.pdf>
-Package pdftex.def Info: Figures/damprices.pdf used on input line 49.
+Package pdftex.def Info: Figures/damprices.pdf used on input line 76.
 (pdftex.def)             Requested size: 154.9507pt x 116.2122pt.
 
-<Figures/qhmprices.pdf, id=42, 578.16pt x 433.62pt>
+<Figures/qhmprices.pdf, id=55, 578.16pt x 433.62pt>
 File: Figures/qhmprices.pdf Graphic file (type pdf)
 
 <use Figures/qhmprices.pdf>
-Package pdftex.def Info: Figures/qhmprices.pdf used on input line 50.
+Package pdftex.def Info: Figures/qhmprices.pdf used on input line 77.
 (pdftex.def)             Requested size: 154.9507pt x 116.2122pt.
 
-<Figures/rtmprices.pdf, id=43, 578.16pt x 433.62pt>
+<Figures/rtmprices.pdf, id=56, 578.16pt x 433.62pt>
 File: Figures/rtmprices.pdf Graphic file (type pdf)
 
 <use Figures/rtmprices.pdf>
-Package pdftex.def Info: Figures/rtmprices.pdf used on input line 51.
+Package pdftex.def Info: Figures/rtmprices.pdf used on input line 78.
 (pdftex.def)             Requested size: 154.9507pt x 116.2122pt.
-
-<Figures/DAM_Reg_Price.pdf, id=45, 578.16pt x 433.62pt>
+ [3]
+<Figures/DAM_Reg_Price.pdf, id=63, 578.16pt x 433.62pt>
 File: Figures/DAM_Reg_Price.pdf Graphic file (type pdf)
 
 <use Figures/DAM_Reg_Price.pdf>
-Package pdftex.def Info: Figures/DAM_Reg_Price.pdf used on input line 59.
+Package pdftex.def Info: Figures/DAM_Reg_Price.pdf used on input line 86.
 (pdftex.def)             Requested size: 237.2655pt x 177.94414pt.
 
-<Figures/QHM_Reg_Price.pdf, id=46, 578.16pt x 433.62pt>
+<Figures/QHM_Reg_Price.pdf, id=64, 578.16pt x 433.62pt>
 File: Figures/QHM_Reg_Price.pdf Graphic file (type pdf)
 
 <use Figures/QHM_Reg_Price.pdf>
-Package pdftex.def Info: Figures/QHM_Reg_Price.pdf used on input line 60.
+Package pdftex.def Info: Figures/QHM_Reg_Price.pdf used on input line 87.
 (pdftex.def)             Requested size: 237.2655pt x 177.94414pt.
- [1
-
-{/usr/local/texlive/2016/texmf-var/fonts/map/pdftex/updmap/pdftex.map} <./Figur
-es/damprices.pdf> <./Figures/qhmprices.pdf
+ [4 <./Figures/damprices.pdf> <./Figures/qhmprices.pdf
 
 pdfTeX warning: /usr/local/texlive/2016/bin/x86_64-darwin/pdflatex (file ./Figu
 res/qhmprices.pdf): PDF inclusion: multiple pdfs with page group included in a 
@@ -556,325 +643,176 @@ single page
 pdfTeX warning: /usr/local/texlive/2016/bin/x86_64-darwin/pdflatex (file ./Figu
 res/rtmprices.pdf): PDF inclusion: multiple pdfs with page group included in a 
 single page
->] <Figures/model.pdf, id=160, 285.065pt x 285.065pt>
-File: Figures/model.pdf Graphic file (type pdf)
- <use Figures/model.pdf>
-Package pdftex.def Info: Figures/model.pdf used on input line 76.
-(pdftex.def)             Requested size: 216.81pt x 216.80823pt.
+> <./Figures/DAM_Reg_Price.pdf
 
-Underfull \hbox (badness 10000) in paragraph at lines 73--80
-
- []
-
-LaTeX Font Info:    Font shape `OT1/ppl/bx/n' in size <10.95> not available
-(Font)              Font shape `OT1/ppl/b/n' tried instead on input line 82.
-[2 <./Figures/DAM_Reg_Price.pdf> <./Figures/QHM_Reg_Price.pdf
+pdfTeX warning: /usr/local/texlive/2016/bin/x86_64-darwin/pdflatex (file ./Figu
+res/DAM_Reg_Price.pdf): PDF inclusion: multiple pdfs with page group included i
+n a single page
+> <./Figures/QHM_Reg_Price.pdf
 
 pdfTeX warning: /usr/local/texlive/2016/bin/x86_64-darwin/pdflatex (file ./Figu
 res/QHM_Reg_Price.pdf): PDF inclusion: multiple pdfs with page group included i
 n a single page
 >]
-Underfull \hbox (badness 10000) in paragraph at lines 84--87
 
- []
+LaTeX Warning: Citation `zavaladispatch' on page 5 undefined on input line 101.
 
-[3 <./Figures/model.pdf>]
-<Figures/regexample.pdf, id=331, 285.065pt x 142.5325pt>
-File: Figures/regexample.pdf Graphic file (type pdf)
 
-<use Figures/regexample.pdf>
-Package pdftex.def Info: Figures/regexample.pdf used on input line 146.
-(pdftex.def)             Requested size: 325.215pt x 162.60834pt.
- [4 <./Figures/regexample.pdf>]
-LaTeX Font Info:    Font shape `OT1/ppl/bx/n' in size <12> not available
-(Font)              Font shape `OT1/ppl/b/n' tried instead on input line 158.
-LaTeX Font Info:    Try loading font information for OMS+ppl on input line 161.
+LaTeX Font Info:    Try loading font information for OT1+pcr on input line 101.
 
+(/usr/local/texlive/2016/texmf-dist/tex/latex/psnfss/ot1pcr.fd
+File: ot1pcr.fd 2001/06/04 font definitions for OT1/pcr.
+)
+
+LaTeX Warning: Reference `gridgas' on page 5 undefined on input line 101.
+
+LaTeX Font Info:    Try loading font information for OMS+ppl on input line 108.
 
 (/usr/local/texlive/2016/texmf-dist/tex/latex/psnfss/omsppl.fd
 File: omsppl.fd 
 )
 LaTeX Font Info:    Font shape `OMS/ppl/m/n' in size <10.95> not available
-(Font)              Font shape `OMS/cmsy/m/n' tried instead on input line 161.
+(Font)              Font shape `OMS/cmsy/m/n' tried instead on input line 108.
+LaTeX Font Info:    Font shape `OT1/pcr/m/it' in size <10.95> not available
+(Font)              Font shape `OT1/pcr/m/sl' tried instead on input line 109.
+ [5]
+LaTeX Font Info:    Font shape `OT1/ppl/bx/n' in size <9> not available
+(Font)              Font shape `OT1/ppl/b/n' tried instead on input line 120.
 
-<Figures/Plots/Simultaneous/DAM_P.pdf, id=376, 1156.32pt x 607.068pt>
-File: Figures/Plots/Simultaneous/DAM_P.pdf Graphic file (type pdf)
+<gas_demands_realized_coupled.pdf, id=276, 493.845pt x 387.4475pt>
+File: gas_demands_realized_coupled.pdf Graphic file (type pdf)
 
-<use Figures/Plots/Simultaneous/DAM_P.pdf>
-Package pdftex.def Info: Figures/Plots/Simultaneous/DAM_P.pdf used on input lin
-e 176.
-(pdftex.def)             Requested size: 237.2655pt x 124.5609pt.
+<use gas_demands_realized_coupled.pdf>
+Package pdftex.def Info: gas_demands_realized_coupled.pdf used on input line 12
+9.
+(pdftex.def)             Requested size: 325.215pt x 255.14267pt.
 
-<Figures/Plots/Simultaneous/QHM_P.pdf, id=377, 1156.32pt x 607.068pt>
-File: Figures/Plots/Simultaneous/QHM_P.pdf Graphic file (type pdf)
+<power_coupled_decoupled.pdf, id=277, 496.85625pt x 385.44pt>
+File: power_coupled_decoupled.pdf Graphic file (type pdf)
 
-<use Figures/Plots/Simultaneous/QHM_P.pdf>
-Package pdftex.def Info: Figures/Plots/Simultaneous/QHM_P.pdf used on input lin
-e 177.
-(pdftex.def)             Requested size: 237.2655pt x 124.5609pt.
+<use power_coupled_decoupled.pdf>
+Package pdftex.def Info: power_coupled_decoupled.pdf used on input line 135.
+(pdftex.def)             Requested size: 325.215pt x 252.29155pt.
 
-<Figures/Plots/Simultaneous/RTM_P.pdf, id=378, 1156.32pt x 607.068pt>
-File: Figures/Plots/Simultaneous/RTM_P.pdf Graphic file (type pdf)
 
-<use Figures/Plots/Simultaneous/RTM_P.pdf>
-Package pdftex.def Info: Figures/Plots/Simultaneous/RTM_P.pdf used on input lin
-e 178.
-(pdftex.def)             Requested size: 237.2655pt x 124.5609pt.
+LaTeX Warning: `!h' float specifier changed to `!ht'.
 
-<Figures/Plots/Simultaneous/DAM_Reg.pdf, id=379, 1156.32pt x 607.068pt>
-File: Figures/Plots/Simultaneous/DAM_Reg.pdf Graphic file (type pdf)
+<power_total.pdf, id=278, 489.83pt x 402.50375pt>
+File: power_total.pdf Graphic file (type pdf)
+ <use power_total.pdf>
+Package pdftex.def Info: power_total.pdf used on input line 141.
+(pdftex.def)             Requested size: 216.81pt x 178.15242pt.
 
-<use Figures/Plots/Simultaneous/DAM_Reg.pdf>
-Package pdftex.def Info: Figures/Plots/Simultaneous/DAM_Reg.pdf used on input l
-ine 183.
-(pdftex.def)             Requested size: 237.2655pt x 124.5609pt.
 
-<Figures/Plots/Simultaneous/QHM_Reg.pdf, id=380, 1156.32pt x 607.068pt>
-File: Figures/Plots/Simultaneous/QHM_Reg.pdf Graphic file (type pdf)
+LaTeX Warning: `!h' float specifier changed to `!ht'.
 
-<use Figures/Plots/Simultaneous/QHM_Reg.pdf>
-Package pdftex.def Info: Figures/Plots/Simultaneous/QHM_Reg.pdf used on input l
-ine 184.
-(pdftex.def)             Requested size: 237.2655pt x 124.5609pt.
 
-<Figures/Plots/Simultaneous/SOC.pdf, id=381, 1156.32pt x 607.068pt>
-File: Figures/Plots/Simultaneous/SOC.pdf Graphic file (type pdf)
+LaTeX Warning: Reference `demands_decoupled' on page 6 undefined on input line 
+145.
 
-<use Figures/Plots/Simultaneous/SOC.pdf>
-Package pdftex.def Info: Figures/Plots/Simultaneous/SOC.pdf used on input line 
-189.
-(pdftex.def)             Requested size: 237.2655pt x 124.5609pt.
+[6 <./gas_demands_realized_coupled.pdf>]
 
-<Figures/Plots/Simultaneous/P_band.pdf, id=382, 749.87067pt x 368.32797pt>
-File: Figures/Plots/Simultaneous/P_band.pdf Graphic file (type pdf)
+LaTeX Warning: Reference `demands_decoupled' on page 7 undefined on input line 
+147.
 
-<use Figures/Plots/Simultaneous/P_band.pdf>
-Package pdftex.def Info: Figures/Plots/Simultaneous/P_band.pdf used on input li
-ne 190.
-(pdftex.def)             Requested size: 237.2655pt x 116.54097pt.
+[7 <./power_coupled_decoupled.pdf> <./power_total.pdf>]
+<flow_decoupled.pdf, id=358, 481.8pt x 391.4625pt>
+File: flow_decoupled.pdf Graphic file (type pdf)
+ <use flow_decoupled.pdf>
+Package pdftex.def Info: flow_decoupled.pdf used on input line 155.
+(pdftex.def)             Requested size: 289.07999pt x 234.88527pt.
 
-<Figures/Plots/Simultaneous/E_Rev.pdf, id=383, 1156.32pt x 607.068pt>
-File: Figures/Plots/Simultaneous/E_Rev.pdf Graphic file (type pdf)
 
-<use Figures/Plots/Simultaneous/E_Rev.pdf>
-Package pdftex.def Info: Figures/Plots/Simultaneous/E_Rev.pdf used on input lin
-e 195.
-(pdftex.def)             Requested size: 237.2655pt x 124.5609pt.
+LaTeX Warning: `!h' float specifier changed to `!ht'.
 
-<Figures/Plots/Simultaneous/Reg_Rev.pdf, id=384, 1156.32pt x 607.068pt>
-File: Figures/Plots/Simultaneous/Reg_Rev.pdf Graphic file (type pdf)
+<flow_coupled.pdf, id=359, 490.83376pt x 390.45876pt>
+File: flow_coupled.pdf Graphic file (type pdf)
+ <use flow_coupled.pdf>
+Package pdftex.def Info: flow_coupled.pdf used on input line 161.
+(pdftex.def)             Requested size: 289.07999pt x 229.96948pt.
 
-<use Figures/Plots/Simultaneous/Reg_Rev.pdf>
-Package pdftex.def Info: Figures/Plots/Simultaneous/Reg_Rev.pdf used on input l
-ine 196.
-(pdftex.def)             Requested size: 237.2655pt x 124.5609pt.
 
-<Figures/Plots/Simultaneous/Tot_Rev.pdf, id=385, 1156.32pt x 607.068pt>
-File: Figures/Plots/Simultaneous/Tot_Rev.pdf Graphic file (type pdf)
+LaTeX Warning: `!h' float specifier changed to `!ht'.
 
-<use Figures/Plots/Simultaneous/Tot_Rev.pdf>
-Package pdftex.def Info: Figures/Plots/Simultaneous/Tot_Rev.pdf used on input l
-ine 197.
-(pdftex.def)             Requested size: 237.2655pt x 124.5609pt.
- [5] [6 <./Figures/Plots/Simultaneous/DAM_P.pdf> <./Figures/Plots/Simultaneous/
-QHM_P.pdf
 
-pdfTeX warning: /usr/local/texlive/2016/bin/x86_64-darwin/pdflatex (file ./Figu
-res/Plots/Simultaneous/QHM_P.pdf): PDF inclusion: multiple pdfs with page group
- included in a single page
-> <./Figures/Plots/Simultaneous/RTM_P.pdf
+LaTeX Warning: Reference `eq:grid' on page 8 undefined on input line 171.
 
-pdfTeX warning: /usr/local/texlive/2016/bin/x86_64-darwin/pdflatex (file ./Figu
-res/Plots/Simultaneous/RTM_P.pdf): PDF inclusion: multiple pdfs with page group
- included in a single page
-> <./Figures/Plots/Simultaneous/DAM_Reg.pdf
 
-pdfTeX warning: /usr/local/texlive/2016/bin/x86_64-darwin/pdflatex (file ./Figu
-res/Plots/Simultaneous/DAM_Reg.pdf): PDF inclusion: multiple pdfs with page gro
-up included in a single page
-> <./Figures/Plots/Simultaneous/QHM_Reg.pdf
+LaTeX Warning: Reference `eq:gas' on page 8 undefined on input line 171.
 
-pdfTeX warning: /usr/local/texlive/2016/bin/x86_64-darwin/pdflatex (file ./Figu
-res/Plots/Simultaneous/QHM_Reg.pdf): PDF inclusion: multiple pdfs with page gro
-up included in a single page
->] [7 <./Figures/Plots/Simultaneous/SOC.pdf> <./Figures/Plots/Simultaneous/P_ba
-nd.pdf, page is rotated 90 degrees> <./Figures/Plots/Simultaneous/E_Rev.pdf
 
-pdfTeX warning: /usr/local/texlive/2016/bin/x86_64-darwin/pdflatex (file ./Figu
-res/Plots/Simultaneous/E_Rev.pdf): PDF inclusion: multiple pdfs with page group
- included in a single page
-> <./Figures/Plots/Simultaneous/Reg_Rev.pdf
+LaTeX Warning: Citation `zavalapavia' on page 8 undefined on input line 171.
 
-pdfTeX warning: /usr/local/texlive/2016/bin/x86_64-darwin/pdflatex (file ./Figu
-res/Plots/Simultaneous/Reg_Rev.pdf): PDF inclusion: multiple pdfs with page gro
-up included in a single page
-> <./Figures/Plots/Simultaneous/Tot_Rev.pdf
 
-pdfTeX warning: /usr/local/texlive/2016/bin/x86_64-darwin/pdflatex (file ./Figu
-res/Plots/Simultaneous/Tot_Rev.pdf): PDF inclusion: multiple pdfs with page gro
-up included in a single page
->] <Figures/Plots/Horizon/DAM_P.pdf, id=753, 1156.32pt x 608.87473pt>
-File: Figures/Plots/Horizon/DAM_P.pdf Graphic file (type pdf)
+LaTeX Warning: Reference `eq:struct' on page 8 undefined on input line 176.
 
-<use Figures/Plots/Horizon/DAM_P.pdf>
-Package pdftex.def Info: Figures/Plots/Horizon/DAM_P.pdf used on input line 219
+[8] [9 <./flow_decoupled.pdf> <./flow_coupled.pdf>]
+
+LaTeX Warning: Citation `zavalastochgas' on page 10 undefined on input line 196
 .
-(pdftex.def)             Requested size: 237.2655pt x 124.93161pt.
-
-<Figures/Plots/Horizon/QHM_P.pdf, id=754, 1156.32pt x 608.87473pt>
-File: Figures/Plots/Horizon/QHM_P.pdf Graphic file (type pdf)
-
-<use Figures/Plots/Horizon/QHM_P.pdf>
-Package pdftex.def Info: Figures/Plots/Horizon/QHM_P.pdf used on input line 220
-.
-(pdftex.def)             Requested size: 237.2655pt x 124.93161pt.
-
-<Figures/Plots/Horizon/RTM_P.pdf, id=755, 1156.32pt x 608.87473pt>
-File: Figures/Plots/Horizon/RTM_P.pdf Graphic file (type pdf)
-
-<use Figures/Plots/Horizon/RTM_P.pdf>
-Package pdftex.def Info: Figures/Plots/Horizon/RTM_P.pdf used on input line 221
-.
-(pdftex.def)             Requested size: 237.2655pt x 124.93161pt.
-
-<Figures/Plots/Horizon/DAM_Reg.pdf, id=756, 1156.32pt x 608.87473pt>
-File: Figures/Plots/Horizon/DAM_Reg.pdf Graphic file (type pdf)
-
-<use Figures/Plots/Horizon/DAM_Reg.pdf>
-Package pdftex.def Info: Figures/Plots/Horizon/DAM_Reg.pdf used on input line 2
-26.
-(pdftex.def)             Requested size: 237.2655pt x 124.93161pt.
-
-<Figures/Plots/Horizon/QHM_Reg.pdf, id=757, 1156.32pt x 608.87473pt>
-File: Figures/Plots/Horizon/QHM_Reg.pdf Graphic file (type pdf)
-
-<use Figures/Plots/Horizon/QHM_Reg.pdf>
-Package pdftex.def Info: Figures/Plots/Horizon/QHM_Reg.pdf used on input line 2
-27.
-(pdftex.def)             Requested size: 237.2655pt x 124.93161pt.
-
-<Figures/Plots/Horizon/SOC.pdf, id=758, 1156.32pt x 608.87473pt>
-File: Figures/Plots/Horizon/SOC.pdf Graphic file (type pdf)
-
-<use Figures/Plots/Horizon/SOC.pdf>
-Package pdftex.def Info: Figures/Plots/Horizon/SOC.pdf used on input line 232.
-(pdftex.def)             Requested size: 237.2655pt x 124.93161pt.
-
-<Figures/Plots/Horizon/P_band.pdf, id=759, 1156.32pt x 608.87473pt>
-File: Figures/Plots/Horizon/P_band.pdf Graphic file (type pdf)
-
-<use Figures/Plots/Horizon/P_band.pdf>
-Package pdftex.def Info: Figures/Plots/Horizon/P_band.pdf used on input line 23
-3.
-(pdftex.def)             Requested size: 237.2655pt x 124.93161pt.
-
-<Figures/Plots/Horizon/Rev_E.pdf, id=760, 1156.32pt x 608.87473pt>
-File: Figures/Plots/Horizon/Rev_E.pdf Graphic file (type pdf)
-
-<use Figures/Plots/Horizon/Rev_E.pdf>
-Package pdftex.def Info: Figures/Plots/Horizon/Rev_E.pdf used on input line 238
-.
-(pdftex.def)             Requested size: 237.2655pt x 124.93161pt.
-
-<Figures/Plots/Horizon/Rev_Reg.pdf, id=761, 1156.32pt x 608.87473pt>
-File: Figures/Plots/Horizon/Rev_Reg.pdf Graphic file (type pdf)
-
-<use Figures/Plots/Horizon/Rev_Reg.pdf>
-Package pdftex.def Info: Figures/Plots/Horizon/Rev_Reg.pdf used on input line 2
-39.
-(pdftex.def)             Requested size: 237.2655pt x 124.93161pt.
-
-<Figures/Plots/Horizon/Rev_Tot.pdf, id=762, 1156.32pt x 608.87473pt>
-File: Figures/Plots/Horizon/Rev_Tot.pdf Graphic file (type pdf)
-
-<use Figures/Plots/Horizon/Rev_Tot.pdf>
-Package pdftex.def Info: Figures/Plots/Horizon/Rev_Tot.pdf used on input line 2
-40.
-(pdftex.def)             Requested size: 237.2655pt x 124.93161pt.
- [8 <./Figures/Plots/Horizon/DAM_P.pdf> <./Figures/Plots/Horizon/QHM_P.pdf
-
-pdfTeX warning: /usr/local/texlive/2016/bin/x86_64-darwin/pdflatex (file ./Figu
-res/Plots/Horizon/QHM_P.pdf): PDF inclusion: multiple pdfs with page group incl
-uded in a single page
-> <./Figures/Plots/Horizon/RTM_P.pdf
-
-pdfTeX warning: /usr/local/texlive/2016/bin/x86_64-darwin/pdflatex (file ./Figu
-res/Plots/Horizon/RTM_P.pdf): PDF inclusion: multiple pdfs with page group incl
-uded in a single page
-> <./Figures/Plots/Horizon/DAM_Reg.pdf
-
-pdfTeX warning: /usr/local/texlive/2016/bin/x86_64-darwin/pdflatex (file ./Figu
-res/Plots/Horizon/DAM_Reg.pdf): PDF inclusion: multiple pdfs with page group in
-cluded in a single page
-> <./Figures/Plots/Horizon/QHM_Reg.pdf
-
-pdfTeX warning: /usr/local/texlive/2016/bin/x86_64-darwin/pdflatex (file ./Figu
-res/Plots/Horizon/QHM_Reg.pdf): PDF inclusion: multiple pdfs with page group in
-cluded in a single page
->] [9 <./Figures/Plots/Horizon/SOC.pdf> <./Figures/Plots/Horizon/P_band.pdf
-
-pdfTeX warning: /usr/local/texlive/2016/bin/x86_64-darwin/pdflatex (file ./Figu
-res/Plots/Horizon/P_band.pdf): PDF inclusion: multiple pdfs with page group inc
-luded in a single page
-> <./Figures/Plots/Horizon/Rev_E.pdf
-
-pdfTeX warning: /usr/local/texlive/2016/bin/x86_64-darwin/pdflatex (file ./Figu
-res/Plots/Horizon/Rev_E.pdf): PDF inclusion: multiple pdfs with page group incl
-uded in a single page
-> <./Figures/Plots/Horizon/Rev_Reg.pdf
-
-pdfTeX warning: /usr/local/texlive/2016/bin/x86_64-darwin/pdflatex (file ./Figu
-res/Plots/Horizon/Rev_Reg.pdf): PDF inclusion: multiple pdfs with page group in
-cluded in a single page
-> <./Figures/Plots/Horizon/Rev_Tot.pdf
-
-pdfTeX warning: /usr/local/texlive/2016/bin/x86_64-darwin/pdflatex (file ./Figu
-res/Plots/Horizon/Rev_Tot.pdf): PDF inclusion: multiple pdfs with page group in
-cluded in a single page
->]
-Overfull \hbox (0.48125pt too wide) in paragraph at lines 252--253
-[]\OT1/ppl/m/n/10.95 Figure [][]8[][] and [][]12[][] show the pro-files of the 
-rev-enues from the en-ergy and reg-u-la-tion mar-kets through-
- []
 
 [10]
-Package atveryend Info: Empty hook `BeforeClearDocument' on input line 270.
+Overfull \hbox (7.07256pt too wide) in paragraph at lines 203--210
+ [] 
+ []
+
+No file cs719paper.bbl.
+Package atveryend Info: Empty hook `BeforeClearDocument' on input line 230.
+
+Underfull \vbox (badness 6284) has occurred while \output is active []
+
  [11]
-Package atveryend Info: Empty hook `AfterLastShipout' on input line 270.
- (build/cs719_project.aux)
-Package atveryend Info: Executing hook `AtVeryEndDocument' on input line 270.
-Package atveryend Info: Executing hook `AtEndAfterFileList' on input line 270.
-Package rerunfilecheck Info: File `cs719_project.out' has not changed.
+[12]
+Package atveryend Info: Empty hook `AfterLastShipout' on input line 230.
+ (build/cs719paper.aux)
+Package atveryend Info: Executing hook `AtVeryEndDocument' on input line 230.
+Package atveryend Info: Executing hook `AtEndAfterFileList' on input line 230.
+Package rerunfilecheck Info: File `cs719paper.out' has not changed.
 (rerunfilecheck)             Checksum: <no file>.
-Package atveryend Info: Empty hook `AtVeryVeryEnd' on input line 270.
+
+
+LaTeX Warning: There were undefined references.
+
+
+LaTeX Warning: Label(s) may have changed. Rerun to get cross-references right.
+
+Package atveryend Info: Empty hook `AtVeryVeryEnd' on input line 230.
  )
 (\end occurred inside a group at level 1)
 
 ### simple group (level 1) entered at line 1061 ({)
 ### bottom level 
 Here is how much of TeX's memory you used:
- 9154 strings out of 493013
- 139481 string characters out of 6133344
- 252702 words of memory out of 5000000
- 12486 multiletter control sequences out of 15000+600000
- 17635 words of font info for 53 fonts, out of 8000000 for 9000
+ 9306 strings out of 493013
+ 140119 string characters out of 6133344
+ 253535 words of memory out of 5000000
+ 12656 multiletter control sequences out of 15000+600000
+ 28421 words of font info for 83 fonts, out of 8000000 for 9000
  1141 hyphenation exceptions out of 8191
- 42i,11n,43p,1193b,6193s stack positions out of 5000i,500n,10000p,200000b,80000s
+ 42i,11n,43p,2712b,6414s stack positions out of 5000i,500n,10000p,200000b,80000s
 {/usr/local/texlive/2016/texmf-dist/fonts/enc/dvips/base/8r.enc
-}</usr/local/texlive/2016/texmf-dist/fonts/type1/public/amsfonts/cm/cmex10.pfb>
-</usr/local/texlive/2016/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi10.pfb><
-/usr/local/texlive/2016/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi6.pfb></u
-sr/local/texlive/2016/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi8.pfb></usr
-/local/texlive/2016/texmf-dist/fonts/type1/public/amsfonts/cm/cmr10.pfb></usr/l
-ocal/texlive/2016/texmf-dist/fonts/type1/public/amsfonts/cm/cmr8.pfb></usr/loca
-l/texlive/2016/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy10.pfb></usr/local
-/texlive/2016/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy8.pfb></usr/local/t
-exlive/2016/texmf-dist/fonts/type1/urw/palatino/uplb8a.pfb></usr/local/texlive/
-2016/texmf-dist/fonts/type1/urw/palatino/uplr8a.pfb>
-Output written on build/cs719_project.pdf (11 pages, 1306484 bytes).
+}</usr/local/texlive/2016/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi10.pfb>
+</usr/local/texlive/2016/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi6.pfb></
+usr/local/texlive/2016/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi7.pfb></us
+r/local/texlive/2016/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi8.pfb></usr/
+local/texlive/2016/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi9.pfb></usr/lo
+cal/texlive/2016/texmf-dist/fonts/type1/public/amsfonts/cm/cmr10.pfb></usr/loca
+l/texlive/2016/texmf-dist/fonts/type1/public/amsfonts/cm/cmr6.pfb></usr/local/t
+exlive/2016/texmf-dist/fonts/type1/public/amsfonts/cm/cmr9.pfb></usr/local/texl
+ive/2016/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy10.pfb></usr/local/texli
+ve/2016/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy6.pfb></usr/local/texlive
+/2016/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy9.pfb></usr/local/texlive/2
+016/texmf-dist/fonts/type1/urw/courier/ucrr8a.pfb></usr/local/texlive/2016/texm
+f-dist/fonts/type1/urw/courier/ucrro8a.pfb></usr/local/texlive/2016/texmf-dist/
+fonts/type1/urw/palatino/uplb8a.pfb></usr/local/texlive/2016/texmf-dist/fonts/t
+ype1/urw/palatino/uplbi8a.pfb></usr/local/texlive/2016/texmf-dist/fonts/type1/u
+rw/palatino/uplr8a.pfb></usr/local/texlive/2016/texmf-dist/fonts/type1/urw/pala
+tino/uplr8a.pfb></usr/local/texlive/2016/texmf-dist/fonts/type1/urw/palatino/up
+lri8a.pfb>
+Output written on build/cs719paper.pdf (12 pages, 543869 bytes).
 PDF statistics:
- 1202 PDF objects out of 1440 (max. 8388607)
- 380 compressed objects within 4 object streams
- 68 named destinations out of 1000 (max. 500000)
- 208 words of extra memory for PDF output out of 10000 (max. 10000000)
+ 497 PDF objects out of 1000 (max. 8388607)
+ 270 compressed objects within 3 object streams
+ 35 named destinations out of 1000 (max. 500000)
+ 123 words of extra memory for PDF output out of 10000 (max. 10000000)
 

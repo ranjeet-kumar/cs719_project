@@ -3,61 +3,9 @@ using JuMP
 using PyPlot
 using Gurobi
 
-close("all")
-
-############# Funtions to convert JuMP returned variables to arrays ################
-
-function convertToArray(x)
-	y = getvalue(x)
-	n = length(y)
-	a = zeros(n)
-	for i = 1:n
-		a[i] = y[i]
-	end
-	return a
-end
-
-function convertToArray2(AA,n)
-	AA = getvalue(A)
-	m = (n[1],n[2])
-	B = zeros(m)
-	for i in 1:n[1]
-		for j in 1:n[2]
-			B[i,j] = AA[i,j]
-		end
-	end
-	return B
-end
-
-function convertToArray3(AA,n)
-	m = (n[1],n[2],n[3])
-	B = zeros(m)
-	for i in 1:n[1]
-		for j in 1:n[2]
-			for k in 1:n[3]
-				B[i,j,k] = AA[i,j,k]
-			end
-		end
-	end
-	return B
-end
-
-function convertToArray4(AA,n)
-	m = (n[1],n[2],n[3],n[4])
-	B = zeros(m)
-	for i in 1:n[1]
-		for j in 1:n[2]
-			for k in 1:n[3]
-				for l in 1:n[4]
-					B[i,j,k,l] = AA[i,j,k,l]
-				end
-			end
-		end
-	end
-	return B
-end
-
+include("helper_functions.jl")
 #############################################################################################################
+
 
 loaddata = readcsv("DATARCoast.csv");
 rtmpricedata = readcsv("AggregatedData_RTM_ALTA31GT_7_B1.csv")
@@ -86,8 +34,6 @@ nrtm_planning = nhours_planning*nrtm;
 
 NS = 50; # Number of scenarios you want to sample from the distrbution
 S = 1:NS;
-
-
 
 #Load and price data
 load = Matrix{Float64}(loaddata[2:nrtmpoints+1,2+(1:ndays)]);	#Load, MW
@@ -200,7 +146,7 @@ m = Model(solver = GurobiSolver(Threads=2))
 		@constraint(m, DAMRamp2[i in rtm[1],k in dam[2:end],iend=rtm[end],l in day,s in S], Pnet[i,k,l,s] - Pnet[iend,k-1,l,s] >= -rampmax*dtrtm)   #Ramp discharge constraint at each time
 		@constraint(m, DAYRamp1[i=rtm[1],k=dam[1],iend=rtm[end],kend=dam[end],l in day[2:end],s in S], Pnet[i,k,l,s] - Pnet[iend,kend,l-1,s] <= rampmax*dtrtm)   #Ramp discharge constraint at each time
 		@constraint(m, DAYRamp2[i=rtm[1],k=dam[1],iend=rtm[end],kend=dam[end],l in day[2:end],s in S], Pnet[i,k,l,s] - Pnet[iend,kend,l-1,s] >= -rampmax*dtrtm)   #Ramp discharge constraint at each time
-=# 
+=#
 		@constraint(m, RTMEProfits[i in rtm,k in dam,l in day,s in S], profitErtm[i,k,l,s] == rtmepr[i,k,l]*Prtm[i,k,l,s]*dtrtm)	#Economic calculation
     @constraint(m, DAMEProfits[k in dam,l in day,s in S], profitEdam[k,l,s] == damepr[k,l]*Pdam[k,l,s]*dtdam)	#Economic calculation
     @constraint(m, TotalProfit[s in S], profittotal[s] ==
