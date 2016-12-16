@@ -3,138 +3,63 @@ using JuMP
 using PyPlot
 using Gurobi
 
-close("all")
-
-############# Funtions to convert JuMP returned variables to arrays ################
-
-function convertToArray(x)
-	y = getvalue(x)
-	n = length(y)
-	a = zeros(n)
-	for i = 1:n
-		a[i] = y[i]
-	end
-	return a
-end
-
-function convertToArray2(AA,n)
-	AA = getvalue(A)
-	m = (n[1],n[2])
-	B = zeros(m)
-	for i in 1:n[1]
-		for j in 1:n[2]
-			B[i,j] = AA[i,j]
-		end
-	end
-	return B
-end
-
-function convertToArray3(AA,n)
-	m = (n[1],n[2],n[3])
-	B = zeros(m)
-	for i in 1:n[1]
-		for j in 1:n[2]
-			for k in 1:n[3]
-				B[i,j,k] = AA[i,j,k]
-			end
-		end
-	end
-	return B
-end
-
-function convertToArray4(AA,n)
-	m = (n[1],n[2],n[3],n[4])
-	B = zeros(m)
-	for i in 1:n[1]
-		for j in 1:n[2]
-			for k in 1:n[3]
-				for l in 1:n[4]
-					B[i,j,k,l] = AA[i,j,k,l]
-				end
-			end
-		end
-	end
-	return B
-end
-
+include("helper_functions.jl")
 #############################################################################################################
+# Read load and price data from csv files
+loadExceldata = readcsv("DATARCoast.csv");
+rtmpriceExceldata = readcsv("AggregatedData_RTM_ALTA31GT_7_B1.csv")
+dampriceExceldata = readcsv("AggregatedData_DAM_ALTA31GT_7_B1.csv")
 
-loaddata = readcsv("DATARCoast.csv");
-rtmpricedata = readcsv("AggregatedData_RTM_ALTA31GT_7_B1.csv")
-dampricedata = readcsv("AggregatedData_DAM_ALTA31GT_7_B1.csv")
+generate_new_scenarios = 0; # 0: don't generate new scenarios for loads; 1: generate new scenarios
+makeplots = 0; # 0: Don't generate plots, 1: Generate plots
 
+# Defining time parameters for the model and planning schedule
 dtdam = 1; 				#time interval of each day ahead market (hourly) intervals [hour]
-ndam = 24;				#No. of day ahead market (hourly) intervals in a day
+ndam = 24;				#No. of day-ahead market (hourly) intervals in a day
 dtrtm = 5/60;				#time interval of each real time interval [hour]
 nrtm = Int64(dtdam/dtrtm);		#No. of real time intervals in each hour
-
-nrtmpoints = ndam*nrtm;		        #Total number of points in RTM data in one day
-ndampoints = ndam;			#Total number of points in hourly data in one day
+nrtmpoints = ndam*nrtm;		    #Total number of points in RTM data in one day
+ndampoints = ndam;			  #Total number of points in hourly data in one day
+weekly_ndays = 7;         #Number of days in every week
+ndays = 365;              #Number of days data is available for
+ndays_planning = 7;       #Number of days you want to plan for
+nweeks_planning = Int64(ceil((ndays_planning/weekly_ndays)));
+nhours_planning = ndays_planning*ndam;  #Number of hours we will plan the policy for
+nrtm_planning = nhours_planning*nrtm;   #Number of rtm intervals we will plan the policy for
 
 #Model Parameters
 ebat_max = 0.5;	          #Battery capacity, MWh
 P_max = 1;	          #Maximum power, MW
+ebat0 = ebat_max;		   #Initial State of charge
 rampmin = -0.5*P_max;	          #Lower bound for ramp discharge, MW/5min
 rampmax = 0.5*P_max;  	  #Upper bound for ramp discharge, MW/5min
-eff = 1;                  #Discharging Efficiency of battery
-ebat0 = ebat_max;		   #Initial State of charge
-ebatend = ebat_max;		  #State of charge at the end of the day
-ndays = 365;              #Number of days data is available for
-ndays_planning = 7;       #Number of days you want to plan for
-nhours_planning = ndays_planning*ndam;
-nrtm_planning = nhours_planning*nrtm;
-
 NS = 50; # Number of scenarios you want to sample from the distrbution
 S = 1:NS;
 
+# Price data
+eprrtm = rtmpriceExceldata[1:nrtmpoints*ndays,4];	 #Real Time Market price, $/MWh
+eprdam = dampriceExceldata[1:ndampoints*ndays,4];	 #Day Ahead Market price, $/MWh
 
-
-
-#Load and price data
-load = Matrix{Float64}(loaddata[2:nrtmpoints+1,2+(1:ndays)]);	#Load, MW
-
-eprrtm = rtmpricedata[1:nrtmpoints*ndays,4];	    	#Real Time Market price, $/MWh
-eprdam = dampricedata[1:ndampoints*ndays,4];	    	#Day Ahead Market Selling price, $/MWh
-
-#Reshape the data to matrices
-rtmepr = reshape(eprrtm,nrtm,ndam,ndays);
-damepr = reshape(eprdam,ndam,ndays);
-load = reshape(load,nrtm,ndam,ndays);
-loadvec = vec(load);
-
-
-
-# Reshaping the data as weekly profiles
-reshape_ndays = 7;
-reshape_nrows = reshape_ndays*nrtmpoints;
-reshape_ncolumns = Int64(floor(length(load)/reshape_nrows));
-load_estimationdata = loadvec[1:reshape_nrows*reshape_ncolumns];
-load_weekly = reshape(load_estimationdata,reshape_nrows,reshape_ncolumns);
-
-
-
-# Loading the NS scenarios for weekly load profiles in kW generated from the fullproblem_stochastic code
-nweeks_planning = Int64(ceil((ndays_planning/reshape_ndays)));
-
-loadNSdata = readcsv("loads_scenarios_month.csv")
-
-
-ndays_data = (nweeks_planning+1)*reshape_ndays;
+# Generate new scenarios for loads
+loadNSdatafile = "loads_scenarios_month.csv";
+if generate_new_scenarios == 1
+  load = Matrix{Float64}(loadExceldata[2:nrtmpoints+1,2+(1:ndays)]);	#Load, MW
+  loadNSdata = generate_weekly_loads_scenarios(load,1:52,ndays_planning,NS,loadNSdatafile);
+end
+loadNSdata = readcsv(loadNSdatafile)
+ndays_data = (nweeks_planning+1)*weekly_ndays;
 loadNSplanningdata = reshape(loadNSdata,nrtm,ndam,ndays_data,NS);   #kW
 
-################################################################
-
-
+#Reshape the data to matrices to be used in the model
+rtmepr = reshape(eprrtm,nrtm,ndam,ndays);
+damepr = reshape(eprdam,ndam,ndays);
 load = loadNSplanningdata[:,:,1:ndays_planning,:]/1000; #MW
+load_mv = mean(load,4); # Mean loads for mean-value problem
 
-load_mv = mean(load,4);
-
-#Define sets to be used in the model defVar and addConstraint
-rtm = 1:nrtm;
-dam = 1:ndam;
-day = 1:ndays_planning;
-
-
+#Define sets to be used in the JuMP model
+rtm = 1:nrtm; # {1,2,...,12}
+dam = 1:ndam; # {1,2,...,24}
+day = 1:ndays_planning; # {1,2,...,7}
 
 
 ################ Mean Value Model ##################
@@ -146,13 +71,12 @@ mv = Model(solver = GurobiSolver(Threads=2))
 		@variable(mv, suppliedload[rtm,dam,day] >= 0)
 		@variable(mv, unmetload[rtm,dam,day] >= 0)
 		@expression(mv, Pnet[i in rtm,k in dam,l in day], Prtm[i,k,l] + Pdam[k,l] + suppliedload[i,k,l])    #Net power discharged from battery in all 5-min interval, kW
-		@variable(mv, profitErtm[rtm,dam,day])# >= 0)				        #Profit from the real time market, USD
-		@variable(mv, profitEdam[dam,day])# >= 0)	        			#Profit from the day ahead market, USD
-		@variable(mv, profittotal)# >= 0)		        	#Total profit in the day, USD
+		@variable(mv, profitErtm[rtm,dam,day])				        #Profit from the real time market, USD
+		@variable(mv, profitEdam[dam,day])	        			#Profit from the day ahead market, USD
+		@variable(mv, profittotal)	        	#Total profit in the day, USD
 		@variable(mv, unmetcost)
 
 		@constraint(mv, InitialEnergy[s in S], ebat[1,1,1] == ebat0 - 1/eff*Pnet[1,1,1]*dtrtm)	#Inital energy in the battery
-		#    @constraint(mv, EndSOC[i in rtm,k in dam,l in day], soc[i,k,l] >= socend)		#Constraint on SOC at the end of the day
 		@constraint(mv, rtmEBalance[i in rtm[2:end],k in dam,l in day], ebat[i,k,l] == ebat[i-1,k,l] - 1/eff*Pnet[i,k,l]*dtrtm)	#Dynamics constraint
 		@constraint(mv, damEBalance[i=rtm[1],k in dam[2:end],iend=rtm[end],l in day], ebat[i,k,l] == ebat[iend,k-1,l] - 1/eff*Pnet[i,k,l]*dtrtm)	#Dynamics constraint
 		@constraint(mv, dayEBalance[i=rtm[1],k=dam[1],iend=rtm[end],kend=dam[end],l in day[2:end]], ebat[i,k,l] == ebat[iend,kend,l-1] - 1/eff*Pnet[i,k,l]*dtrtm)	#Dynamics constraint
@@ -174,12 +98,8 @@ mv = Model(solver = GurobiSolver(Threads=2))
 		# Non-anticipativity constraints for first stage variables
 		@constraint(mv, Nonant_PDAM[k in dam,l in day], Pdam[k,l] == Pdam[k,l])
 		@objective(mv, Min, -profittotal + unmetcost)
-#    print(mv)
-status = solve(mv)
-Pdam_mv = getvalue(getvariable(mv,:Pdam))
-
-
-###############################################################
+status = solve(mv);
+Pdam_mv = getvalue(getvariable(mv,:Pdam));
 
 ######################### Mean value Model End ###########################
 
