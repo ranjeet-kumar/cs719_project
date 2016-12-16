@@ -66,7 +66,7 @@ In the U.S., generators/loads provide the hierarchical market structure with add
 Manufacturing facilities and other large electricity consumers may also participate in electricity markets through Demand Response (DR) programs by manipulating their loads and/or by using on-site generators. DR is typically classified as dispatchable and non-dispatchable, as shown in Figure \ref{fig:DR_classifications}. For dispatchable DR, the ISO directly controls the load (e.g., balancing authority sends new set points through AGC system to regulation resources), whereas non-dispatchable loads are coordinated through a variety of pricing signals including real-time electricity markets, which are updated every 5 to 15 minutes. In Texas, load resources provide 2,400 MW of energy and ancillary services, including half of the spinning reserve capacity. To give an idea of the impact of manufacturing, around 1,000 MW of this capacity is obtained from a single electrochemical processing facility that provides regulation and other services. Medium (10 to 50 MW each) and small (less than 10 MW) size industrial/commercial facilities provide the remaining 820 MW and 550 MW of capacity, respectively \cite{Kirby2011}. The Alcoa facility in Warrick, IN offers several ancillary services in markets run by the Midcontinent ISO. The aluminum smelter provides 70 MW of regulation capacity, which is 15\% of its average load (470 MW). This type of operation represents a paradigm shift on the use of manufacturing loads for ancillary services. The same plant also provides 75 MW of interruptible load, which has been dispatched around 55 times per year for an average length of 42 minutes  \cite{Todd2009,Todd2013}. Alcoa generates up to {\em 120,000 \$/day of additional revenue by participating in electricity markets}, and has identified potential for 10\% energy cost reductions through more targeted operations \cite{Todd2013}. Based on data from CAISO, a system providing 10 MW of regulation capacity for every hour in 2015 would have received 500,000 \$/year plus mileage payments. Regulation capacity prices currently reach up to 59 \$/MW and this number might increase as more renewable power is adopted. Moreover, shifting 10 MW of load during the 1\% most extreme prices (in the 97 to 1,621\$/MWh range) in the CAISO real-time energy market to the average price (30 \$/MWh) would yield savings of 400,000 \$/yr. The savings for large manufacturing facilities can reach millions of dollars per year. For instance, the pumping system of an oil pipeline comprised of 50 pump units with 6,500 horsepower electric motors has a load of 200 MW. Large refineries in Texas have generation facilities of up to 500 MW and usually have excess power capacity installed 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-\section{Decision-Making Setting}\label{sec:setting}
+\section{Problem Definition and Decision-Making Setting}\label{sec:setting}
 The rechargeable Li-ion batteries can be inter-connected to the power grid to provide electricity and regulation services to the grid. Electricity services imply that batteries can provide power to or draw power from the grid. Power drawn from or provided by the grid to batteries can be regulated within a certain regulation capacities (a "regulation band"). The operator of the power grid (which is called an Independent System Operator or ISO) compensates the battery-owners for both the electricity and regulation services. The goal for the battery-owners is to maximize the revenues generated from both the services.
 
 The electricity markets in California are organized in three levels of time - (1) Day-ahead market, (2) Quarter-hourly market, (3) Real-time market. The  day-ahead market has the time scale of 1 hour, quarter-hourly market has the time scale of 15 minutes and the real-time market has the time scale of 5 minutes. Here, for example, the time scale of the day-ahead market means that the electricity in day-ahead market is traded in intervals of 1 hour with the prices being constant in each interval of 1 hour and varying after the intervals. The price data in the three levels of energy markets for a day have been shown in Figure \ref{eprices}.
@@ -94,9 +94,20 @@ Cosidering the price data for a full year to be known (deterministic) we can sol
 \end{enumerate}
 
 At the end, we will compare the two solutions and investigate the advantages and disadvantages of the two approaches.
+\section{Optimization Model for Battery Systems}\label{sec:model}
+\subsection{Perfect Information Setting}
+\subsection{Optimization Under Uncertainty}
 
-\section{Illinois Case Study}\label{sec:case}
-
+\section{Computational Experiments}\label{sec:exp}
+\subsection{Full Problem}
+\subsubsection{Estimating Bounds with Perfect Information}
+\subsubsection{Estimating Bounds with Two-Stage Approximation: Restriction}
+\subsection{Receding Horizon Heuristic}
+\subsection{Stochastic Dual Dynamic Programming}
+\section{Conclusions}
+\section{Future Work}
+\subsection{Price Uncertainty}
+\subsection{Three Layer Markets}
 We use a case study in Illinois to illustrate some of the insights that can be gained with the proposed full-resolution model. The Illinois power grid transmission system  is built on a realistic data set that we have used for previous studies \cite{zavaladispatch}. The system comprises $2{,}522$ lines, $1{,}908$ nodes, $870$ demands points, and $225$ generators points (153 gas-fired generators). Because of the difficulty in obtaining natural gas infrastructure data, we construct a simulated natural gas network system using the basic topology reported by the EIA (see \url{http://www.eia.gov/pub/oil_gas/natural_gas/analysis_publications/ngpipeline/midwest.html}) and by using engineering insight to ensure gas supply to all the gas-fired power plants under nominal conditions. The gas network designed comprises 215 pipeline segments, 157 nodes, 12 compression stations, and 4 supply points. The resulting network in sketched in Figure \ref{gridgas}. 
 
 
