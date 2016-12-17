@@ -3,44 +3,44 @@ Capacity: max_strings=35307, hash_size=35307, hash_prime=30011
 The top-level auxiliary file: cs719paper.aux
 The style file: plain.bst
 Database file #1: cs719.bib
-You've used 4 entries,
+You've used 1 entry,
             2118 wiz_defined-function locations,
-            526 strings with 4798 characters,
-and the built_in function-call counts, 1640 in all, are:
-= -- 175
-> -- 56
-< -- 2
-+ -- 23
-- -- 18
-* -- 106
-:= -- 254
-add.period$ -- 14
-call.type$ -- 4
-change.case$ -- 21
+            505 strings with 4169 characters,
+and the built_in function-call counts, 355 in all, are:
+= -- 35
+> -- 13
+< -- 0
++ -- 6
+- -- 4
+* -- 28
+:= -- 64
+add.period$ -- 3
+call.type$ -- 1
+change.case$ -- 5
 chr.to.int$ -- 0
-cite$ -- 4
-duplicate$ -- 69
-empty$ -- 136
-format.name$ -- 18
-if$ -- 361
+cite$ -- 1
+duplicate$ -- 11
+empty$ -- 28
+format.name$ -- 4
+if$ -- 69
 int.to.chr$ -- 0
-int.to.str$ -- 4
-missing$ -- 4
-newline$ -- 23
-num.names$ -- 8
-pop$ -- 23
+int.to.str$ -- 1
+missing$ -- 1
+newline$ -- 8
+num.names$ -- 2
+pop$ -- 3
 preamble$ -- 1
-purify$ -- 17
+purify$ -- 4
 quote$ -- 0
-skip$ -- 52
+skip$ -- 8
 stack$ -- 0
-substring$ -- 135
-swap$ -- 23
-text.length$ -- 2
+substring$ -- 31
+swap$ -- 1
+text.length$ -- 0
 text.prefix$ -- 0
 top$ -- 0
-type$ -- 16
+type$ -- 4
 warning$ -- 0
-while$ -- 18
-width$ -- 5
-write$ -- 48
+while$ -- 4
+width$ -- 2
+write$ -- 13
