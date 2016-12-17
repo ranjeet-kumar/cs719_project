@@ -59,7 +59,7 @@ end
 function damtortm(A)
 		nrtm = 12;
     B = zeros(length(A)*nrtm);
-    for i in 1:length(A)*nrtm
+    for i in 1:length(A)
         B[(i-1)*nrtm+1:i*nrtm] = repmat([A[i]],nrtm);
     end
     return B;
@@ -107,4 +107,15 @@ end
 loadNSdata[loadNSdata.<=0] = minimum(loadvec);
 writecsv(filename,loadNSdata)
 return loadNSdata;
+end
+# Generating a random path
+function generate_sample_paths(load,NS,filename_paths)
+(nrtm,ndam,ndays_planning,N) = size(load);
+nhours_planning = ndam*ndays_planning;
+paths	= Matrix(nhours_planning,NS);
+for k in 1:nhours_planning
+  paths[k,:] = (Array{Int64,1}(rand(S,NS)))';
+end
+	writecsv(filename_paths,paths);
+	return paths,loadperm;
 end

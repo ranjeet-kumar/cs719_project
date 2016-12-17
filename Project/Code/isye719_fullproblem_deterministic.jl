@@ -10,8 +10,11 @@ loadExceldata = readcsv("DATARCoast.csv");
 rtmpriceExceldata = readcsv("AggregatedData_RTM_ALTA31GT_7_B1.csv")
 dampriceExceldata = readcsv("AggregatedData_DAM_ALTA31GT_7_B1.csv")
 
-generate_new_scenarios = 0; # 0: don't generate new scenarios for loads; 1: generate new scenarios
-makeplots = 0; # 0: Don't generate plots, 1: Generate plots
+generate_new_scenarios = 0; # 0: don't generate new scenarios for load profiles; 1: generate new scenarios
+generate_new_sample_paths = 0; # 0: don't generate new sample paths for loads; 1: generate new sample paths
+participate_rtm = 1; # 0: Don't participate in RTM; 1: participate in RTM
+participate_dam = 1; # 0: Don't participate in DAM; 1: participate in DAM
+makeplots = 1; # 0: Don't generate plots, 1: Generate plots
 
 # Defining time parameters for the model and planning schedule
 dtdam = 1; 				#time interval of each day ahead market (hourly) intervals [hour]
@@ -54,13 +57,29 @@ loadNSplanningdata = reshape(loadNSdata,nrtm,ndam,ndays_data,NS);   #kW
 rtmepr = reshape(eprrtm,nrtm,ndam,ndays);
 damepr = reshape(eprdam,ndam,ndays);
 load = loadNSplanningdata[:,:,1:ndays_planning,:]/1000; #MW
-load_mv = mean(load,4); # Mean loads for mean-value problem
 
 #Define sets to be used in the JuMP model
 rtm = 1:nrtm; # {1,2,...,12}
 dam = 1:ndam; # {1,2,...,24}
 day = 1:ndays_planning; # {1,2,...,7}
 
+if generate_new_sample_paths == 1
+# Generate NS sample paths for realizations of loads in 7 days at hourly intervals
+  (paths,loadperm) = generate_sample_paths(load,NS,"samplepaths.csv","sampleloadperm.csv");
+end
+# Take the NS sample paths for loads generated earlier
+paths = readcsv("samplepaths.csv");
+loadperm = zeros(nrtm,ndam,ndays_planning,NS);
+for s in S
+  j = 1;
+  for l in day
+    for k in dam
+        loadperm[:,k,l,s] = load[:,k,l,paths[j,s]];
+        j = j+1;
+    end
+  end
+end
+loadperm_mv = mean(loadperm,4); # Mean loads for mean-value problem
 
 ################ Mean Value Model ##################
 tic()
@@ -80,9 +99,9 @@ mv = Model(solver = GurobiSolver(Threads=2))
 		@constraint(mv, rtmEBalance[i in rtm[2:end],k in dam,l in day], ebat[i,k,l] == ebat[i-1,k,l] - 1/eff*Pnet[i,k,l]*dtrtm)	#Dynamics constraint
 		@constraint(mv, damEBalance[i=rtm[1],k in dam[2:end],iend=rtm[end],l in day], ebat[i,k,l] == ebat[iend,k-1,l] - 1/eff*Pnet[i,k,l]*dtrtm)	#Dynamics constraint
 		@constraint(mv, dayEBalance[i=rtm[1],k=dam[1],iend=rtm[end],kend=dam[end],l in day[2:end]], ebat[i,k,l] == ebat[iend,kend,l-1] - 1/eff*Pnet[i,k,l]*dtrtm)	#Dynamics constraint
-		@constraint(mv, UnmetLoad[i in rtm,k in dam,l in day], suppliedload[i,k,l] + unmetload[i,k,l] >=  load_mv[i,k,l])
-		@constraint(mv, BoundSupplied[i in rtm,k in dam,l in day], suppliedload[i,k,l] <= load_mv[i,k,l])
-		@constraint(mv, BoundUnmet[i in rtm,k in dam,l in day], unmetload[i,k,l] <= load_mv[i,k,l])
+		@constraint(mv, UnmetLoad[i in rtm,k in dam,l in day], suppliedload[i,k,l] + unmetload[i,k,l] >=  loadperm_mv[i,k,l])
+		@constraint(mv, BoundSupplied[i in rtm,k in dam,l in day], suppliedload[i,k,l] <= loadperm_mv[i,k,l])
+		@constraint(mv, BoundUnmet[i in rtm,k in dam,l in day], unmetload[i,k,l] <= loadperm_mv[i,k,l])
 		#=    @constraint(mv, RTMRamp1[i in rtm[2:end],k in dam,l in day], Pnet[i,k,l]  - Pnet[i-1,k,l] <= rampmax*dtrtm)   #Ramp discharge constraint at each time
 		@constraint(mv, RTMRamp2[i in rtm[2:end],k in dam,l in day], Pnet[i,k,l]  - Pnet[i-1,k,l] >= -rampmax*dtrtm)   #Ramp discharge constraint at each time
 		@constraint(mv, DAMRamp1[i in rtm[1],k in dam[2:end],iend=rtm[end],l in day], Pnet[i,k,l] - Pnet[iend,k-1,l] <= rampmax*dtrtm)   #Ramp discharge constraint at each time
@@ -98,6 +117,12 @@ mv = Model(solver = GurobiSolver(Threads=2))
 		# Non-anticipativity constraints for first stage variables
 		@constraint(mv, Nonant_PDAM[k in dam,l in day], Pdam[k,l] == Pdam[k,l])
 		@objective(mv, Min, -profittotal + unmetcost)
+		if participate_dam == 0
+      @constraint(m, NoDAM[k in dam,l in day, s in S], Pdam[k,l,s] == 0)
+    end
+    if participate_rtm == 0
+      @constraint(m, NoRTM[i in rtm,k in dam,l in day, s in S], Prtm[i,k,l,s] == 0)
+    end
 status = solve(mv);
 Pdam_mv = getvalue(getvariable(mv,:Pdam));
 
@@ -112,19 +137,18 @@ m_d = Model(solver = GurobiSolver(Threads=2))
 		@variable(m_d, suppliedload[rtm,dam,day,S] >= 0)
 		@variable(m_d, unmetload[rtm,dam,day,S] >= 0)
 		@expression(m_d, Pnet[i in rtm,k in dam,l in day,s in S], Prtm[i,k,l,s] + Pdam[k,l,s] + suppliedload[i,k,l,s])    #Net power discharged from battery in all 5-min interval, kW
-		@variable(m_d, profitErtm[rtm,dam,day,S])# >= 0)				        #Profit from the real time market, USD
-		@variable(m_d, profitEdam[dam,day,S])# >= 0)	        			#Profit from the day ahead market, USD
-		@variable(m_d, profittotal[S])# >= 0)		        	#Total profit in the day, USD
+		@variable(m_d, profitErtm[rtm,dam,day,S])				        #Profit from the real time market, USD
+		@variable(m_d, profitEdam[dam,day,S])	        			#Profit from the day ahead market, USD
+		@variable(m_d, profittotal[S])		        	#Total profit in the day, USD
 		@variable(m_d, unmetcost[S])
 
 		@constraint(m_d, InitialEnergy[s in S], ebat[1,1,1,s] == ebat0 - 1/eff*Pnet[1,1,1,s]*dtrtm)	#Inital energy in the battery
-		#    @constraint(m_d, EndSOC[i in rtm,k in dam,l in day,s in S], soc[i,k,l,s] >= socend)		#Constraint on SOC at the end of the day
 		@constraint(m_d, rtmEBalance[i in rtm[2:end],k in dam,l in day,s in S], ebat[i,k,l,s] == ebat[i-1,k,l,s] - 1/eff*Pnet[i,k,l,s]*dtrtm)	#Dynamics constraint
 		@constraint(m_d, damEBalance[i=rtm[1],k in dam[2:end],iend=rtm[end],l in day,s in S], ebat[i,k,l,s] == ebat[iend,k-1,l,s] - 1/eff*Pnet[i,k,l,s]*dtrtm)	#Dynamics constraint
 		@constraint(m_d, dayEBalance[i=rtm[1],k=dam[1],iend=rtm[end],kend=dam[end],l in day[2:end],s in S], ebat[i,k,l,s] == ebat[iend,kend,l-1,s] - 1/eff*Pnet[i,k,l,s]*dtrtm)	#Dynamics constraint
-		@constraint(m_d, UnmetLoad[i in rtm,k in dam,l in day, s in S], suppliedload[i,k,l,s] + unmetload[i,k,l,s] >=  load[i,k,l,s])
-		@constraint(m_d, BoundSupplied[i in rtm,k in dam,l in day,s in S], suppliedload[i,k,l,s] <= load[i,k,l,s])
-		@constraint(m_d, BoundUnmet[i in rtm,k in dam,l in day,s in S], unmetload[i,k,l,s] <= load[i,k,l,s])
+		@constraint(m_d, UnmetLoad[i in rtm,k in dam,l in day, s in S], suppliedload[i,k,l,s] + unmetload[i,k,l,s] >=  loadperm[i,k,l,s])
+		@constraint(m_d, BoundSupplied[i in rtm,k in dam,l in day,s in S], suppliedload[i,k,l,s] <= loadperm[i,k,l,s])
+		@constraint(m_d, BoundUnmet[i in rtm,k in dam,l in day,s in S], unmetload[i,k,l,s] <= loadperm[i,k,l,s])
 		#=    @constraint(m_d, RTMRamp1[i in rtm[2:end],k in dam,l in day,s in S], Pnet[i,k,l,s]  - Pnet[i-1,k,l,s] <= rampmax*dtrtm)   #Ramp discharge constraint at each time
 		@constraint(m_d, RTMRamp2[i in rtm[2:end],k in dam,l in day,s in S], Pnet[i,k,l,s]  - Pnet[i-1,k,l,s] >= -rampmax*dtrtm)   #Ramp discharge constraint at each time
 		@constraint(m_d, DAMRamp1[i in rtm[1],k in dam[2:end],iend=rtm[end],l in day,s in S], Pnet[i,k,l,s] - Pnet[iend,k-1,l,s] <= rampmax*dtrtm)   #Ramp discharge constraint at each time
@@ -140,7 +164,6 @@ m_d = Model(solver = GurobiSolver(Threads=2))
     # Fixing first stage variables at mean-value solution
 		@constraint(m_d, Fix_PDAM[k in dam,l in day,s in S], Pdam[k,l,s] == Pdam_mv[k,l])
     @objective(m_d, Min, (1/NS)*sum{-profittotal[s] + unmetcost[s], s in S})
-#    print(m)
     status = solve(m_d)
 
 time_taken_dt_fullproblem = toc();

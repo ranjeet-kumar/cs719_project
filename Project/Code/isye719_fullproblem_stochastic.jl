@@ -10,8 +10,11 @@ loadExceldata = readcsv("DATARCoast.csv");
 rtmpriceExceldata = readcsv("AggregatedData_RTM_ALTA31GT_7_B1.csv")
 dampriceExceldata = readcsv("AggregatedData_DAM_ALTA31GT_7_B1.csv")
 
-generate_new_scenarios = 0; # 0: don't generate new scenarios for loads; 1: generate new scenarios
-makeplots = 0; # 0: Don't generate plots, 1: Generate plots
+generate_new_scenarios = 0; # 0: don't generate new scenarios for load profiles; 1: generate new scenarios
+generate_new_sample_paths = 0; # 0: don't generate new sample paths for loads; 1: generate new sample paths
+participate_rtm = 1; # 0: Don't participate in RTM; 1: participate in RTM
+participate_dam = 1; # 0: Don't participate in DAM; 1: participate in DAM
+makeplots = 1; # 0: Don't generate plots, 1: Generate plots
 
 # Defining time parameters for the model and planning schedule
 dtdam = 1; 				#time interval of each day ahead market (hourly) intervals [hour]
@@ -60,6 +63,22 @@ rtm = 1:nrtm; # {1,2,...,12}
 dam = 1:ndam; # {1,2,...,24}
 day = 1:ndays_planning; # {1,2,...,7}
 
+if generate_new_sample_paths == 1
+# Generate NS sample paths for realizations of loads in 7 days at hourly intervals
+  (paths,loadperm) = generate_sample_paths(load,NS,"samplepaths.csv","sampleloadperm.csv");
+end
+# Take the NS sample paths for loads generated earlier
+paths = readcsv("samplepaths.csv");
+loadperm = zeros(nrtm,ndam,ndays_planning,NS);
+for s in S
+  j = 1;
+  for l in day
+    for k in dam
+        loadperm[:,k,l,s] = load[:,k,l,paths[j,s]];
+        j = j+1;
+    end
+  end
+end
 
 ################ Model ##################
 tic()
@@ -74,14 +93,13 @@ m = Model(solver = GurobiSolver(Threads=2))
     @variable(m, profitEdam[dam,day,S])	      #Profit from the day ahead market, USD
     @variable(m, profittotal[S])		        	#Total profit in the day, USD
     @variable(m, unmetcost[S])                #Cost for unmet load
-
     @constraint(m, InitialEnergy[s in S], ebat[1,1,1,s] == ebat0 - Pnet[1,1,1,s]*dtrtm)	#Inital energy in the battery
     @constraint(m, rtmEBalance[i in rtm[2:end],k in dam,l in day,s in S], ebat[i,k,l,s] == ebat[i-1,k,l,s] - Pnet[i,k,l,s]*dtrtm)	#Dynamics constraint
     @constraint(m, damEBalance[i=rtm[1],k in dam[2:end],iend=rtm[end],l in day,s in S], ebat[i,k,l,s] == ebat[iend,k-1,l,s] - Pnet[i,k,l,s]*dtrtm)	#Dynamics constraint
     @constraint(m, dayEBalance[i=rtm[1],k=dam[1],iend=rtm[end],kend=dam[end],l in day[2:end],s in S], ebat[i,k,l,s] == ebat[iend,kend,l-1,s] - Pnet[i,k,l,s]*dtrtm)	#Dynamics constraint
-    @constraint(m, UnmetLoad[i in rtm,k in dam,l in day, s in S], suppliedload[i,k,l,s] + unmetload[i,k,l,s] >=  load[i,k,l,s])
-    @constraint(m, BoundSupplied[i in rtm,k in dam,l in day,s in S], suppliedload[i,k,l,s] <= load[i,k,l,s])
-    @constraint(m, BoundUnmet[i in rtm,k in dam,l in day,s in S], unmetload[i,k,l,s] <= load[i,k,l,s])
+    @constraint(m, UnmetLoad[i in rtm,k in dam,l in day, s in S], suppliedload[i,k,l,s] + unmetload[i,k,l,s] >=  loadperm[i,k,l,s])
+    @constraint(m, BoundSupplied[i in rtm,k in dam,l in day,s in S], suppliedload[i,k,l,s] <= loadperm[i,k,l,s])
+    @constraint(m, BoundUnmet[i in rtm,k in dam,l in day,s in S], unmetload[i,k,l,s] <= loadperm[i,k,l,s])
 #=  Commenting ramping constraints
     @constraint(m, RTMRamp1[i in rtm[2:end],k in dam,l in day,s in S], Pnet[i,k,l,s]  - Pnet[i-1,k,l,s] <= rampmax*dtrtm)   #Ramp discharge constraint at each time
 		@constraint(m, RTMRamp2[i in rtm[2:end],k in dam,l in day,s in S], Pnet[i,k,l,s]  - Pnet[i-1,k,l,s] >= -rampmax*dtrtm)   #Ramp discharge constraint at each time
@@ -98,6 +116,12 @@ m = Model(solver = GurobiSolver(Threads=2))
     # Non-anticipativity constraints for first stage variables
     @constraint(m, Nonant_PDAM[k in dam,l in day,s in S], Pdam[k,l,s] == (1/NS)*sum{Pdam[k,l,s], s in S})
     @objective(m, Min, (1/NS)*sum{-profittotal[s] + unmetcost[s], s in S})
+    if participate_dam == 0
+      @constraint(m, NoDAM[k in dam,l in day, s in S], Pdam[k,l,s] == 0)
+    end
+    if participate_rtm == 0
+      @constraint(m, NoRTM[i in rtm,k in dam,l in day, s in S], Prtm[i,k,l,s] == 0)
+    end
 status = solve(m)
 time_taken_st_fullproblem = toc();
 
@@ -110,7 +134,7 @@ if makeplots == 1
 r = 5;
 # Plot of Scenarios of loads
 xplot = 0:dtrtm:dtrtm*nrtm_planning
-loadNSplot = loadNSdata[1:nrtm_planning,:];
+loadNSplot = loadNSdata[1:nrtm_planning,:]/1000; # MW
 loadNSplot = [loadNSplot;loadNSplot[end,:]];
 figure()
 plt[:get_current_fig_manager]()[:full_screen_toggle]()
@@ -121,7 +145,7 @@ end
 plot(xplot,mean(loadNSplot,2), color="blue", drawstyle="steps-post",label="Mean scenario");
 grid()
 xlim(0,nhours_planning)
-ylabel("Loads (kW)",size = 24)
+ylabel("Loads (MW)",size = 24)
 xlabel("Time (hours)",size = 24)
 tick_params(labelsize=14)
 #legend(loc="upper right",fancybox="True", shadow="True", fontsize = 15)
@@ -143,7 +167,7 @@ hold(true)
 plot(xplot,eprdamplot, color="blue", drawstyle="steps-post");
 grid()
 xlim(0,nhours_planning)
-ylabel("Energy price (\$/kWh)",size = 24)
+ylabel("Energy price (\$/MWh)",size = 24)
 tick_params(labelsize=14)
 #legend(loc="upper right",fancybox="True", shadow="True", fontsize = 15)
 subplot(2,1,2)
@@ -152,7 +176,7 @@ plot(xplot,Pdamplot, color="blue", drawstyle="steps-post");
 grid()
 xlim(0,nhours_planning)
 ylim(-1.02,1.02)
-ylabel("Net Power (kW)",size = 24)
+ylabel("DAM Power (MW)",size = 24)
 xlabel("Time (hours)",size = 24)
 tick_params(labelsize=14)
 #legend(loc="upper right",fancybox="True", shadow="True", fontsize = 15)
@@ -174,7 +198,7 @@ hold(true)
 plot(xplot,eprrtmplot, color="blue", drawstyle="steps-post");
 grid()
 xlim(0,nhours_planning)
-ylabel("Energy price (\$/kWh)",size = 24)
+ylabel("Energy price (\$/MWh)",size = 24)
 tick_params(labelsize=14)
 #legend(loc="upper right",fancybox="True", shadow="True", fontsize = 15)
 subplot(2,1,2)
@@ -185,7 +209,7 @@ end
 grid()
 xlim(0,nhours_planning)
 ylim(-1.02,1.02)
-ylabel("Net Power (kW)",size = 24)
+ylabel("RTM Power (MW)",size = 24)
 xlabel("Time (hours)",size = 24)
 tick_params(labelsize=14)
 #legend(loc="upper right",fancybox="True", shadow="True", fontsize = 15)
@@ -210,7 +234,7 @@ for s in S[r]
 end
 grid()
 xlim(0,nhours_planning)
-ylabel("Supplied & unmet loads (kW)",size = 24)
+ylabel("Supplied & unmet loads (MW)",size = 24)
 xlabel("Time (hours)",size = 24)
 tick_params(labelsize=14)
 #legend(loc="upper right",fancybox="True", shadow="True", fontsize = 15)
@@ -266,11 +290,68 @@ end
 grid()
 xlim(0,nhours_planning)
 ylim(-1.02,1.02)
-ylabel("Net discharge (kW)",size = 24)
+ylabel("Net discharge (MW)",size = 24)
 xlabel("Time (hours)",size = 24)
 tick_params(labelsize=14)
 #legend(loc="upper right",fancybox="True", shadow="True", fontsize = 15)
 savefig(string("cs719figures/netpower_fp_st.pdf"))
+close("all")
+
+# Plot of Profits from Pdam and Prtm and Total
+n3 = [ndam,ndays_planning,NS];
+profitEdamarray = convertToArray3(getvalue(getvariable(m,:profitEdam)),n3);
+profitEdamplot = reshape(profitEdamarray[:,:,1],nhours_planning);
+cumulprofitEdamplot = cumul(profitEdamplot);
+cumulprofitEdamtortmplot = damtortm(cumulprofitEdamplot);
+
+n4 = [nrtm,ndam,ndays_planning,NS];
+profitErtmarray = convertToArray4(getvalue(getvariable(m,:profitErtm)),n4);
+profitErtmplot = reshape(profitErtmarray,nrtm_planning,NS);
+profitErtmplotmean = mean(profitErtmplot,2);
+cumulprofitErtmplot = zeros(nrtm_planning,NS);
+for s in S
+  cumulprofitErtmplot[:,s] = cumul(profitErtmplot[:,s]);
+end
+cumulprofitErtmplotmean = cumul(profitErtmplotmean);
+
+
+n4 = [nrtm,ndam,ndays_planning,NS];
+eprrtmplot = eprrtm[1:nrtm_planning];
+unmetloadarray = convertToArray4(getvalue(getvariable(m,:unmetload)),n4);
+unmetloadplot = reshape(unmetloadarray,nrtm_planning,NS);
+costunmetloadplot = zeros(nrtm_planning,NS);
+cumulcostunmetloadplot = zeros(nrtm_planning,NS);
+for s in S
+  costunmetloadplot[:,s] = eprrtmplot.*unmetloadplot[:,s];
+  cumulcostunmetloadplot[:,s] = cumul(costunmetloadplot[:,s]);
+end
+cumulcostunmetloadplotmean = mean(cumulcostunmetloadplot,2);
+cumultotalprofitplot = repmat(cumulprofitEdamtortmplot,1,NS) + cumulprofitErtmplot - cumulcostunmetloadplot;
+cumultotalprofitplotmean = mean(cumultotalprofitplot,2);
+
+cumulprofitEdamtortmplot = [cumulprofitEdamtortmplot;cumulprofitEdamtortmplot[end]];
+cumulprofitErtmplotmean = [cumulprofitErtmplotmean;cumulprofitErtmplotmean[end]];
+cumulcostunmetloadplotmean = [cumulcostunmetloadplotmean;cumulcostunmetloadplotmean[end]];
+cumultotalprofitplotmean = [cumultotalprofitplotmean;cumultotalprofitplotmean[end]];
+cumulprofitErtmplot = [cumulprofitErtmplot;cumulprofitErtmplot[end,:]];
+cumulcostunmetloadplot = [cumulcostunmetloadplot;cumulcostunmetloadplot[end,:]];
+cumultotalprofitplot = [cumultotalprofitplot;cumultotalprofitplot[end,:]];
+xplot = 0:dtrtm:dtrtm*nrtm_planning;
+figure()
+plt[:get_current_fig_manager]()[:full_screen_toggle]()
+hold(true)
+plot(xplot,cumulprofitEdamtortmplot, drawstyle="steps-post", color = "blue", label="Day-ahead market");
+plot(xplot,cumulprofitErtmplotmean, drawstyle="steps-post", color = "green", label="Real-time market");
+plot(xplot,cumulcostunmetloadplotmean, drawstyle="steps-post", color = "red", label="Unmet load");
+plot(xplot,cumultotalprofitplotmean, drawstyle="steps-post", color = "indigo", label="Total revenue");
+grid()
+xlim(0,nhours_planning)
+#ylim(-1.02,1.02)
+ylabel("Expected Cumulative Revenue (\$)",size = 24)
+xlabel("Time (hours)",size = 24)
+tick_params(labelsize=20)
+legend(loc="upper left",fancybox="True", shadow="True", fontsize = 15)
+savefig(string("cs719figures/cumulative_rev_fp_st.pdf"))
 close("all")
 
 end # End if makeplots
