@@ -95,6 +95,58 @@ In the U.S., generators/loads provide the hierarchical market structure with add
 
 \section{Optimization Model for Battery Systems}\label{sec:model}
 \subsection{Perfect Information Setting}
+The optimization model for each day can be formulated as follows:\\
+\paragraph{Sets:}
+\begin{subequations}
+\begin{align}
+R := \{1,..,n_r\},\,\; D :=  \{1,..,n_d\}
+\end{align}
+\end{subequations}
+Here, R is the set of time indices for the real-time subintervals within each quarter-hour interval, so $n_r=12$, so D is the set of time indices for the hourly intervals within each day, so $n_d=24$.\\
+\paragraph{Indices:}
+\begin{subequations}
+\begin{align}
+i \in R, \;\; k \in D
+\end{align}
+\end{subequations}
+\paragraph{Constraints for each day in the model:}
+\begin{subequations}
+\begin{align}
+&P_{{net}_{i,k}} = P_{i} + P_{i,k} + L_{i,k}\\
+\end{align}
+\label{eq:Pnet}
+\end{subequations}
+\begin{subequations}
+\begin{align}
+&E_{1,1} = E_{0} - P_{{net}_{i,k}}\Delta t_r\\
+\end{align}
+\label{eq:eq1}
+\end{subequations}
+\vspace{-0.45in}
+\begin{subequations}
+\begin{align}
+E_{i,k} =&\; E_{i-1,k}- P_{{net}_{i,k}}\Delta t_r\\
+E_{1,k} =&\; E_{n_r,k}- P_{{net}_{1,k}} \Delta t_r\\
+\end{align}
+\label{eq:eq2}
+\end{subequations}
+\vspace{-0.45in}
+\begin{subequations}
+\begin{align}
+0 & \leq E_{i,j,k} \leq E_{max}\\
+-P_{max} & \leq P_{i,k} \leq P_{max}\\
+-P_{max} & \leq P_{k}\phantom{i,} \leq P_{max}\\
+\end{align}
+\label{eq:eq4}
+\end{subequations}\vspace{-0.45in}
+\begin{subequations}
+\begin{align}
+Rev_E =& \sum_{i \in R} \sum_{k \in D} \Delta t_r(\pi^E_{i,k}P_{i,k}) + \sum_{k \in D}\Delta t_d(\pi^E_{k}P_{k})\\
+\end{align}
+\label{eq5}
+\end{subequations}
+Here, the decision variables are $E$, the energy of the battery at every time interval, $P$, the net power of the battery going to the power grid in the three markets, $R^U$, the regulation up capacities in the two levels of regulation markets, $R^D$, the regulation down capacities in the two levels of regulation markets and $Rev^E$ and $Rev^R$, the revenues from the energy and regulation markets respectively. The three subscripted indices in $P$, $R^U$ and $R^D$ variables mean that they are for the real-time market, the two subscripted indices in $P$, $R^U$ and $R^D$ variables mean that they are for the quarter-hourly market and the one subscripted index in $P$, $R^U$ and $R^D$ variables mean that they are for the day-ahead market. $\pi$'s are the prices which are known parameters in the model, the superscript on $\pi$ denotes the quantity which it is the price of and subscripts on $\pi$ denotes the level of market of which it is the price.
+
 \subsection{Optimization Under Uncertainty}
 
 \section{Computational Experiments}\label{sec:exp}
@@ -168,7 +220,7 @@ In this case study, we sample 50 scenario paths for the full week.
 
 
 \subsubsection{Estimating Bounds with Perfect Information}
-\subsubsection{Estimating Bounds with Two-Stage Approximation: Restriction}
+\subsubsection{Estimating Bounds with Two-Stage 	Approximation: Restriction}
 \subsection{Receding Horizon Heuristic}
 We sample 50 paths upto next 24 hours horizon 
 \subsection{Stochastic Dual Dynamic Programming}
