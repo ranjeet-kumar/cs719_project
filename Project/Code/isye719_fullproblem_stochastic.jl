@@ -12,9 +12,10 @@ dampriceExceldata = readcsv("AggregatedData_DAM_ALTA31GT_7_B1.csv")
 
 generate_new_scenarios = 0; # 0: don't generate new scenarios for load profiles; 1: generate new scenarios
 generate_new_sample_paths = 0; # 0: don't generate new sample paths for loads; 1: generate new sample paths
-participate_rtm = 1; # 0: Don't participate in RTM; 1: participate in RTM
+participate_rtm = 0; # 0: Don't participate in RTM; 1: participate in RTM
 participate_dam = 1; # 0: Don't participate in DAM; 1: participate in DAM
 makeplots = 1; # 0: Don't generate plots, 1: Generate plots
+figuredirectory = string(pwd(),"/cs719figures/onlydam");
 
 # Defining time parameters for the model and planning schedule
 dtdam = 1; 				#time interval of each day ahead market (hourly) intervals [hour]
@@ -149,7 +150,7 @@ ylabel("Loads (MW)",size = 24)
 xlabel("Time (hours)",size = 24)
 tick_params(labelsize=14)
 #legend(loc="upper right",fancybox="True", shadow="True", fontsize = 15)
-savefig(string("cs719figures/loads_scenarios.pdf"))
+savefig(string(figuredirectory,"/loads_scenarios.pdf"))
 close("all")
 
 # Plot of Pdam
@@ -180,7 +181,7 @@ ylabel("DAM Power (MW)",size = 24)
 xlabel("Time (hours)",size = 24)
 tick_params(labelsize=14)
 #legend(loc="upper right",fancybox="True", shadow="True", fontsize = 15)
-savefig(string("cs719figures/Pdam_fp_st.pdf"))
+savefig(string(figuredirectory,"/Pdam_fp_st.pdf"))
 close("all")
 
 # Plot of Prtm
@@ -213,7 +214,7 @@ ylabel("RTM Power (MW)",size = 24)
 xlabel("Time (hours)",size = 24)
 tick_params(labelsize=14)
 #legend(loc="upper right",fancybox="True", shadow="True", fontsize = 15)
-savefig(string("cs719figures/Prtm_fp_st.pdf"))
+savefig(string(figuredirectory,"/Prtm_fp_st.pdf"))
 close("all")
 
 # Plot of supplied load and unmet load
@@ -238,7 +239,7 @@ ylabel("Supplied & unmet loads (MW)",size = 24)
 xlabel("Time (hours)",size = 24)
 tick_params(labelsize=14)
 #legend(loc="upper right",fancybox="True", shadow="True", fontsize = 15)
-savefig(string("cs719figures/supp_unmet_fp_st.pdf"))
+savefig(string(figuredirectory,"/supp_unmet_fp_st.pdf"))
 close("all")
 
 
@@ -261,7 +262,7 @@ ylabel("State of charge (%)",size = 24)
 xlabel("Time (hours)",size = 24)
 tick_params(labelsize=14)
 #legend(loc="upper right",fancybox="True", shadow="True", fontsize = 15)
-savefig(string("cs719figures/soc_fp_st.pdf"))
+savefig(string(figuredirectory,"/soc_fp_st.pdf"))
 close("all")
 
 # Pnet, regulation bands calculation
@@ -294,7 +295,7 @@ ylabel("Net discharge (MW)",size = 24)
 xlabel("Time (hours)",size = 24)
 tick_params(labelsize=14)
 #legend(loc="upper right",fancybox="True", shadow="True", fontsize = 15)
-savefig(string("cs719figures/netpower_fp_st.pdf"))
+savefig(string(figuredirectory,"/netpower_fp_st.pdf"))
 close("all")
 
 # Plot of Profits from Pdam and Prtm and Total
@@ -350,8 +351,8 @@ xlim(0,nhours_planning)
 ylabel("Expected Cumulative Revenue (\$)",size = 24)
 xlabel("Time (hours)",size = 24)
 tick_params(labelsize=20)
-legend(loc="upper left",fancybox="True", shadow="True", fontsize = 15)
-savefig(string("cs719figures/cumulative_rev_fp_st.pdf"))
+legend(loc="lower left",fancybox="True", shadow="True", fontsize = 15)
+savefig(string(figuredirectory,"/cumulative_rev_fp_st.pdf"))
 close("all")
 
 end # End if makeplots
