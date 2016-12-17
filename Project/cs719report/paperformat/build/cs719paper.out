@@ -1,7 +1,7 @@
 \BOOKMARK [1][-]{section.1}{Introduction}{}% 1
 \BOOKMARK [1][-]{section.2}{Problem Definition and Decision-Making Setting}{}% 2
 \BOOKMARK [1][-]{section.3}{Optimization Model for Battery Systems}{}% 3
-\BOOKMARK [2][-]{subsection.3.1}{Perfect Information Setting}{section.3}% 4
+\BOOKMARK [2][-]{subsection.3.1}{Deterministic Setting}{section.3}% 4
 \BOOKMARK [2][-]{subsection.3.2}{Optimization Under Uncertainty}{section.3}% 5
 \BOOKMARK [1][-]{section.4}{Computational Experiments}{}% 6
 \BOOKMARK [2][-]{subsection.4.1}{Full Problem}{section.4}% 7

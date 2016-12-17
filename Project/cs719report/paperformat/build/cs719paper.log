@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.14159265-2.6-1.40.17 (TeX Live 2016) (preloaded format=pdflatex 2016.8.2)  16 DEC 2016 22:43
+This is pdfTeX, Version 3.14159265-2.6-1.40.17 (TeX Live 2016) (preloaded format=pdflatex 2016.8.2)  17 DEC 2016 13:53
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -408,7 +408,23 @@ Package: lineno 2005/11/02 line numbers on paragraphs v4.41
 \bframebox=\box38
 LaTeX Info: Redefining \\ on input line 3056.
 )
-(build/cs719paper.aux)
+(build/cs719paper.aux
+
+LaTeX Warning: Label `eq:Pnet' multiply defined.
+
+
+LaTeX Warning: Label `eq:eq1' multiply defined.
+
+
+LaTeX Warning: Label `eq:eq2' multiply defined.
+
+
+LaTeX Warning: Label `eq:eq4' multiply defined.
+
+
+LaTeX Warning: Label `eq5' multiply defined.
+
+)
 \openout1 = `cs719paper.aux'.
 
 LaTeX Font Info:    Checking defaults for OML/cmm/m/it on input line 40.
@@ -426,8 +442,7 @@ LaTeX Font Info:    ... okay on input line 40.
 LaTeX Font Info:    Checking defaults for PD1/pdf/m/n on input line 40.
 LaTeX Font Info:    ... okay on input line 40.
 LaTeX Font Info:    Try loading font information for OT1+ppl on input line 40.
-
-(/usr/local/texlive/2016/texmf-dist/tex/latex/psnfss/ot1ppl.fd
+ (/usr/local/texlive/2016/texmf-dist/tex/latex/psnfss/ot1ppl.fd
 File: ot1ppl.fd 2001/06/04 font definitions for OT1/ppl.
 )
 (/usr/local/texlive/2016/texmf-dist/tex/context/base/mkii/supp-pdf.mkii
@@ -617,245 +632,194 @@ Underfull \hbox (badness 10000) in paragraph at lines 103--106
  []
 
 [4]
-LaTeX Font Info:    Try loading font information for OMS+ppl on input line 158.
+LaTeX Font Info:    Try loading font information for OMS+ppl on input line 115.
 
  (/usr/local/texlive/2016/texmf-dist/tex/latex/psnfss/omsppl.fd
 File: omsppl.fd 
 )
 LaTeX Font Info:    Font shape `OMS/ppl/m/n' in size <10.95> not available
-(Font)              Font shape `OMS/cmsy/m/n' tried instead on input line 158.
+(Font)              Font shape `OMS/cmsy/m/n' tried instead on input line 115.
 
-<Figures/Plots/fullproblem_stoch/cumulative_rev_fp_st.pdf, id=268, 1156.32pt x 
+Underfull \hbox (badness 10000) in paragraph at lines 170--171
+
+ []
+
+[5]
+Underfull \hbox (badness 10000) in paragraph at lines 175--178
+
+ []
+
+[6]
+<Figures/Plots/fullproblem_stoch/cumulative_rev_fp_st.pdf, id=319, 1156.32pt x 
 598.03424pt>
 File: Figures/Plots/fullproblem_stoch/cumulative_rev_fp_st.pdf Graphic file (ty
 pe pdf)
  <use Figures/Plots/fullproblem_stoch/cumulative_rev_fp_st.pdf>
 Package pdftex.def Info: Figures/Plots/fullproblem_stoch/cumulative_rev_fp_st.p
-df used on input line 168.
+df used on input line 238.
 (pdftex.def)             Requested size: 289.07999pt x 149.5082pt.
 
-
-LaTeX Warning: `!h' float specifier changed to `!ht'.
-
-
-<Figures/Plots/fullproblem_stoch/netpower_fp_st.pdf, id=269, 1156.32pt x 598.03
+<Figures/Plots/fullproblem_stoch/netpower_fp_st.pdf, id=320, 1156.32pt x 598.03
 424pt>
 File: Figures/Plots/fullproblem_stoch/netpower_fp_st.pdf Graphic file (type pdf
 )
  <use Figures/Plots/fullproblem_stoch/netpower_fp_st.pdf>
 Package pdftex.def Info: Figures/Plots/fullproblem_stoch/netpower_fp_st.pdf use
-d on input line 172.
+d on input line 242.
 (pdftex.def)             Requested size: 289.07999pt x 149.5082pt.
 
 
 LaTeX Warning: `!h' float specifier changed to `!ht'.
 
 
-<Figures/Plots/fullproblem_stoch/Pdam_fp_st.pdf, id=270, 1156.32pt x 598.03424p
+<Figures/Plots/fullproblem_stoch/Pdam_fp_st.pdf, id=321, 1156.32pt x 598.03424p
 t>
 File: Figures/Plots/fullproblem_stoch/Pdam_fp_st.pdf Graphic file (type pdf)
  <use Figures/Plots/fullproblem_stoch/Pdam_fp_st.pdf>
 Package pdftex.def Info: Figures/Plots/fullproblem_stoch/Pdam_fp_st.pdf used on
- input line 176.
+ input line 246.
 (pdftex.def)             Requested size: 289.07999pt x 149.5082pt.
 
 
 LaTeX Warning: `!h' float specifier changed to `!ht'.
 
 
-<Figures/Plots/fullproblem_stoch/Prtm_fp_st.pdf, id=271, 1156.32pt x 598.03424p
+<Figures/Plots/fullproblem_stoch/Prtm_fp_st.pdf, id=322, 1156.32pt x 598.03424p
 t>
 File: Figures/Plots/fullproblem_stoch/Prtm_fp_st.pdf Graphic file (type pdf)
  <use Figures/Plots/fullproblem_stoch/Prtm_fp_st.pdf>
 Package pdftex.def Info: Figures/Plots/fullproblem_stoch/Prtm_fp_st.pdf used on
- input line 180.
+ input line 250.
 (pdftex.def)             Requested size: 289.07999pt x 149.5082pt.
 
 
 LaTeX Warning: `!h' float specifier changed to `!ht'.
 
 
-<Figures/Plots/fullproblem_stoch/supp_unmet_fp_st.pdf, id=272, 1156.32pt x 598.
+<Figures/Plots/fullproblem_stoch/supp_unmet_fp_st.pdf, id=323, 1156.32pt x 598.
 03424pt>
 File: Figures/Plots/fullproblem_stoch/supp_unmet_fp_st.pdf Graphic file (type p
 df)
  <use Figures/Plots/fullproblem_stoch/supp_unmet_fp_st.pdf>
 Package pdftex.def Info: Figures/Plots/fullproblem_stoch/supp_unmet_fp_st.pdf u
-sed on input line 185.
+sed on input line 255.
 (pdftex.def)             Requested size: 289.07999pt x 149.5082pt.
 
 
 LaTeX Warning: `!h' float specifier changed to `!ht'.
 
 
-<Figures/Plots/fullproblem_stoch/soc_fp_st.pdf, id=273, 1156.32pt x 598.03424pt
+<Figures/Plots/fullproblem_stoch/soc_fp_st.pdf, id=324, 1156.32pt x 598.03424pt
 >
 File: Figures/Plots/fullproblem_stoch/soc_fp_st.pdf Graphic file (type pdf)
  <use Figures/Plots/fullproblem_stoch/soc_fp_st.pdf>
 Package pdftex.def Info: Figures/Plots/fullproblem_stoch/soc_fp_st.pdf used on 
-input line 190.
+input line 260.
+(pdftex.def)             Requested size: 289.07999pt x 149.5082pt.
+
+
+LaTeX Warning: `!h' float specifier changed to `!ht'.
+
+<Figures/Plots/onlydam/Pdam_fp_st.pdf, id=325, 1156.32pt x 598.03424pt>
+File: Figures/Plots/onlydam/Pdam_fp_st.pdf Graphic file (type pdf)
+
+<use Figures/Plots/onlydam/Pdam_fp_st.pdf>
+Package pdftex.def Info: Figures/Plots/onlydam/Pdam_fp_st.pdf used on input lin
+e 265.
 (pdftex.def)             Requested size: 289.07999pt x 149.5082pt.
 
 
 LaTeX Warning: `!h' float specifier changed to `!ht'.
 
 
-<Figures/Plots/fullproblem_det/cumulative_rev_fp_dt.pdf, id=274, 1156.32pt x 59
-8.03424pt>
-File: Figures/Plots/fullproblem_det/cumulative_rev_fp_dt.pdf Graphic file (type
- pdf)
- <use Figures/Plots/fullproblem_det/cumulative_rev_fp_dt.pdf>
-Package pdftex.def Info: Figures/Plots/fullproblem_det/cumulative_rev_fp_dt.pdf
- used on input line 196.
+<Figures/Plots/onlydam/cumulative_rev_fp_st.pdf, id=326, 1156.32pt x 598.03424p
+t>
+File: Figures/Plots/onlydam/cumulative_rev_fp_st.pdf Graphic file (type pdf)
+ <use Figures/Plots/onlydam/cumulative_rev_fp_st.pdf>
+Package pdftex.def Info: Figures/Plots/onlydam/cumulative_rev_fp_st.pdf used on
+ input line 270.
 (pdftex.def)             Requested size: 289.07999pt x 149.5082pt.
 
 
 LaTeX Warning: `!h' float specifier changed to `!ht'.
 
 
-<Figures/Plots/fullproblem_det/netpower_fp_dt.pdf, id=275, 1156.32pt x 598.0342
-4pt>
-File: Figures/Plots/fullproblem_det/netpower_fp_dt.pdf Graphic file (type pdf)
- <use Figures/Plots/fullproblem_det/netpower_fp_dt.pdf>
-Package pdftex.def Info: Figures/Plots/fullproblem_det/netpower_fp_dt.pdf used 
-on input line 200.
-(pdftex.def)             Requested size: 289.07999pt x 149.5082pt.
+LaTeX Warning: Reference `fig:Pdam_onlydam' on page 7 undefined on input line 2
+72.
 
 
-LaTeX Warning: `!h' float specifier changed to `!ht'.
+LaTeX Warning: Reference `fig:cumulative_rev_onlydam' on page 7 undefined on in
+put line 272.
 
 
-<Figures/Plots/fullproblem_det/Pdam_fp_dt.pdf, id=276, 1156.32pt x 598.03424pt>
-File: Figures/Plots/fullproblem_det/Pdam_fp_dt.pdf Graphic file (type pdf)
-<use Figures/Plots/fullproblem_det/Pdam_fp_dt.pdf>
-Package pdftex.def Info: Figures/Plots/fullproblem_det/Pdam_fp_dt.pdf used on i
-nput line 204.
-(pdftex.def)             Requested size: 289.07999pt x 149.5082pt.
+LaTeX Warning: Reference `fig:Pdam_fp_st' on page 7 undefined on input line 272
+.
 
 
-LaTeX Warning: `!h' float specifier changed to `!ht'.
+LaTeX Warning: Reference `fig:Prtm_fp_st' on page 7 undefined on input line 272
+.
 
+[7 <./Figures/Plots/fullproblem_stoch/cumulative_rev_fp_st.pdf>]
+Underfull \vbox (badness 1205) has occurred while \output is active []
 
-<Figures/Plots/fullproblem_det/Prtm_fp_dt.pdf, id=277, 1156.32pt x 598.03424pt>
-File: Figures/Plots/fullproblem_det/Prtm_fp_dt.pdf Graphic file (type pdf)
-<use Figures/Plots/fullproblem_det/Prtm_fp_dt.pdf>
-Package pdftex.def Info: Figures/Plots/fullproblem_det/Prtm_fp_dt.pdf used on i
-nput line 208.
-(pdftex.def)             Requested size: 289.07999pt x 149.5082pt.
-
-
-LaTeX Warning: `!h' float specifier changed to `!ht'.
-
-
-<Figures/Plots/fullproblem_det/supp_unmet_fp_dt.pdf, id=278, 1156.32pt x 598.03
-424pt>
-File: Figures/Plots/fullproblem_det/supp_unmet_fp_dt.pdf Graphic file (type pdf
-)
- <use Figures/Plots/fullproblem_det/supp_unmet_fp_dt.pdf>
-Package pdftex.def Info: Figures/Plots/fullproblem_det/supp_unmet_fp_dt.pdf use
-d on input line 213.
-(pdftex.def)             Requested size: 289.07999pt x 149.5082pt.
-
-
-LaTeX Warning: `!h' float specifier changed to `!ht'.
-
-
-<Figures/Plots/fullproblem_det/soc_fp_dt.pdf, id=279, 1156.32pt x 598.03424pt>
-File: Figures/Plots/fullproblem_det/soc_fp_dt.pdf Graphic file (type pdf)
-
-<use Figures/Plots/fullproblem_det/soc_fp_dt.pdf>
-Package pdftex.def Info: Figures/Plots/fullproblem_det/soc_fp_dt.pdf used on in
-put line 218.
-(pdftex.def)             Requested size: 289.07999pt x 149.5082pt.
-
-
-LaTeX Warning: `!h' float specifier changed to `!ht'.
-
-[5]
-Underfull \vbox (badness 10000) has occurred while \output is active []
-
- [6 <./Figures/Plots/fullproblem_stoch/cumulative_rev_fp_st.pdf> <./Figures/Plo
-ts/fullproblem_stoch/netpower_fp_st.pdf
-
-pdfTeX warning: /usr/local/texlive/2016/bin/x86_64-darwin/pdflatex (file ./Figu
-res/Plots/fullproblem_stoch/netpower_fp_st.pdf): PDF inclusion: multiple pdfs w
-ith page group included in a single page
-> <./Figures/Plots/fullproblem_stoch/Pdam_fp_st.pdf
+ [8 <./Figures/Plots/fullproblem_stoch/netpower_fp_st.pdf> <./Figures/Plots/ful
+lproblem_stoch/Pdam_fp_st.pdf
 
 pdfTeX warning: /usr/local/texlive/2016/bin/x86_64-darwin/pdflatex (file ./Figu
 res/Plots/fullproblem_stoch/Pdam_fp_st.pdf): PDF inclusion: multiple pdfs with 
 page group included in a single page
->]
-Overfull \vbox (42.17226pt too high) has occurred while \output is active []
-
-
-[7 <./Figures/Plots/fullproblem_stoch/Prtm_fp_st.pdf> <./Figures/Plots/fullprob
-lem_stoch/supp_unmet_fp_st.pdf
+> <./Figures/Plots/fullproblem_stoch/Prtm_fp_st.pdf
 
 pdfTeX warning: /usr/local/texlive/2016/bin/x86_64-darwin/pdflatex (file ./Figu
-res/Plots/fullproblem_stoch/supp_unmet_fp_st.pdf): PDF inclusion: multiple pdfs
- with page group included in a single page
-> <./Figures/Plots/fullproblem_stoch/soc_fp_st.pdf
+res/Plots/fullproblem_stoch/Prtm_fp_st.pdf): PDF inclusion: multiple pdfs with 
+page group included in a single page
+>]
+Underfull \vbox (badness 1205) has occurred while \output is active []
+
+ [9 <./Figures/Plots/fullproblem_stoch/supp_unmet_fp_st.pdf> <./Figures/Plots/f
+ullproblem_stoch/soc_fp_st.pdf
 
 pdfTeX warning: /usr/local/texlive/2016/bin/x86_64-darwin/pdflatex (file ./Figu
 res/Plots/fullproblem_stoch/soc_fp_st.pdf): PDF inclusion: multiple pdfs with p
 age group included in a single page
+> <./Figures/Plots/onlydam/Pdam_fp_st.pdf
+
+pdfTeX warning: /usr/local/texlive/2016/bin/x86_64-darwin/pdflatex (file ./Figu
+res/Plots/onlydam/Pdam_fp_st.pdf): PDF inclusion: multiple pdfs with page group
+ included in a single page
 >] (./cs719paper.bbl
 Underfull \vbox (badness 10000) has occurred while \output is active []
 
- [8 <./Figures/Plots/fullproblem_det/cumulative_rev_fp_dt.pdf> <./Figures/Plots
-/fullproblem_det/netpower_fp_dt.pdf
-
-pdfTeX warning: /usr/local/texlive/2016/bin/x86_64-darwin/pdflatex (file ./Figu
-res/Plots/fullproblem_det/netpower_fp_dt.pdf): PDF inclusion: multiple pdfs wit
-h page group included in a single page
-> <./Figures/Plots/fullproblem_det/Pdam_fp_dt.pdf
-
-pdfTeX warning: /usr/local/texlive/2016/bin/x86_64-darwin/pdflatex (file ./Figu
-res/Plots/fullproblem_det/Pdam_fp_dt.pdf): PDF inclusion: multiple pdfs with pa
-ge group included in a single page
->]
-Overfull \vbox (135.18372pt too high) has occurred while \output is active []
-
-
-[9 <./Figures/Plots/fullproblem_det/Prtm_fp_dt.pdf> <./Figures/Plots/fullproble
-m_det/supp_unmet_fp_dt.pdf
-
-pdfTeX warning: /usr/local/texlive/2016/bin/x86_64-darwin/pdflatex (file ./Figu
-res/Plots/fullproblem_det/supp_unmet_fp_dt.pdf): PDF inclusion: multiple pdfs w
-ith page group included in a single page
-> <./Figures/Plots/fullproblem_det/soc_fp_dt.pdf
-
-pdfTeX warning: /usr/local/texlive/2016/bin/x86_64-darwin/pdflatex (file ./Figu
-res/Plots/fullproblem_det/soc_fp_dt.pdf): PDF inclusion: multiple pdfs with pag
-e group included in a single page
->])
-Package atveryend Info: Empty hook `BeforeClearDocument' on input line 236.
- [10]
-Package atveryend Info: Empty hook `AfterLastShipout' on input line 236.
+ [10 <./Figures/Plots/onlydam/cumulative_rev_fp_st.pdf>])
+Package atveryend Info: Empty hook `BeforeClearDocument' on input line 291.
+ [11]
+Package atveryend Info: Empty hook `AfterLastShipout' on input line 291.
  (build/cs719paper.aux)
-Package atveryend Info: Executing hook `AtVeryEndDocument' on input line 236.
-Package atveryend Info: Executing hook `AtEndAfterFileList' on input line 236.
+Package atveryend Info: Executing hook `AtVeryEndDocument' on input line 291.
+Package atveryend Info: Executing hook `AtEndAfterFileList' on input line 291.
 Package rerunfilecheck Info: File `cs719paper.out' has not changed.
 (rerunfilecheck)             Checksum: F02DF584E2DFB772738DD9289E8D6285;1518.
 
 
 LaTeX Warning: There were undefined references.
 
-Package atveryend Info: Empty hook `AtVeryVeryEnd' on input line 236.
+
+LaTeX Warning: There were multiply-defined labels.
+
+Package atveryend Info: Empty hook `AtVeryVeryEnd' on input line 291.
  )
 (\end occurred inside a group at level 1)
 
 ### simple group (level 1) entered at line 1061 ({)
 ### bottom level 
 Here is how much of TeX's memory you used:
- 9313 strings out of 493013
- 142125 string characters out of 6133344
- 256801 words of memory out of 5000000
- 12630 multiletter control sequences out of 15000+600000
- 20792 words of font info for 59 fonts, out of 8000000 for 9000
+ 9328 strings out of 493013
+ 141655 string characters out of 6133344
+ 253857 words of memory out of 5000000
+ 12624 multiletter control sequences out of 15000+600000
+ 22321 words of font info for 62 fonts, out of 8000000 for 9000
  1141 hyphenation exceptions out of 8191
- 42i,11n,43p,1323b,6404s stack positions out of 5000i,500n,10000p,200000b,80000s
+ 42i,11n,43p,1512b,6404s stack positions out of 5000i,500n,10000p,200000b,80000s
 {/usr/local/texlive/2016/texmf-dist/fonts/enc/dvips/base/8r.enc
 }</usr/local/texlive/2016/texmf-dist/fonts/type1/public/amsfonts/cm/cmex10.pfb>
 </usr/local/texlive/2016/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi10.pfb><
@@ -870,10 +834,10 @@ ive/2016/texmf-dist/fonts/type1/urw/palatino/uplb8a.pfb></usr/local/texlive/201
 6/texmf-dist/fonts/type1/urw/palatino/uplbi8a.pfb></usr/local/texlive/2016/texm
 f-dist/fonts/type1/urw/palatino/uplr8a.pfb></usr/local/texlive/2016/texmf-dist/
 fonts/type1/urw/palatino/uplri8a.pfb>
-Output written on build/cs719paper.pdf (10 pages, 1723007 bytes).
+Output written on build/cs719paper.pdf (11 pages, 1561164 bytes).
 PDF statistics:
- 845 PDF objects out of 1000 (max. 8388607)
- 302 compressed objects within 4 object streams
- 74 named destinations out of 1000 (max. 500000)
- 214 words of extra memory for PDF output out of 10000 (max. 10000000)
+ 736 PDF objects out of 1000 (max. 8388607)
+ 314 compressed objects within 4 object streams
+ 100 named destinations out of 1000 (max. 500000)
+ 194 words of extra memory for PDF output out of 10000 (max. 10000000)
 
