@@ -57,47 +57,6 @@ reshape_ncolumns = Int64(floor(length(load)/reshape_nrows));
 load_estimationdata = loadvec[1:reshape_nrows*reshape_ncolumns];
 load_weekly = reshape(load_estimationdata,reshape_nrows,reshape_ncolumns);
 
-
-#=
-# Using Ledoit-Wolfe Sample Covariance Estimator
-(p,n) = size(load_weekly);
-load_weeklymean = mean(load_weekly,2);
-X = load_weekly-repmat(load_weeklymean,1,n); # Columns are 168*1 random vectors with mean 0 and covariance Sigma
-Sn = X*X'/n;
-mn = trace(Sn*eye(size(Sn)[1])')/p;
-dn2 = trace((Sn-mn*eye(size(Sn)[1]))*(Sn-mn*eye(size(Sn)[1]))')/p;
-bnbar2 = 0;
-for k = 1:n
-    bnbar2 = bnbar2 + trace((X[:,k]*X[:,k]'-Sn)*(X[:,k]*X[:,k]'-Sn)')/p;
-end
-bnbar2 = bnbar2/n^2;
-bn2 = min(bnbar2,dn2);
-an2 = dn2 - bn2;
-Snstar = bn2/dn2*eye(p) + an2/dn2*Sn; # Estimator of variance Sigma
-
-
-# Generating NS scenarios for weekly load profiles in kW
-nweeks_planning = Int64(ceil((ndays_planning/reshape_ndays)));
-loadNSdata = zeros(reshape_nrows*(nweeks_planning+1),NS);
-R = chol(Snstar);
-for j in 1:nweeks_planning+1
-    loadNSdata[(j-1)*reshape_nrows+(1:reshape_nrows),:]  = repmat(load_weeklymean,1,NS) + R'*randn(p,NS);
-end
-loadNSdata[loadNSdata.<=0] = minimum(loadvec);
-writecsv("loads_scenarios_month.csv",loadNSdata)
-
-
-ndays_data = (nweeks_planning+1)*reshape_ndays;
-loadNSplanningdata = reshape(loadNSdata,nrtm,ndam,ndays_data,NS);   #kW
-
-######################################################
-
-load1 = loadNSplanningdata/1000;   #MW
-loaddata1 = reshape(load1,nrtm*ndam*ndays_data,NS);
-
-=#
-
-
 # Loading the NS scenarios for weekly load profiles in kW generated from the fullproblem_stochastic code
 nweeks_planning = Int64(ceil((ndays_planning/reshape_ndays)));
 

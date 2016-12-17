@@ -93,7 +93,7 @@ m_sf = Model(solver = GurobiSolver(Threads=2))
 		@variable(m_sf, profitEdam[dam,day,S])# >= 0)	        			#Profit from the day ahead market, USD
 		@variable(m_sf, profittotal[S])# >= 0)		        	#Total profit in the day, USD
 		@variable(m_sf, unmetcost[S])
-		@constraint(m_sf, InitialEnergy[s in S], ebat[1,1,1,s] == ebat0 - 1/eff*Pnet[1,1,1,s]*dtrtm)	#Inital energy in the battery
+		@constraint(m_sf, InitialEnergy[s in S], ebat[1,1,1,s] == ebat0 - Pnet[1,1,1,s]*dtrtm)	#Inital energy in the battery
 		@constraint(m_sf, rtmEBalance[i in rtm[2:end],k in dam,l in day,s in S], ebat[i,k,l,s] == ebat[i-1,k,l,s] - Pnet[i,k,l,s]*dtrtm)	#Dynamics constraint
 		@constraint(m_sf, damEBalance[i=rtm[1],k in dam[2:end],iend=rtm[end],l in day,s in S], ebat[i,k,l,s] == ebat[iend,k-1,l,s] - Pnet[i,k,l,s]*dtrtm)	#Dynamics constraint
 		@constraint(m_sf, dayEBalance[i=rtm[1],k=dam[1],iend=rtm[end],kend=dam[end],l in day[2:end],s in S], ebat[i,k,l,s] == ebat[iend,kend,l-1,s] - Pnet[i,k,l,s]*dtrtm)	#Dynamics constraint

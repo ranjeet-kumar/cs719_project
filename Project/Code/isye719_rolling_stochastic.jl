@@ -178,10 +178,9 @@ for p in 1:nhours_planning
     @variable(m_rol, profittotal[S])# >= 0)		        	#Total profit in the day, USD
     @variable(m_rol, unmetcost[S])
 
-    @constraint(m_rol, InitialEnergy[s in S], ebat[1,1,s] == ebat0 - 1/eff*Pnet[1,1,s]*dtrtm)	#Inital energy in the battery
-#    @constraint(m_rol, EndSOC[i in rtm,k in dam,s in S], soc[i,k,s] >= socend)		#Constraint on SOC at the end of the day
-    @constraint(m_rol, rtmEBalance[i in rtm[2:end],k in dam,s in S], ebat[i,k,s] == ebat[i-1,k,s] - 1/eff*Pnet[i,k,s]*dtrtm)	#Dynamics constraint
-    @constraint(m_rol, damEBalance[i=rtm[1],k in dam[2:end],iend=rtm[end],s in S], ebat[i,k,s] == ebat[iend,k-1,s] - 1/eff*Pnet[i,k,s]*dtrtm)	#Dynamics constraint
+    @constraint(m_rol, InitialEnergy[s in S], ebat[1,1,s] == ebat0 - Pnet[1,1,s]*dtrtm)	#Inital energy in the battery
+    @constraint(m_rol, rtmEBalance[i in rtm[2:end],k in dam,s in S], ebat[i,k,s] == ebat[i-1,k,s] - Pnet[i,k,s]*dtrtm)	#Dynamics constraint
+    @constraint(m_rol, damEBalance[i=rtm[1],k in dam[2:end],iend=rtm[end],s in S], ebat[i,k,s] == ebat[iend,k-1,s] - Pnet[i,k,s]*dtrtm)	#Dynamics constraint
     @constraint(m_rol, UnmetLoad[i in rtm,k in dam,s in S], suppliedload[i,k,s] + unmetload[i,k,s] >=  load[i,k,s])
     @constraint(m_rol, BoundSupplied[i in rtm,k in dam,s in S], suppliedload[i,k,s] <= load[i,k,s])
     @constraint(m_rol, BoundUnmet[i in rtm,k in dam,s in S], unmetload[i,k,s] <= load[i,k,s])
@@ -198,7 +197,6 @@ for p in 1:nhours_planning
     # Non-anticipativity constraints for first stage variables
     @constraint(m_rol, Nonant_PDAM[k in dam,s in S], Pdam[k,s] == (1/NS)*sum{Pdam[k,s], s in S})
     @objective(m_rol, Min, (1/NS)*sum{-profittotal[s] + unmetcost[s], s in S})
-    #    print(m_rol)
     status = solve(m_rol)
 
 ##########################################################################
