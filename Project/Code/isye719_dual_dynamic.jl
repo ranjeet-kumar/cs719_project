@@ -1,13 +1,20 @@
 using JuMP
-using Gurobi
 using PyPlot
+using Gurobi
 
 include("helper_functions.jl")
 #############################################################################################################
+# Read load and price data from csv files
+loadExceldata = readcsv("DATARCoast.csv");
+rtmpriceExceldata = readcsv("AggregatedData_RTM_ALTA31GT_7_B1.csv")
+dampriceExceldata = readcsv("AggregatedData_DAM_ALTA31GT_7_B1.csv")
 
-loaddata = readcsv("DATARCoast.csv");
-rtmpricedata = readcsv("AggregatedData_RTM_ALTA31GT_7_B1.csv")
-dampricedata = readcsv("AggregatedData_DAM_ALTA31GT_7_B1.csv")
+generate_new_scenarios = 0; # 0: don't generate new scenarios for load profiles; 1: generate new scenarios
+generate_new_sample_paths = 0; # 0: don't generate new sample paths for loads; 1: generate new sample paths
+participate_rtm = 1; # 0: Don't participate in RTM; 1: participate in RTM
+participate_dam = 1; # 0: Don't participate in DAM; 1: participate in DAM
+makeplots = 1; # 0: Don't generate plots, 1: Generate plots
+
 rtmepricedata = rtmpricedata[:,4];
 damepricedata = dampricedata[:,4];
 damreguppricedata = dampricedata[:,5];
@@ -112,19 +119,8 @@ nrtm_planning = nhours_planning*nrtm;
 nhours_horizon = ndays_horizon*ndam;
 nrtm_horizon = nhours_horizon*nrtm;
 
-
-#=
-realized_sequence = rand(S,nhours_planning);
-writecsv("realized_sequence.csv",realized_sequence)
-=#
-
-# realized_sequence = readcsv("realized_sequence.csv")
-# realized_sequence = Vector{Int64}(ones(nhours_planning));
-
-
-
 ######################################################
-# TRYING DUAL DYNAMIC PROGRAMMING
+# STOCHASTIC DUAL DYNAMIC PROGRAMMING
 
 edamprofitlimit = P_max*(sum(damepricedata[find(damepricedata.>0)])-sum(damepricedata[find(damepricedata.<0)]));
 ertmprofitlimit = P_max*(sum(rtmepricedata[find(rtmepricedata.>0)])-sum(rtmepricedata[find(rtmepricedata.<0)]));
@@ -139,15 +135,15 @@ function forwardmodel(ebat0,L)
     @variable(m, suppliedload[rtm] >= 0)
     @variable(m, unmetload[rtm] >= 0)
     @expression(m, Pnet[i in rtm], Prtm[i] + Pdam + suppliedload[i])              #Net power discharged from battery in all 5-min interval, kW
-    @variable(m, profitErtm[rtm])# >= 0)				#Profit from the real time market, USD
-    @variable(m, profitEdam)# >= 0)	        		#Profit from the day ahead market, USD
-    @variable(m, profitregupdam)# >= 0)			        #Profit from the day ahead market, USD
-    @variable(m, profitregdowndam)# >= 0)	        		#Profit from the day ahead market, USD
-    @variable(m, profittotal)# >= 0)		                	#Total profit in the day, USD
+    @variable(m, profitErtm[rtm])				#Profit from the real time market, USD
+    @variable(m, profitEdam)	        		#Profit from the day ahead market, USD
+    @variable(m, profitregupdam)			        #Profit from the day ahead market, USD
+    @variable(m, profitregdowndam)	        		#Profit from the day ahead market, USD
+    @variable(m, profittotal)		                	#Total profit in the day, USD
     @variable(m, unmetcost)
     @variable(m, theta >= thetalimit)
-    @constraint(m, InitialEnergy, ebat[1] == ebat0 - 1/eff*Pnet[1]*dtrtm)	#Inital energy in the battery
-    @constraint(m, rtmEBalance[i in rtm[2:end]], ebat[i] == ebat[i-1] - 1/eff*Pnet[i]*dtrtm)	#Dynamics constraint
+    @constraint(m, InitialEnergy, ebat[1] == ebat0 - Pnet[1]*dtrtm)	#Inital energy in the battery
+    @constraint(m, rtmEBalance[i in rtm[2:end]], ebat[i] == ebat[i-1] - Pnet[i]*dtrtm)	#Dynamics constraint
     #=  Commenting ramping constraints
         @constraint(m, RTMRamp1[i in rtm[2:end]], Pnet[i]  - Pnet[i-1] <= rampmax*dtrtm)   #Ramp discharge constraint at each time
     		@constraint(m, RTMRamp2[i in rtm[2:end]], Pnet[i]  - Pnet[i-1] >= -rampmax*dtrtm)   #Ramp discharge constraint at each time
@@ -160,12 +156,8 @@ function forwardmodel(ebat0,L)
     @constraint(m, TotalProfit, profittotal == sum{profitErtm[i], i in rtm} + profitEdam)
     @constraint(m, UnmetCost, unmetcost == sum{rtmepr[i]*unmetload[i], i in rtm})
     @objective(m, Min, -profittotal + unmetcost + theta)
-
     return m;
-
 end
-
-
 
 function scenariosubproblem(ebat0,s)
     m = Model(solver = GurobiSolver(Threads = 2, OutputFlag = 0))
@@ -175,13 +167,13 @@ function scenariosubproblem(ebat0,s)
     @variable(m, suppliedload[rtm] >= 0)
     @variable(m, unmetload[rtm] >= 0)
     @expression(m, Pnet[i in rtm], Prtm[i] + Pdam + suppliedload[i])              #Net power discharged from battery in all 5-min interval, kW
-    @variable(m, profitErtm[rtm])# >= 0)				#Profit from the real time market, USD
-    @variable(m, profitEdam)# >= 0)	        		#Profit from the day ahead market, USD
-    @variable(m, profittotal)# >= 0)		                	#Total profit in the day, USD
+    @variable(m, profitErtm[rtm])				#Profit from the real time market, USD
+    @variable(m, profitEdam)	        		#Profit from the day ahead market, USD
+    @variable(m, profittotal)		                	#Total profit in the day, USD
     @variable(m, unmetcost)
     @variable(m, theta >= thetalimit)
-    @constraint(m, InitialEnergy, ebat[1] == ebat0 - 1/eff*Pnet[1]*dtrtm)	#Inital energy in the battery
-    @constraint(m, rtmEBalance[i in rtm[2:end]], ebat[i] == ebat[i-1] - 1/eff*Pnet[i]*dtrtm)	#Dynamics constraint
+    @constraint(m, InitialEnergy, ebat[1] == ebat0 - Pnet[1]*dtrtm)	#Inital energy in the battery
+    @constraint(m, rtmEBalance[i in rtm[2:end]], ebat[i] == ebat[i-1] - Pnet[i]*dtrtm)	#Dynamics constraint
     #=  Commenting ramping constraints
         @constraint(m, RTMRamp1[i in rtm[2:end]], Pnet[i]  - Pnet[i-1] <= rampmax*dtrtm)   #Ramp discharge constraint at each time
     		@constraint(m, RTMRamp2[i in rtm[2:end]], Pnet[i]  - Pnet[i-1] >= -rampmax*dtrtm)   #Ramp discharge constraint at each time
@@ -195,7 +187,6 @@ function scenariosubproblem(ebat0,s)
     @constraint(m, UnmetCost, unmetcost == sum{rtmepr[i]*unmetload[i], i in rtm})
     @objective(m, Min, -profittotal + unmetcost + theta)
     return m;
-
 end
 
 #Define sets to be used in the model defVar and addConstraint
@@ -221,7 +212,7 @@ node0problem = Model(solver = GurobiSolver(OutputFlag=0,Threads=2));
 solve(node0problem)
 lowerbound = getobjectivevalue(node0problem);
 
-ebat0 = ebat_max
+ebat0 = ebat_max;
 tic()
 # First iteration of Forward and backward passes
 j=1;

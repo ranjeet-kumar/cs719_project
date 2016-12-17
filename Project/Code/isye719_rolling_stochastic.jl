@@ -1,134 +1,83 @@
 using JuMP
-using Gurobi
 using PyPlot
-close("all")
+using Gurobi
 
-
-
-############# Funtions to convert JuMP returned variables to arrays ################
-
-
-function convertToArray(x)
-    y = getvalue(x)
-    n = length(y)
-    a = zeros(n)
-    for i = 1:n
-	a[i] = y[i]
-    end
-    return a
-end
-
-function convertToArray2(A,n)
-    AA = getvalue(A)
-    m = (n[1],n[2])
-    B = zeros(m)
-    for i in 1:n[1]
-	for j in 1:n[2]
-	    B[i,j] = AA[i,j]
-	end
-    end
-    return B
-end
-
-function convertToArray3(A,n)
-    AA = getvalue(A)
-    m = (n[1],n[2],n[3])
-    B = zeros(m)
-    for i in 1:n[1]
-	for j in 1:n[2]
-	    for k in 1:n[3]
-		B[i,j,k] = AA[i,j,k]
-	    end
-	end
-    end
-    return B
-end
-
+include("helper_functions.jl")
 #############################################################################################################
+# Read load and price data from csv files
+loadExceldata = readcsv("DATARCoast.csv");
+rtmpriceExceldata = readcsv("AggregatedData_RTM_ALTA31GT_7_B1.csv")
+dampriceExceldata = readcsv("AggregatedData_DAM_ALTA31GT_7_B1.csv")
 
-loaddata = readcsv("DATARCoast.csv");
-rtmpricedata = readcsv("AggregatedData_RTM_ALTA31GT_7_B1.csv")
-dampricedata = readcsv("AggregatedData_DAM_ALTA31GT_7_B1.csv")
+generate_new_scenarios = 0; # 0: don't generate new scenarios for load profiles; 1: generate new scenarios
+generate_new_sample_paths = 0; # 0: don't generate new sample paths for loads; 1: generate new sample paths
+participate_rtm = 1; # 0: Don't participate in RTM; 1: participate in RTM
+participate_dam = 1; # 0: Don't participate in DAM; 1: participate in DAM
+makeplots = 1; # 0: Don't generate plots, 1: Generate plots
 
+# Defining time parameters for the model and planning schedule
 dtdam = 1; 				#time interval of each day ahead market (hourly) intervals [hour]
-ndam = 24;				#No. of day ahead market (hourly) intervals in a day
+ndam = 24;				#No. of day-ahead market (hourly) intervals in a day
 dtrtm = 5/60;				#time interval of each real time interval [hour]
 nrtm = Int64(dtdam/dtrtm);		#No. of real time intervals in each hour
-
-nrtmpoints = ndam*nrtm;		        #Total number of points in RTM data in one day
-ndampoints = ndam;			#Total number of points in hourly data in one day
+nrtmpoints = ndam*nrtm;		    #Total number of points in RTM data in one day
+ndampoints = ndam;			  #Total number of points in hourly data in one day
+weekly_ndays = 7;         #Number of days in every week
+ndays = 365;              #Number of days data is available for
+ndays_planning = 7;       #Number of days you want to plan for
+nweeks_planning = Int64(ceil((ndays_planning/weekly_ndays)));
+nhours_planning = ndays_planning*ndam;  #Number of hours we will plan the policy for
+nrtm_planning = nhours_planning*nrtm;   #Number of rtm intervals we will plan the policy for
 
 #Model Parameters
 ebat_max = 0.5;	          #Battery capacity, MWh
 P_max = 1;	          #Maximum power, MW
+ebat0 = ebat_max;		   #Initial State of charge
 rampmin = -0.5*P_max;	          #Lower bound for ramp discharge, MW/5min
 rampmax = 0.5*P_max;  	  #Upper bound for ramp discharge, MW/5min
-eff = 1;                  #Discharging Efficiency of battery
-ebat0 = ebat_max;		   #Initial State of charge
-ebatend = ebat_max;		  #State of charge at the end of the day
-ndays = 365;              #Number of days data is available for
-ndays_planning = 7;       #Number of days you want to plan for
-nhours_planning = ndays_planning*ndam;
-nrtm_planning = nhours_planning*nrtm;
-nhours_horizon = 24;
-nrtm_horizon = nhours_horizon*nrtm;
-
 NS = 50; # Number of scenarios you want to sample from the distrbution
 S = 1:NS;
 
+# Price data
+eprrtm = rtmpriceExceldata[1:nrtmpoints*ndays,4];	 #Real Time Market price, $/MWh
+eprdam = dampriceExceldata[1:ndampoints*ndays,4];	 #Day Ahead Market price, $/MWh
 
-
-
-load = Matrix{Float64}(loaddata[2:nrtmpoints+1,2+(1:ndays)]);	#Load, MW
-load = reshape(load,nrtm,ndam,ndays);
-loadvec = vec(load);
-
-# Reshaping the data as weekly profiles
-reshape_ndays = 7;
-reshape_nrows = reshape_ndays*nrtmpoints;
-reshape_ncolumns = Int64(floor(length(load)/reshape_nrows));
-load_estimationdata = loadvec[1:reshape_nrows*reshape_ncolumns];
-load_weekly = reshape(load_estimationdata,reshape_nrows,reshape_ncolumns);
-
-
-#=
-# Using Ledoit-Wolfe Sample Covariance Estimator
-(p,n) = size(load_weekly);
-load_weeklymean = mean(load_weekly,2);
-X = load_weekly-repmat(load_weeklymean,1,n); # Columns are 168*1 random vectors with mean 0 and covariance Sigma
-Sn = X*X'/n;
-mn = trace(Sn*eye(size(Sn)[1])')/p;
-dn2 = trace((Sn-mn*eye(size(Sn)[1]))*(Sn-mn*eye(size(Sn)[1]))')/p;
-bnbar2 = 0;
-for k = 1:n
-    bnbar2 = bnbar2 + trace((X[:,k]*X[:,k]'-Sn)*(X[:,k]*X[:,k]'-Sn)')/p;
+# Generate new scenarios for loads
+loadNSdatafile = "loads_scenarios_month.csv";
+if generate_new_scenarios == 1
+  load = Matrix{Float64}(loadExceldata[2:nrtmpoints+1,2+(1:ndays)]);	#Load, MW
+  loadNSdata = generate_weekly_loads_scenarios(load,1:52,ndays_planning,NS,loadNSdatafile);
 end
-bnbar2 = bnbar2/n^2;
-bn2 = min(bnbar2,dn2);
-an2 = dn2 - bn2;
-Snstar = bn2/dn2*eye(p) + an2/dn2*Sn; # Estimator of variance Sigma
-
-
-# Generating NS scenarios for weekly load profiles in kW
-nweeks_planning = Int64(ceil((ndays_planning/reshape_ndays)));
-loadNSdata = zeros(reshape_nrows*(nweeks_planning+1),NS);
-R = chol(Snstar);
-for j in 1:nweeks_planning+1
-    loadNSdata[(j-1)*reshape_nrows+(1:reshape_nrows),:]  = repmat(load_weeklymean,1,NS) + R'*randn(p,NS);
-end
-loadNSdata[loadNSdata.<=0] = minimum(loadvec);
-writecsv("loads_scenarios_month.csv",loadNSdata)
-
-
-ndays_data = (nweeks_planning+1)*reshape_ndays;
+loadNSdata = readcsv(loadNSdatafile)
+ndays_data = (nweeks_planning+1)*weekly_ndays;
 loadNSplanningdata = reshape(loadNSdata,nrtm,ndam,ndays_data,NS);   #kW
 
-######################################################
+#Reshape the data to matrices to be used in the model
+rtmepr = reshape(eprrtm,nrtm,ndam,ndays);
+damepr = reshape(eprdam,ndam,ndays);
+load = loadNSplanningdata[:,:,1:ndays_planning,:]/1000; #MW
 
-load1 = loadNSplanningdata/1000;   #MW
-loaddata1 = reshape(load1,nrtm*ndam*ndays_data,NS);
+#Define sets to be used in the JuMP model
+rtm = 1:nrtm; # {1,2,...,12}
+dam = 1:ndam; # {1,2,...,24}
+day = 1:ndays_planning; # {1,2,...,7}
 
-=#
+if generate_new_sample_paths == 1
+# Generate NS sample paths for realizations of loads in 7 days at hourly intervals
+  (paths,loadperm) = generate_sample_paths(load,NS,"samplepaths.csv","sampleloadperm.csv");
+end
+# Take the NS sample paths for loads generated earlier
+paths = readcsv("samplepaths.csv");
+loadperm = zeros(nrtm,ndam,ndays_planning,NS);
+for s in S
+  j = 1;
+  for l in day
+    for k in dam
+        loadperm[:,k,l,s] = load[:,k,l,paths[j,s]];  #MW
+        j = j+1;
+    end
+  end
+end
 
 
 # Loading the NS scenarios for weekly load profiles in kW generated from the fullproblem_stochastic code
