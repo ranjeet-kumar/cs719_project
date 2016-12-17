@@ -1,3 +1,29 @@
-\begin{thebibliography}{}
+\begin{thebibliography}{1}
+
+\bibitem{ledoit2004well}
+Olivier Ledoit and Michael Wolf.
+\newblock A well-conditioned estimator for large-dimensional covariance
+  matrices.
+\newblock {\em Journal of multivariate analysis}, 88(2):365--411, 2004.
+
+\bibitem{zavalastochgas}
+Victor~M Zavala.
+\newblock Stochastic optimal control model for natural gas networks.
+\newblock {\em Computers \& Chemical Engineering}, 64:103--113, 2014.
+
+\bibitem{zavalapavia}
+Victor~M Zavala and Lorenz~T Biegler.
+\newblock Nonlinear programming strategies for state estimation and model
+  predictive control.
+\newblock In {\em Nonlinear model predictive control}, pages 419--432.
+  Springer, 2009.
+
+\bibitem{zavaladispatch}
+Victor~M Zavala, Audun Botterud, Emil Constantinescu, and Jianhui Wang.
+\newblock Computational and economic limitations of dispatch operations in the
+  next-generation power grid.
+\newblock In {\em Innovative Technologies for an Efficient and Reliable
+  Electricity Supply (CITRES), 2010 IEEE Conference on}, pages 401--406. IEEE,
+  2010.
 
 \end{thebibliography}
