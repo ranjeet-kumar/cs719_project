@@ -1,13 +1,13 @@
 # Fdb version 3
-["bibtex cs719paper"] 1482038621 "cs719paper.aux" "cs719paper.bbl" "cs719paper" 1482038695
+["bibtex cs719paper"] 1482043322 "cs719paper.aux" "cs719paper.bbl" "cs719paper" 1482043948
   "/usr/share/texlive/texmf-dist/bibtex/bst/base/plain.bst" 1292289607 20613 bd3fbfa9f64872b81ac57a0dd2ed855f ""
   "cs719.bib" 1481947801 8347 5ca2a19402ccc2a679408173e94187aa ""
-  "cs719paper.aux" 1482038695 9209 3209ada8fd3458951565f32418e66b59 ""
+  "cs719paper.aux" 1482043948 9367 ba412f9f8bafdd79424fe0aaad69260f ""
   "cs719paper.bcf" 0 -1 0 ""
   (generated)
-  "cs719paper.bbl"
   "cs719paper.blg"
-["pdflatex"] 1482038695 "cs719paper.tex" "cs719paper.pdf" "cs719paper" 1482038695
+  "cs719paper.bbl"
+["pdflatex"] 1482043947 "cs719paper.tex" "cs719paper.pdf" "cs719paper" 1482043948
   "/etc/texmf/web2c/texmf.cnf" 1470274592 1101 af7716885e081ab43982cab7b4672c1a ""
   "/usr/share/texlive/texmf-dist/fonts/enc/dvips/base/8r.enc" 1165713224 4850 80dc9bab7f31fb78a000ccfed0e27cab ""
   "/usr/share/texlive/texmf-dist/fonts/map/fontname/texfonts.map" 1272929888 3287 e6b82fe08f5336d4d5ebc73fb1152e87 ""
@@ -137,12 +137,12 @@
   "Figures/qhmprices.pdf" 1481908181 12583 1e5f27d195ac4116cb35dbc5f06b4002 ""
   "Figures/rtmprices.pdf" 1481908181 15013 64b7c72284ce1b85dd6d3c72377ffcc8 ""
   "Figures/scenario_tree-crop.pdf" 1482008775 20221 c02c96ecd5c7f5020f9f1b375cd99f17 ""
-  "cs719paper.aux" 1482038695 9209 3209ada8fd3458951565f32418e66b59 ""
-  "cs719paper.bbl" 1482038621 265 c02f075781d4808cda0871b335161a4e "bibtex cs719paper"
-  "cs719paper.out" 1482038695 1821 9d21ed60a392c55fd0d20cebf5ce62c8 ""
-  "cs719paper.tex" 1482038695 29875 65787714ac58bc734ef0bac4443dc119 ""
+  "cs719paper.aux" 1482043948 9367 ba412f9f8bafdd79424fe0aaad69260f ""
+  "cs719paper.bbl" 1482043323 265 c02f075781d4808cda0871b335161a4e "bibtex cs719paper"
+  "cs719paper.out" 1482043948 1874 724ff9a3243748c0cc1c0413dea1bcf3 ""
+  "cs719paper.tex" 1482043947 31303 5243140830a99bf31c96d1a1e317d6d3 ""
   (generated)
-  "cs719paper.out"
-  "cs719paper.pdf"
-  "cs719paper.log"
   "cs719paper.aux"
+  "cs719paper.out"
+  "cs719paper.log"
+  "cs719paper.pdf"

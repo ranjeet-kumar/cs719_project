@@ -218,7 +218,7 @@ P_{k,s} =& \frac{1}{N} \sum\limits_{s \in \mathcal{S}} P_{k,s}, \quad \forall k 
 
 \section{Computational Experiments}\label{sec:exp}
 
-\subsection{Full Problem}
+\subsection{Economic Potential of Different Timescales of Electricity Markets}
 In this case study, we sample 50 scenario paths (out of the $50^{168}$ possibilities) for a week's time period. We then construct a full model for for this week and use real price signals from 01/01/2015 to 01/07/2015 in California ISO \footnote{http://oasis.caiso.com/mrioasis/logon.do}. For every 1 hour interval in the model, we sample a scenario, and use the load data corresponding to that scenario for the 12 intervals (5 minutes each) in that hour. This helps to reduce the size of scenario tree (from $50^{168 \times 12}$ to $50^{168}$). We solve this model (with 50 sampled paths) 100 times to get a confidence interval on the expected revenue. We then compare this expected revenue (obtained by participating in both real time and day-ahead market) to the cases when the battery participates only in either real time or day-ahead market alone.
 \begin{table}[!ht]\centering
 \caption{Revenue Breakup from Participation in Different Markets}
@@ -239,7 +239,11 @@ None & -10,293.23 & 10,293.23 & N/A & N/A \\
 Highest revenue is earned when the battery participates in both the real time and day-ahead markets (Table \ref{tab:rev_comp}). Whereas, if it participates in just day-ahead or real time market alone, the revenue is much less or even negative (results in loss). Consider the case when it participates in only day ahead market. It is evident from Figure \ref{fig:Pdam_onlydam} and \ref{fig:cumulative_rev_onlydam} that the battery needs to charge itself (buy energy from the grid) in order to meet the building load demands. The price of energy is on average higher in day-ahead market than that in real time markets. Thus with no participation in real time market in does not have the flexibility to buy energy from the real-time market at lower prices and sell to day-ahead market (at a higher price) to make profits. The building loads need to be met in real-time (at every 5-minute interval) while the battery has the opportunity to buy or sell energy from the grid only at every hour. Thus the battery is forced to store enough energy to meet the building requirement for an hour by buying energy in hourly intervals from the day-ahead market. Whenever it has slightly excess energy available it tries to sell that energy to the day-ahead market to minimize the overall cost. 
 
 On the other hand, when it participates in both day-ahead and real-time markets, it has the flexibility to buy from the real-time market and sell to the day-ahead market while saving sufficient energy to meet the building requirement in real-time. This is possible because the real-time electricity prices are slightly lower than the day-ahead market prices on average. The real-time prices also fall below the day-ahead market prices very often (Figures \ref{fig:Pdam_fp_st} and \ref{fig:Prtm_fp_st}) and because of its fast dynamics, the battery can capture these moments by buying from real-time market and selling in day-ahead market to make profit. 
-
+conclusion: market participation in both time scales is important for maximizing the economic potential. The typical problem size in a stochastic setting (considering only 50 samples of load scenarios) for 1 week planning is of the order :
+variable: 520900
+linear constraints: 722500
+time: 37.5 sec (35 - 40 by gurobi)
+if there were more number of scenarios, the problem size would grow exponentially. thus for this simultaneous type of problem, we use advanced stochastic techniques to solve these kind of problem. and compare their performance wrt time and expected revenue.
 \begin{figure}[h!]
 \begin{center}
 \includegraphics[scale=0.4]{Figures/Plots/fullproblem_stoch/cumulative_rev_fp_st.pdf} \caption{Trajectory of cumulative revenues when battery participates in both day-ahead and real-time markets}\label{fig:cumulative_rev_fp_st}\end{center}
@@ -288,13 +292,17 @@ On the other hand, when it participates in both day-ahead and real-time markets,
 
 
 \subsubsection{Upper Bound from Mean Value Problem}
-
+total cost: -697.61
 
 \subsubsection{Estimating Bounds with Perfect Information}
+expected cost: -714.18 better than -711
 
 \subsubsection{Estimating Bounds with Two-Stage Approximation: Restriction}
- 
+expected cost: -698.92
 \subsection{Stochastic Dual Dynamic Programming}
+final lower bound : -554.88
+final upper bound : -554.79 confidence interval: [-554.57, -555.02]
+time : 825.8 sec
 \begin{figure}[h!]
 \begin{center}
 \includegraphics[scale=0.4]
