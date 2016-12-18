@@ -290,12 +290,12 @@ if makeplots == 1
   figure()
   plt[:get_current_fig_manager]()[:full_screen_toggle]()
   hold(true)
-  plot(xplot,lowerbound_Vector, color = "blue", label="Lower bound");
-  plot(xplot[1:end-1],upperbound_Vector, color = "red", label="Upper bound");
-  plot(xplot[1:end-1],upperbound_up_Vector, color = "grey",label="Confidence interval on upper bound");
-  plot(xplot[1:end-1],upperbound_down_Vector, color = "grey");
+  plot(xplot,lowerbound_Vector, color = "blue", label="Lower bound",LineWidth=2);
+  plot(xplot[1:end-1],upperbound_Vector, color = "red", label="Upper bound",LineWidth=2);
+  plot(xplot[1:end-1],upperbound_up_Vector, color = "grey",label="Confidence interval on upper bound",LineWidth=2);
+  plot(xplot[1:end-1],upperbound_down_Vector, color = "grey",LineWidth=2);
   grid()
-  ylabel("Upper & lower bounds",size = 24)
+  ylabel("Expected cost",size = 24)
   xlabel("Iteration",size = 24)
   xlim(0,220)
   ylim(-565,-540)
