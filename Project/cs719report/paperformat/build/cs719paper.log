@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.14159265-2.6-1.40.17 (TeX Live 2016) (preloaded format=pdflatex 2016.8.2)  18 DEC 2016 05:26
+This is pdfTeX, Version 3.14159265-2.6-1.40.17 (TeX Live 2016) (preloaded format=pdflatex 2016.8.2)  18 DEC 2016 10:12
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -639,132 +639,122 @@ File: Figures/Plots/fullproblem_stoch/cumulative_rev_fp_st.pdf Graphic file (ty
 pe pdf)
  <use Figures/Plots/fullproblem_stoch/cumulative_rev_fp_st.pdf>
 Package pdftex.def Info: Figures/Plots/fullproblem_stoch/cumulative_rev_fp_st.p
-df used on input line 258.
+df used on input line 262.
 (pdftex.def)             Requested size: 462.5198pt x 239.93213pt.
 
-
-LaTeX Warning: `!h' float specifier changed to `!ht'.
-
-
-<Figures/Plots/fullproblem_stoch/Pdam_fp_st.pdf, id=630, 1156.32pt x 599.84097p
+[9]
+<Figures/Plots/fullproblem_stoch/Pdam_fp_st.pdf, id=639, 1156.32pt x 599.84097p
 t>
 File: Figures/Plots/fullproblem_stoch/Pdam_fp_st.pdf Graphic file (type pdf)
  <use Figures/Plots/fullproblem_stoch/Pdam_fp_st.pdf>
 Package pdftex.def Info: Figures/Plots/fullproblem_stoch/Pdam_fp_st.pdf used on
- input line 264.
+ input line 268.
 (pdftex.def)             Requested size: 484.20988pt x 251.18095pt.
 
-<Figures/Plots/fullproblem_stoch/Prtm_fp_st.pdf, id=631, 1156.32pt x 599.84097p
+<Figures/Plots/fullproblem_stoch/Prtm_fp_st.pdf, id=640, 1156.32pt x 599.84097p
 t>
 File: Figures/Plots/fullproblem_stoch/Prtm_fp_st.pdf Graphic file (type pdf)
  <use Figures/Plots/fullproblem_stoch/Prtm_fp_st.pdf>
 Package pdftex.def Info: Figures/Plots/fullproblem_stoch/Prtm_fp_st.pdf used on
- input line 268.
+ input line 272.
 (pdftex.def)             Requested size: 484.20988pt x 251.18095pt.
 
 
 LaTeX Warning: `!h' float specifier changed to `!ht'.
 
-[9] [10 <./Figures/Plots/fullproblem_stoch/cumulative_rev_fp_st.pdf>] [11 <./Fi
-gures/Plots/fullproblem_stoch/Pdam_fp_st.pdf> <./Figures/Plots/fullproblem_stoc
-h/Prtm_fp_st.pdf
-
-pdfTeX warning: /usr/local/texlive/2016/bin/x86_64-darwin/pdflatex (file ./Figu
-res/Plots/fullproblem_stoch/Prtm_fp_st.pdf): PDF inclusion: multiple pdfs with 
-page group included in a single page
->]
-<Figures/Plots/fullproblem_stoch/supp_unmet_fp_st.pdf, id=776, 1156.32pt x 599.
+[10 <./Figures/Plots/fullproblem_stoch/cumulative_rev_fp_st.pdf>]
+<Figures/Plots/fullproblem_stoch/supp_unmet_fp_st.pdf, id=689, 1156.32pt x 599.
 84097pt>
 File: Figures/Plots/fullproblem_stoch/supp_unmet_fp_st.pdf Graphic file (type p
 df)
  <use Figures/Plots/fullproblem_stoch/supp_unmet_fp_st.pdf>
 Package pdftex.def Info: Figures/Plots/fullproblem_stoch/supp_unmet_fp_st.pdf u
-sed on input line 275.
+sed on input line 279.
 (pdftex.def)             Requested size: 462.5198pt x 239.93213pt.
 
-<Figures/Plots/fullproblem_stoch/netpower_fp_st.pdf, id=777, 1156.32pt x 599.84
+
+LaTeX Warning: `!h' float specifier changed to `!ht'.
+
+
+<Figures/Plots/fullproblem_stoch/netpower_fp_st.pdf, id=690, 1156.32pt x 599.84
 097pt>
 File: Figures/Plots/fullproblem_stoch/netpower_fp_st.pdf Graphic file (type pdf
 )
  <use Figures/Plots/fullproblem_stoch/netpower_fp_st.pdf>
 Package pdftex.def Info: Figures/Plots/fullproblem_stoch/netpower_fp_st.pdf use
-d on input line 282.
+d on input line 286.
 (pdftex.def)             Requested size: 484.20988pt x 251.18095pt.
 
-<Figures/Plots/fullproblem_stoch/soc_fp_st.pdf, id=778, 1156.32pt x 599.84097pt
+<Figures/Plots/fullproblem_stoch/soc_fp_st.pdf, id=691, 1156.32pt x 599.84097pt
 >
 File: Figures/Plots/fullproblem_stoch/soc_fp_st.pdf Graphic file (type pdf)
  <use Figures/Plots/fullproblem_stoch/soc_fp_st.pdf>
 Package pdftex.def Info: Figures/Plots/fullproblem_stoch/soc_fp_st.pdf used on 
-input line 286.
+input line 290.
 (pdftex.def)             Requested size: 484.20988pt x 251.18095pt.
 
 
 LaTeX Warning: `!h' float specifier changed to `!ht'.
 
-[12
+[11 <./Figures/Plots/fullproblem_stoch/Pdam_fp_st.pdf> <./Figures/Plots/fullpro
+blem_stoch/Prtm_fp_st.pdf
 
- <./Figures/Plots/fullproblem_stoch/supp_unmet_fp_st.pdf>]
-<Figures/Plots/onlydam/Pdam_fp_st.pdf, id=820, 1156.32pt x 599.84097pt>
-File: Figures/Plots/onlydam/Pdam_fp_st.pdf Graphic file (type pdf)
-
-<use Figures/Plots/onlydam/Pdam_fp_st.pdf>
-Package pdftex.def Info: Figures/Plots/onlydam/Pdam_fp_st.pdf used on input lin
-e 294.
-(pdftex.def)             Requested size: 289.07999pt x 149.95987pt.
-
-
-LaTeX Warning: `!h' float specifier changed to `!ht'.
-
-
-<Figures/Plots/onlydam/cumulative_rev_fp_st.pdf, id=821, 1156.32pt x 599.84097p
-t>
-File: Figures/Plots/onlydam/cumulative_rev_fp_st.pdf Graphic file (type pdf)
- <use Figures/Plots/onlydam/cumulative_rev_fp_st.pdf>
-Package pdftex.def Info: Figures/Plots/onlydam/cumulative_rev_fp_st.pdf used on
- input line 299.
-(pdftex.def)             Requested size: 289.07999pt x 149.95987pt.
-
-
-LaTeX Warning: `!h' float specifier changed to `!ht'.
-
-<Figures/Plots/dualdynamic/bounds.pdf, id=822, 1156.32pt x 600.74437pt>
-File: Figures/Plots/dualdynamic/bounds.pdf Graphic file (type pdf)
-
-<use Figures/Plots/dualdynamic/bounds.pdf>
-Package pdftex.def Info: Figures/Plots/dualdynamic/bounds.pdf used on input lin
-e 314.
-(pdftex.def)             Requested size: 462.5198pt x 240.29349pt.
-
-Underfull \vbox (badness 10000) has occurred while \output is active []
-
- [13 <./Figures/Plots/fullproblem_stoch/netpower_fp_st.pdf> <./Figures/Plots/fu
-llproblem_stoch/soc_fp_st.pdf
+pdfTeX warning: /usr/local/texlive/2016/bin/x86_64-darwin/pdflatex (file ./Figu
+res/Plots/fullproblem_stoch/Prtm_fp_st.pdf): PDF inclusion: multiple pdfs with 
+page group included in a single page
+>] [12 <./Figures/Plots/fullproblem_stoch/supp_unmet_fp_st.pdf>] [13 <./Figures
+/Plots/fullproblem_stoch/netpower_fp_st.pdf> <./Figures/Plots/fullproblem_stoch
+/soc_fp_st.pdf
 
 pdfTeX warning: /usr/local/texlive/2016/bin/x86_64-darwin/pdflatex (file ./Figu
 res/Plots/fullproblem_stoch/soc_fp_st.pdf): PDF inclusion: multiple pdfs with p
 age group included in a single page
->]
+>] <Figures/Plots/onlydam/Pdam_fp_st.pdf, id=891, 1156.32pt x 599.84097pt>
+File: Figures/Plots/onlydam/Pdam_fp_st.pdf Graphic file (type pdf)
+
+<use Figures/Plots/onlydam/Pdam_fp_st.pdf>
+Package pdftex.def Info: Figures/Plots/onlydam/Pdam_fp_st.pdf used on input lin
+e 298.
+(pdftex.def)             Requested size: 289.07999pt x 149.95987pt.
+
+<Figures/Plots/onlydam/cumulative_rev_fp_st.pdf, id=892, 1156.32pt x 599.84097p
+t>
+File: Figures/Plots/onlydam/cumulative_rev_fp_st.pdf Graphic file (type pdf)
+ <use Figures/Plots/onlydam/cumulative_rev_fp_st.pdf>
+Package pdftex.def Info: Figures/Plots/onlydam/cumulative_rev_fp_st.pdf used on
+ input line 303.
+(pdftex.def)             Requested size: 289.07999pt x 149.95987pt.
+
+<Figures/Plots/dualdynamic/bounds.pdf, id=893, 1156.32pt x 600.74437pt>
+File: Figures/Plots/dualdynamic/bounds.pdf Graphic file (type pdf)
+
+<use Figures/Plots/dualdynamic/bounds.pdf>
+Package pdftex.def Info: Figures/Plots/dualdynamic/bounds.pdf used on input lin
+e 322.
+(pdftex.def)             Requested size: 462.5198pt x 240.29349pt.
+
 
 LaTeX Warning: `!h' float specifier changed to `!ht'.
 
-[14 <./Figures/Plots/onlydam/Pdam_fp_st.pdf> <./Figures/Plots/onlydam/cumulativ
-e_rev_fp_st.pdf
+[14
+
+ <./Figures/Plots/onlydam/Pdam_fp_st.pdf> <./Figures/Plots/onlydam/cumulative_r
+ev_fp_st.pdf
 
 pdfTeX warning: /usr/local/texlive/2016/bin/x86_64-darwin/pdflatex (file ./Figu
 res/Plots/onlydam/cumulative_rev_fp_st.pdf): PDF inclusion: multiple pdfs with 
 page group included in a single page
 >] [15 <./Figures/Plots/dualdynamic/bounds.pdf>] (./cs719paper.bbl)
-Package atveryend Info: Empty hook `BeforeClearDocument' on input line 351.
+Package atveryend Info: Empty hook `BeforeClearDocument' on input line 359.
  [16]
-Package atveryend Info: Empty hook `AfterLastShipout' on input line 351.
+Package atveryend Info: Empty hook `AfterLastShipout' on input line 359.
 
 (build/cs719paper.aux)
-Package atveryend Info: Executing hook `AtVeryEndDocument' on input line 351.
-Package atveryend Info: Executing hook `AtEndAfterFileList' on input line 351.
+Package atveryend Info: Executing hook `AtVeryEndDocument' on input line 359.
+Package atveryend Info: Executing hook `AtEndAfterFileList' on input line 359.
 Package rerunfilecheck Info: File `cs719paper.out' has not changed.
-(rerunfilecheck)             Checksum: 9D21ED60A392C55FD0D20CEBF5CE62C8;1821.
-Package atveryend Info: Empty hook `AtVeryVeryEnd' on input line 351.
+(rerunfilecheck)             Checksum: 724FF9A3243748C0CC1C0413DEA1BCF3;1874.
+Package atveryend Info: Empty hook `AtVeryVeryEnd' on input line 359.
  )
 (\end occurred inside a group at level 1)
 
@@ -796,7 +786,7 @@ texmf-dist/fonts/type1/urw/palatino/uplb8a.pfb></usr/local/texlive/2016/texmf-d
 ist/fonts/type1/urw/palatino/uplbi8a.pfb></usr/local/texlive/2016/texmf-dist/fo
 nts/type1/urw/palatino/uplr8a.pfb></usr/local/texlive/2016/texmf-dist/fonts/typ
 e1/urw/palatino/uplri8a.pfb>
-Output written on build/cs719paper.pdf (16 pages, 2125015 bytes).
+Output written on build/cs719paper.pdf (16 pages, 2125711 bytes).
 PDF statistics:
  1102 PDF objects out of 1200 (max. 8388607)
  580 compressed objects within 6 object streams

@@ -14,7 +14,7 @@ generate_new_scenarios = 0; # 0: don't generate new scenarios for load profiles;
 generate_new_sample_paths = 0; # 0: don't generate new sample paths for loads; 1: generate new sample paths
 participate_rtm = 1; # 0: Don't participate in RTM; 1: participate in RTM
 participate_dam = 1; # 0: Don't participate in DAM; 1: participate in DAM
-makeplots = 1; # 0: Don't generate plots, 1: Generate plots
+makeplots = 0; # 0: Don't generate plots, 1: Generate plots
 
 # Defining time parameters for the model and planning schedule
 dtdam = 1; 				#time interval of each day ahead market (hourly) intervals [hour]
@@ -130,7 +130,8 @@ obj_st_fp_socfix = getobjectivevalue(m_sf);
 
 ###############################################################
 
-println("\nTotal Profits in stochastic socfix", getvalue(profittotal),"\n" )
+obj_st_fp_socfix_all = -convertToArray(getvalue(getvariable(m_sf,:profittotal))) + convertToArray(getvalue(getvariable(m_sf,:unmetcost)));
+
 
 if makeplots == 1
 ################# PLOTTING #################

@@ -181,6 +181,8 @@ println("\nExpected Objective with Mean Value first stage solution ", getobjecti
 
 obj_dt_fp = getobjectivevalue(m_d);
 
+obj_dt_fp_all = -convertToArray(getvalue(getvariable(m_d,:profittotal))) + convertToArray(getvalue(getvariable(m_d,:unmetcost)));
+
 
 if makeplots == 1
 ################# PLOTTING #################

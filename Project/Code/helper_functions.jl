@@ -1,10 +1,9 @@
 ######## Funtions to convert JuMP returned dictionaries to arrays ########
 function convertToArray(x)
-	y = getvalue(x)
-	n = length(y)
+	n = length(x)
 	a = zeros(n)
 	for i = 1:n
-		a[i] = y[i]
+		a[i] = x[i]
 	end
 	return a
 end
