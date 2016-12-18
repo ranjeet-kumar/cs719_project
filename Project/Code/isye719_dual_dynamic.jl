@@ -182,8 +182,8 @@ push!(policy_cost, sum(cost_hourly));
 upperbound = mean(policy_cost);
 println("Current upperbound = $(upperbound), Current lowerbound = $(lowerbound)")
 push!(upperbound_Vector,upperbound);
-upperbound_up = mean(upperbound_Vector);
-upperbound_down = mean(upperbound_Vector);
+upperbound_up = upperbound;
+upperbound_down = upperbound;
 push!(upperbound_up_Vector,upperbound_up);
 push!(upperbound_down_Vector,upperbound_down);
 
@@ -243,8 +243,8 @@ push!(policy_cost, sum(cost_hourly));
 upperbound = mean(policy_cost);
 push!(upperbound_Vector,upperbound);
 # 95% 2-sided confidence interval on upperbound
-upperbound_up = mean(upperbound_Vector) + tdistinvcdf(length(upperbound_Vector)-1, 0.975)*std(upperbound_Vector)/sqrt(length(upperbound_Vector));
-upperbound_down = mean(upperbound_Vector) -  tdistinvcdf(length(upperbound_Vector)-1, 0.975)*std(upperbound_Vector)/sqrt(length(upperbound_Vector));;
+upperbound_up = upperbound + tdistinvcdf(length(upperbound_Vector)-1, 0.975)*std(upperbound_Vector)/sqrt(length(upperbound_Vector));
+upperbound_down = upperbound -  tdistinvcdf(length(upperbound_Vector)-1, 0.975)*std(upperbound_Vector)/sqrt(length(upperbound_Vector));;
 push!(upperbound_up_Vector,upperbound_up);
 push!(upperbound_down_Vector,upperbound_down);
 
@@ -288,13 +288,33 @@ if makeplots == 1
   hold(true)
   plot(xplot,lowerbound_Vector, color = "blue", label="Lower bound");
   plot(xplot[1:end-1],upperbound_Vector, color = "red", label="Upper bound");
-  plot(xplot[1:end-1],upperbound_up_Vector, color = "grey");
+  plot(xplot[1:end-1],upperbound_up_Vector, color = "grey",label="Confidence interval on upper bound");
   plot(xplot[1:end-1],upperbound_down_Vector, color = "grey");
   grid()
   ylabel("Upper & lower bounds",size = 24)
   xlabel("Iteration",size = 24)
+  xlim(0,122)
+  ylim(-600,-555)
   tick_params(labelsize=20)
-  legend(loc="upper left",fancybox="True", shadow="True", fontsize = 15)
+  legend(loc="upper right",fancybox="True", shadow="True", fontsize = 15)
   savefig(string("cs719figures/dual_dynamic_bounds.pdf"))
   close("all")
+  figure()
+  xplot = 0:length(lowerbound_Vector)-1;
+  figure()
+  plt[:get_current_fig_manager]()[:full_screen_toggle]()
+  hold(true)
+  plot(xplot[5:end],lowerbound_Vector[5:end], color = "blue", label="Lower bound");
+  plot(xplot[6:end],upperbound_Vector[5:end], color = "red", label="Upper bound");
+  plot(xplot[6:end],upperbound_up_Vector[5:end], color = "grey",label="Confidence interval on upper bound");
+  plot(xplot[6:end],upperbound_down_Vector[5:end], color = "grey");
+  grid()
+  xlim(5,xplot[end])
+  ylabel("Upper & lower bounds",size = 24)
+  xlabel("Iteration",size = 24)
+  tick_params(labelsize=20)
+  legend(loc="upper right",fancybox="True", shadow="True", fontsize = 15)
+  savefig(string("cs719figures/dual_dynamic_bounds_zoomed.pdf"))
+  close("all")
+
 end # End makeplots
