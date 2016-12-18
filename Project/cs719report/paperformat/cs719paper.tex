@@ -106,131 +106,150 @@ Understanding the economic incentives provided by generation and load flexibilit
 
 In the U.S., generators/loads provide the hierarchical market structure with addition flexibility via \emph{regulation} and \emph{reserve} ancillary service products. 
 
-\section{Optimization Model for Battery Systems}\label{sec:model}
-\subsection{Deterministic Setting}
-First, we formulate an optimization problem to minimize the cost (or maximize revenue) for the building-battery system operating in the electricity market in a deterministic setting assuming no uncertainty in any of the market and demand quantities. In this formulation, the building-battery system participates in the market at two timescales, hourly and 5-minute intervals. Since the price and load signals are discrete, real-time prices and loads available at 5-minute intervals and day-ahead prices at hourly intervals, we make the zero-order hold assumption, i.e. we assume that these time-varying signals are constant within an interval of corresponding duration. With the assumptions, we develop the following optimization problem formulation for the system:   \\
-\paragraph{Sets:}
-\begin{subequations}
-\begin{align}
-\mathcal{T_R} := \{1,..,n_{\textrm{rtm}}\},\,\; \mathcal{T_D} :=  \{1,..,n_{\textrm{dam}}\}
-\end{align}
-\end{subequations}
-Here, $\mathcal{T_R}$ is the set of time indices corresponding to each 5-minute subintervals in the real-time market within each hour, so $n_{rtm}=12$. $\mathcal{T_D}$ is the set of time indices corresponding to the hourly intervals of the day-ahead market. $n_d$ can be chosen appropriately for any number of hours we plan to schedule the market participation policy for the building-battery system.\\
-\paragraph{Time indices:}
-\begin{subequations}
-\begin{align}
-i \in \mathcal{T_R}, \;\; k \in \mathcal{T_D}
-\end{align}
-\end{subequations}
-Each time index $i \in \mathcal{T_R}$ and $k \in \mathcal{T_D}$ in the model corresponds to the end of the respective interval. For example, index ($i,k$) corresponds to the end of the 5-minute interval between $i-1$ and $i$ within the $k^\textrm{th}$ hour and $k$ corresponds to the end of the 1-hour interval between $k-1$ and $k$.
-\paragraph{Variables in the model:}
+\section{Optimization Model for Building-Battery System}\label{sec:model}
+\subsection{Deterministic Setting}\label{subsec:deterministic}
+First, we formulate an optimization problem to minimize the cost (or maximize revenue) for the building-battery system operating in the electricity market in a deterministic setting assuming no uncertainty in any of the market and demand quantities. In this formulation, the building-battery system participates in the market at two timescales, hourly and 5-minute intervals. Since the price and load signals are discrete, real-time prices and loads available at 5-minute intervals and day-ahead prices at hourly intervals, we make the zero-order hold assumption, i.e. these time-varying signals are constant within an interval of corresponding duration of their timescale. We also assume that the energy stored in the battery before beginning of market participation is fixed at $E_{0}$. With these assumptions, we develop the optimization problem formulation for the system is described below.
+\subsubsection{Sets used in the model}
+\begin{center}
+$\mathcal{T_R} := \{1,..,n_{\textrm{rtm}}\}$\\$ \mathcal{T_D} :=  \{1,..,n_{\textrm{dam}}\}$
+\end{center}
+Here, $\mathcal{T_R}$ is the set of time indices corresponding to each 5-minute subintervals in the real-time market within each hour, so $n_{rtm}=12$. $\mathcal{T_D}$ is the set of time indices corresponding to the hourly intervals of the day-ahead market. $n_d$ can be chosen appropriately for any number of hours we plan to schedule the market participation policy for the building-battery system.
+\subsubsection{Time discretization used in the model}
+A time instance for a day-ahead market variable in the model is represented by only the index $k$ ($k \in \mathcal{T_D}$) which corresponds to the interval between hours $k-1$ and $k$. On the other hand, a time instance for a real-time variable in the model is represented by index $(i,k)$, where $i \in \mathcal{T_R}$ and $ k \in \mathcal{T_D}$. The indices $i$ and $k$ in a time instance $(i,k)$ for a real-time variable correspond to the end of the respective 5-minute interval. For example, the time instance ($5,7$) corresponds to the end of the interval between $4^{\text{th}}$ and $5^{\text{th}}$ 5-minute interval within the $7^\textrm{th}$ hour. 
+
+So, if a variable or time-varying parameter is indexed by only one index $k$ it implies that it varies at hourly intervals and belongs to the day-ahead market, whereas a variable or time-varying parameter indexed by $(i,k)$ is a real-time variable. 
+\subsubsection{Parameters in the model:}
+\begin{itemize}
+\item\textbf{Market parameters:}
+\begin{itemize}
+\item[\textbullet] $\pi_{k}, \forall k \in \mathcal{T_D}$: Electricity price in day-ahead market in the interval between hour $k-1$ to $k$
+\item[\textbullet] $\pi_{i,k}, \forall i \in \mathcal{T_R}, k \in \mathcal{T_D}$: Electricity price in real-time market in the 5-minute interval between $(i-1,k)$ and $(i,k)$ within $k^\text{th}$ hour
+\item[\textbullet] $\Delta t$: Time interval (in unit of hours) in the real-time market (which is 5 minutes)
+\end{itemize}
+\item\textbf{Battery parameters:}
+\begin{itemize}
+\item[\textbullet] $E_{max} = 0.5$ MWh: Energy storage capacity of the battery
+\item[\textbullet] $P_{max} = 0.5$ MW: Maximum discharging or charging rate of the battery
+\item[\textbullet] $E_{0} = E_{max}$: Energy stored in the battery before beginning of market participation
+\end{itemize}
+\item\textbf{Building loads:}
+\begin{itemize}
+\item[\textbullet] $L_{i,k}, \forall i \in \mathcal{T_R}, k \in \mathcal{T_D}$: Building loads in the 5-minute interval between $(i-1,k)$ and $(i,k)$ within $k^\text{th}$ hour
+\end{itemize}
+\end{itemize}
+\subsubsection{Variables in the model:}
 \begin{itemize}
 \item \textbf{Decision variables:}
 \begin{itemize}
-\item $P_{k} \forall k \in \mathcal{T_D}$ 
-\item $P_{i,k} \forall i \in \mathcal{T_R}, k \in \mathcal{T_D} $
-\item $L_{s_{i,k}} \forall i \in \mathcal{T_R}, k \in \mathcal{T_D} $
+\item[\textbullet] $P_{k}, \forall k \in \mathcal{T_D}$: Power committed by battery in day-ahead market in the interval between hour $k-1$ to $k$
+\item[\textbullet] $P_{i,k}, \forall i \in \mathcal{T_R}, k \in \mathcal{T_D}$: Power committed by battery in real-time market in the 5-minute interval between $(i-1,k)$ and $(i,k)$ within $k^\text{th}$ hour
+\item[\textbullet] $L_{s_{i,k}}, \forall i \in \mathcal{T_R}, k \in \mathcal{T_D}$: Power supplied by battery to the building in the 5-minute interval between $(i-1,k)$ and $(i,k)$ within $k^\text{th}$ hour 
 \end{itemize}
-\item \textbf{State variables:}\\
-$E_{i,k} \forall i \in \mathcal{T_R}, k \in \mathcal{T_D} $
+\item \textbf{State variables:}
+\begin{itemize}
+\item[\textbullet] $E_{i,k}, \forall i \in \mathcal{T_R}, k \in \mathcal{T_D}$: Energy stored in the battery at time $(i,k)$ (at the end of $i^{th}$ 5-minute interval within $k^\text{th}$ hour) 
 \end{itemize}
-\begin{subequations}
+\end{itemize}
+\subsubsection{Constraints and objective function}
+\begin{itemize}
+\item Net discharge (power) from the battery at any time:
 \begin{align}
-&P_{{net}_{i,k}} = P_{i} + P_{i,k} + L_{i,k}\\
+&P_{{net}_{i,k}} = P_{i} + P_{i,k} + L_{s_{i,k}}
 \end{align}
 \label{eq:Pnet}
-\end{subequations}
-
-\paragraph{Constraints for each day in the model:}
+\item Balance on the energy stored in the battery at each time
+\begin{align}
+E_{i,k} =& E_{i-1,k}- P_{{net}_{i,k}}\Delta t_r, \quad \forall i \in \mathcal{T_R}, k \in \mathcal{T_D}
+\end{align}
+\label{eq:ebalance}
+In \ref{eq:ebalance}, $E_{0,k} = E_{0}$ for $k \in \lbrace1\rbrace$ and $E_{0,k} = E_{n_{rtm},k-1}$ for $k \in \mathcal{T_R}\setminus{\lbrace1\rbrace}$. 
+\item Bounds on variables:
 \begin{subequations}
 \begin{align}
-&P_{{net}_{i,k}} = P_{k} + P_{i,k} + L_{i,k}\\
+0 & \leq E_{i,j,k} \leq E_{max}, \forall i \in \mathcal{T_R}, k \in \mathcal{T_D}\\
+-P_{max} & \leq P_{i,k} \leq P_{max}, \forall i \in \mathcal{T_R}, k \in \mathcal{T_D}\\
+-P_{max} & \leq P_{k}\phantom{i,} \leq P_{max}, \forall k \in \mathcal{T_D}\\
 \end{align}
-\label{eq:Pnet}
+\label{eq:bounds}
 \end{subequations}
-\begin{subequations}
+\item Objective Function:
 \begin{align}
-&E_{1,1} = E_{0} - P_{{net}_{i,k}}\Delta t_r\\
+\min \quad -\sum\limits_{i \in \mathcal{T_R}}\sum\limits_{k \in \mathcal{T_R}} \pi_{i,k}P_{i,k}\Delta t_r - \sum\limits_{k \in \mathcal{T_D}}\pi_{k}P_{k}\Delta t_r n_{rtm} + \sum\limits_{i \in \mathcal{T_R}}\sum\limits_{k \in \mathcal{T_R}} \pi_{i,k}(L_{i,k}-L_{s_{i,k}})\Delta t_r
 \end{align}
-\label{eq:eq1}
-\end{subequations}
-\vspace{-0.45in}
-\begin{subequations}
-\begin{align}
-E_{i,k} =&\; E_{i-1,k}- P_{{net}_{i,k}}\Delta t_r\\
-E_{1,k} =&\; E_{n_r,k}- P_{{net}_{1,k}} \Delta t_r\\
-\end{align}
-\label{eq:eq2}
-\end{subequations}
-\vspace{-0.45in}
-\begin{subequations}
-\begin{align}
-0 & \leq E_{i,j,k} \leq E_{max}\\
--P_{max} & \leq P_{i,k} \leq P_{max}\\
--P_{max} & \leq P_{k}\phantom{i,} \leq P_{max}\\
-\end{align}
-\label{eq:eq4}
-\end{subequations}\vspace{-0.45in}
-\begin{subequations}
-\begin{align}
-Rev_E =& \sum_{i \in R} \sum_{k \in D} \Delta t_r(\pi^E_{i,k}P_{i,k}) + \sum_{k \in D}\Delta t_d(\pi^E_{k}P_{k})\\
-\end{align}
-\label{eq5}
-\end{subequations}
-Here, the decision variables are $E$, the energy of the battery at every time interval, $P$, the net power of the battery going to the power grid in the three markets, $R^U$, the regulation up capacities in the two levels of regulation markets, $R^D$, the regulation down capacities in the two levels of regulation markets and $Rev^E$ and $Rev^R$, the revenues from the energy and regulation markets respectively. The three subscripted indices in $P$, $R^U$ and $R^D$ variables mean that they are for the real-time market, the two subscripted indices in $P$, $R^U$ and $R^D$ variables mean that they are for the quarter-hourly market and the one subscripted index in $P$, $R^U$ and $R^D$ variables mean that they are for the day-ahead market. $\pi$'s are the prices which are known parameters in the model, the superscript on $\pi$ denotes the quantity which it is the price of and subscripts on $\pi$ denotes the level of market of which it is the price.
+\label{objective}
+\end{itemize}
 
 \subsection{Optimization Under Uncertainty}
-The optimization model for each day can be formulated as follows:\\
-\paragraph{Sets:}
-\begin{subequations}
+Now, we consider uncertainty in the building loads and extend the optimization formulation in deterministic setting \ref{subsec:deterministic} to formulate an extensive form of stochastic optimization problem to minimize the expected cost (or maximize expected revenue) for the building-battery system. In the formulation of the problem under uncertainty, we assume all the the market participating conditions are same as in the deterministic setting except for the uncertainty in the loads. The extensive form of the stochastic optimization problem for the system is described below.
+\subsubsection{Sets used in the model}
+\begin{center}
+$\mathcal{T_R} := \{1,..,n_{\textrm{rtm}}\}$\\$ \mathcal{T_D} :=  \{1,..,n_{\textrm{dam}}\}$
+\end{center}
+Here, $\mathcal{T_R}$ is the set of time indices corresponding to each 5-minute subintervals in the real-time market within each hour, so $n_{rtm}=12$. $\mathcal{T_D}$ is the set of time indices corresponding to the hourly intervals of the day-ahead market. $n_d$ can be chosen appropriately for any number of hours we plan to schedule the market participation policy for the building-battery system.
+\subsubsection{Time discretization used in the model}
+A time instance for a day-ahead market variable in the model is represented by only the index $k$ ($k \in \mathcal{T_D}$) which corresponds to the interval between hours $k-1$ and $k$. On the other hand, a time instance for a real-time variable in the model is represented by index $(i,k)$, where $i \in \mathcal{T_R}$ and $ k \in \mathcal{T_D}$. The indices $i$ and $k$ in a time instance $(i,k)$ for a real-time variable correspond to the end of the respective 5-minute interval. For example, the time instance ($5,7$) corresponds to the end of the interval between $4^{\text{th}}$ and $5^{\text{th}}$ 5-minute interval within the $7^\textrm{th}$ hour. 
+
+So, if a variable or time-varying parameter is indexed by only one index $k$ it implies that it varies at hourly intervals and belongs to the day-ahead market, whereas a variable or time-varying parameter indexed by $(i,k)$ is a real-time variable. 
+\subsubsection{Parameters in the model:}
+\begin{itemize}
+\item\textbf{Market parameters:}
+\begin{itemize}
+\item[\textbullet] $\pi_{k}, \forall k \in \mathcal{T_D}$: Electricity price in day-ahead market in the interval between hour $k-1$ to $k$
+\item[\textbullet] $\pi_{i,k}, \forall i \in \mathcal{T_R}, k \in \mathcal{T_D}$: Electricity price in real-time market in the 5-minute interval between $(i-1,k)$ and $(i,k)$ within $k^\text{th}$ hour
+\item[\textbullet] $\Delta t$: Time interval (in unit of hours) in the real-time market (which is 5 minutes)
+\end{itemize}
+\item\textbf{Battery parameters:}
+\begin{itemize}
+\item[\textbullet] $E_{max} = 0.5$ MWh: Energy storage capacity of the battery
+\item[\textbullet] $P_{max} = 0.5$ MW: Maximum discharging or charging rate of the battery
+\item[\textbullet] $E_{0} = E_{max}$: Energy stored in the battery before beginning of market participation
+\end{itemize}
+\item\textbf{Building loads:}
+\begin{itemize}
+\item[\textbullet] $L_{i,k}, \forall i \in \mathcal{T_R}, k \in \mathcal{T_D}$: Building loads in the 5-minute interval between $(i-1,k)$ and $(i,k)$ within $k^\text{th}$ hour
+\end{itemize}
+\end{itemize}
+\subsubsection{Variables in the model:}
+\begin{itemize}
+\item \textbf{Decision variables:}
+\begin{itemize}
+\item[\textbullet] $P_{k}, \forall k \in \mathcal{T_D}$: Power committed by battery in day-ahead market in the interval between hour $k-1$ to $k$
+\item[\textbullet] $P_{i,k}, \forall i \in \mathcal{T_R}, k \in \mathcal{T_D}$: Power committed by battery in real-time market in the 5-minute interval between $(i-1,k)$ and $(i,k)$ within $k^\text{th}$ hour
+\item[\textbullet] $L_{s_{i,k}}, \forall i \in \mathcal{T_R}, k \in \mathcal{T_D}$: Power supplied by battery to the building in the 5-minute interval between $(i-1,k)$ and $(i,k)$ within $k^\text{th}$ hour 
+\end{itemize}
+\item \textbf{State variables:}
+\begin{itemize}
+\item[\textbullet] $E_{i,k}, \forall i \in \mathcal{T_R}, k \in \mathcal{T_D}$: Energy stored in the battery at time $(i,k)$ (at the end of $i^{th}$ 5-minute interval within $k^\text{th}$ hour) 
+\end{itemize}
+\end{itemize}
+\subsubsection{Constraints and objective function}
+\begin{itemize}
+\item Net discharge (power) from the battery at any time:
 \begin{align}
-\mathcal{T_r} := \{1,..,n_r\},\,\; D :=  \{1,..,n_d\}
-\end{align}
-\end{subequations}
-Here, R is the set of time indices for the real-time subintervals within each quarter-hour interval, so $n_r=12$, so D is the set of time indices for the hourly intervals within each day, so $n_d=24$.\\
-\paragraph{Indices:}
-\begin{subequations}
-\begin{align}
-i \in R, \;\; k \in D
-\end{align}
-\end{subequations}
-\paragraph{Constraints for each day in the model:}
-\begin{subequations}
-\begin{align}
-&P_{{net}_{i,k}} = P_{i} + P_{i,k} + L_{i,k}\\
+&P_{{net}_{i,k}} = P_{i} + P_{i,k} + L_{s_{i,k}}
 \end{align}
 \label{eq:Pnet}
-\end{subequations}
+\item Balance on the energy stored in the battery at each time
+\begin{align}
+E_{i,k} =& E_{i-1,k}- P_{{net}_{i,k}}\Delta t_r, \quad \forall i \in \mathcal{T_R}, k \in \mathcal{T_D}
+\end{align}
+\label{eq:ebalance}
+In \ref{eq:ebalance}, $E_{0,k} = E_{0}$ for $k \in \lbrace1\rbrace$ and $E_{0,k} = E_{n_{rtm},k-1}$ for $k \in \mathcal{T_R}\setminus{\lbrace1\rbrace}$. 
+\item Bounds on variables:
 \begin{subequations}
 \begin{align}
-&E_{1,1} = E_{0} - P_{{net}_{i,k}}\Delta t_r\\
+0 & \leq E_{i,j,k} \leq E_{max}, \forall i \in \mathcal{T_R}, k \in \mathcal{T_D}\\
+-P_{max} & \leq P_{i,k} \leq P_{max}, \forall i \in \mathcal{T_R}, k \in \mathcal{T_D}\\
+-P_{max} & \leq P_{k}\phantom{i,} \leq P_{max}, \forall k \in \mathcal{T_D}\\
 \end{align}
-\label{eq:eq1}
+\label{eq:bounds}
 \end{subequations}
-\vspace{-0.45in}
-\begin{subequations}
+\item Objective Function:
 \begin{align}
-E_{i,k} =&\; E_{i-1,k}- P_{{net}_{i,k}}\Delta t_r\\
-E_{1,k} =&\; E_{n_r,k}- P_{{net}_{1,k}} \Delta t_r\\
+\min \quad -\sum\limits_{i \in \mathcal{T_R}}\sum\limits_{k \in \mathcal{T_R}} \pi_{i,k}P_{i,k}\Delta t_r - \sum\limits_{k \in \mathcal{T_D}}\pi_{k}P_{k}\Delta t_r n_{rtm} + \sum\limits_{i \in \mathcal{T_R}}\sum\limits_{k \in \mathcal{T_R}} \pi_{i,k}(L_{i,k}-L_{s_{i,k}})\Delta t_r
 \end{align}
-\label{eq:eq2}
-\end{subequations}
-\vspace{-0.45in}
-\begin{subequations}
-\begin{align}
-0 & \leq E_{i,j,k} \leq E_{max}\\
--P_{max} & \leq P_{i,k} \leq P_{max}\\
--P_{max} & \leq P_{k}\phantom{i,} \leq P_{max}\\
-\end{align}
-\label{eq:eq4}
-\end{subequations}\vspace{-0.45in}
-\begin{subequations}
-\begin{align}
-Rev_E =& \sum_{i \in R} \sum_{k \in D} \Delta t_r(\pi^E_{i,k}P_{i,k}) + \sum_{k \in D}\Delta t_d(\pi^E_{k}P_{k})\\
-\end{align}
-\label{eq5}
-\end{subequations}
-Here, the decision variables are $E$, the energy of the battery at every time interval, $P$, the net power of the battery going to the power grid in the three markets, $R^U$, the regulation up capacities in the two levels of regulation markets, $R^D$, the regulation down capacities in the two levels of regulation markets and $Rev^E$ and $Rev^R$, the revenues from the energy and regulation markets respectively. The three subscripted indices in $P$, $R^U$ and $R^D$ variables mean that they are for the real-time market, the two subscripted indices in $P$, $R^U$ and $R^D$ variables mean that they are for the quarter-hourly market and the one subscripted index in $P$, $R^U$ and $R^D$ variables mean that they are for the day-ahead market. $\pi$'s are the prices which are known parameters in the model, the superscript on $\pi$ denotes the quantity which it is the price of and subscripts on $\pi$ denotes the level of market of which it is the price.
+\label{objective}
+\end{itemize}
 
 \section{Computational Experiments}\label{sec:exp}
 List of figures
@@ -309,6 +328,11 @@ From figures \ref{fig:Pdam_onlydam} and \ref{fig:cumulative_rev_onlydam}, it is 
 \subsection{Receding Horizon Heuristic}
 We sample 50 paths upto next 24 hours horizon 
 \subsection{Stochastic Dual Dynamic Programming}
+\begin{figure}[h!]
+\begin{center}
+\includegraphics[width=4in]
+{Figures/Plots/dualdynamic/bounds.pdf} \caption{Trajectory of the lowerand upper bounds obtained at every iteration of stochastic dual dynamic programming}\label{fig:bounds}\end{center}
+\end{figure}
 \section{Conclusions}
 \section{Future Work}
 \subsection{Price Uncertainty}
