@@ -301,12 +301,12 @@ On the other hand, when it participates in both day-ahead and real-time markets,
 \subsection{Receding Horizon Heuristic}
 In practical situations, we may not have the sample scenarios for load profiles available for full week or a longer planning period that we want to schedule our market participation policy for. In situations when we have the profiles for load scenarios are available for less time periods, a receding horizon scheme is useful and can be implemented to minimize the cost looking at only that much ahead in future for which we have the sample load scenarios. The receding horizon scheme is expected to do worse than the case when we have sample scenarios for load profiles available for the full planning period, but it is still expected to outperform a policy obtained using mean-value approximation of the uncertainty.
 
-Assuming that at every hour, we have a set of samples for the scenarios for load profiles available only for the next $T$ hours, we can solve a stochastic program $\mathcal{P}_{\tau}$, where $\mathcal{P}_{\tau}$ is the same stochastic program in extensive form in \ref{subsec:opt_unc}.
+Assuming that at every hour, we have a set of samples for the scenarios for load profiles available only for the next $T$ hours, we can solve a stochastic program $\mathcal{P}_{\tau}$, where $\mathcal{P}_{\tau}$ is the extensive form stochastic program described in \ref{subsec:opt_unc} with $n_d = T$.
 
 The receding horizon scheme which we implement on the building-battery system is described below.
 \begin{enumerate}
 \item Consider $\tau = 0$.
-\item The initial battery energy level is $E_\tau$ and we have a set of samples for the scenarios of load profiles available from $\tau+1$ to $\tau+T$. solve the stochastic program $\mathcal{P}_{\tau}\left(E_{\tau},P_{\tau},L(\xi_{\tau})\right)$ over a 24 hour horizon, where $\xi_\tau$ represents a set of scenarios realized at each time till $\tau$  
+\item The initial battery energy level is $E_\tau$ and we have a set of samples for the scenarios of load profiles available from $\tau+1$ to $\tau+T$. solve the stochastic program $\mathcal{P}_{\tau}\left(E_{\tau},P_{\tau},L(\xi_{\tau})\right)$ over a 24 hour horizon, where $\xi_\tau$ represents a set of scenarios realized at each time till $\tau$. 
 \item Implement commitments for next hour (power and participation levels), evolve battery storage level to $E_{\tau+1}$
 \item Using realized scenario for load (random), calculate net demand $d_{\tau+1}(\xi_{\tau+1})$ at time $\tau+1$, $d_{\tau+1}(\xi_{\tau+1}) = L_{\tau+1}(\xi_{\tau+1}) - P_{\tau+1} + F_{\tau+1}$, and update the peak demand till time $\tau+1$, $D_{\tau+1}(\xi_{\tau+1}) = \max\{D_{\tau}(\xi_{\tau}),d_{\tau+1}(\xi_{\tau+1})\}$             
 \item Solve stochastic problem $\mathcal{P}_{\tau+1}\left(E_{\tau+1},P_{\tau+1},D_{\tau+1}(\xi_{\tau+1})\right)$. \item Repeat from 2.

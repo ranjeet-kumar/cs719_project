@@ -297,11 +297,11 @@ if makeplots == 1
   grid()
   ylabel("Upper & lower bounds",size = 24)
   xlabel("Iteration",size = 24)
-  xlim(0,122)
-  ylim(-600,-555)
+  xlim(0,220)
+  ylim(-565,-540)
   tick_params(labelsize=20)
   legend(loc="upper right",fancybox="True", shadow="True", fontsize = 15)
-  savefig(string("cs719figures/dual_dynamic_bounds.pdf"))
+  savefig(string("cs719figures/dual/dual_dynamic_bounds.pdf"))
   close("all")
   figure()
   xplot = 0:length(lowerbound_Vector)-1;
@@ -318,7 +318,7 @@ if makeplots == 1
   xlabel("Iteration",size = 24)
   tick_params(labelsize=20)
   legend(loc="upper right",fancybox="True", shadow="True", fontsize = 15)
-  savefig(string("cs719figures/dual_dynamic_bounds_zoomed.pdf"))
+  savefig(string("cs719figures/dual/dual_dynamic_bounds_zoomed.pdf"))
   close("all")
 
 end # End makeplots
