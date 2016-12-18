@@ -336,20 +336,26 @@ The stochastic problem at each node is for making the energy commitment decision
 In our multi-scale problem, the state variables ($E_{i,k}$) are defined at 12 sub-intervals (of 5 minutes each) within a stage.  In standard (one timescale) SDDP algorithm, we take dual of the constraint linking the state variable at the current stage to the state variable at the previous stage. This does not work in case of multi-scale problems since the state variables vary at a time scale of 5 minutes within a stage, while the stages are realized at every one hour. The value of the state variable that is carried forward to the next stage is only the state at the last sub-interval of the current stage i.e the state variables are linked within each sub-intervals and not directly between the stages. We therefore use the sum of duals of the constraints inter-linking these state variables at all sub-intervals within the stage; this sum in effect links the final value of the state variables between consecutive stages. With this modified approach we implement our version of the SDDP algorithm as follows:    
 
 \begin{enumerate}
-\item Generate a compact scenario tree with 50 nodes at every stage (168)\\\\
-\textbf{Forward Pass:}  
-\item Solve the root node problem and get $\theta_1$. Set the current lower bound to $\theta_1$.
-\item Sample a load profile for stage j. 
-\item Formulate an optimization problem as described in Section \ref{subsec:deterministic}, with $n_\text{dam} = j$, $ E_{0, j} = E_{n_\text{rtm}, j-1}$ and using the loads sampled in Step 3. Add a $\theta_{j+1}$ (capturing future costs) variable (bounded by $\underline{\theta}$) to the objective function.   
-\item Solve the optimization problem formulated in Step 4, get $E_{n_\text{rtm}, j}$ Set $j = j +1$. 
-\item \emph{If} j <= 168, go to Step 3 \emph{else} go to Step 7 and set j = 168.\\\\
+\item Set iteration counter $i = 1$. Generate a compact scenario tree with 50 nodes at every stage (168).
+\item Formulate the root node problem (k=0) as described above. Denote this optimization problem by $\mathcal{P}^f_{0}$.\\\\
+\textbf{Forward Pass:}
+\item Solve the optimization problem $\mathcal{P}^f_{0}$ and get $\theta_1$. Set the current lower bound, $lb = \theta_1$. Set $k = 1$.
+\item Sample a load profile for stage $k$. 
+\item \emph{If} $i>1$,\\ go to Step 6, \\ \emph{else},\\ formulate an optimization problem as described in Section \ref{subsec:deterministic}, with $n_\text{dam} = k$, $ E_{0, k} = E_{n_\text{rtm}, k-1}$ and using the loads sampled in Step 4. Modify the original objective function (say, $f_{k,i}$) by adding a $\theta_{k+1}$ (capturing future costs) variable (bounded below by $\underline{\theta}$). Denote the resulting optimization problem by $\mathcal{P}^f_{k}$.
+\item Solve the optimization problem $\mathcal{P}^f_{k}$, get $E_{n_\text{rtm}, k}$ and $f_{k,i}$. Set $k = k +1$. 
+\item \emph{If} $k <= 168$, go to Step 4 \emph{else} go to Step 8 and set $k = 168$.
+\item Set current upper bound, $ub = \frac{1}{i}\sum\limits_{p = 1}^{i}\sum\limits_{k \in \mathcal{T_D}}{f_{k,p}}$ \\\\
 \textbf{Backward Pass:}
-\emph{for s = 1,2,....,N}
-\begin{itemize} 
-\item Formulate a scenario sub-problem for scenario s, as described in Section  \ref{subsec:deterministic}, with $n_\text{dam} = j$, $E_{0, j} = E_{n_\text{rtm}, j-1}$ (obtained from forward pass) and using the loads in scenario s.
-\item Solve the scenario subproblem and get the duals corresponding to each of the ${n_\text{rtm}}$ constraints linking the state variables at each subintervals. 
-\end{itemize}
+\item Set $\overline{v}^i_{k+1} = 0, \overline{\rho}_{k+1} = 0$.
+\item \emph{for $s = 1,2,....,N$}
+\begin{enumerate} 
+\item \emph{If} $i>1$,\\ go to Step (b), \\ \emph{else},\\ formulate a scenario subproblem for scenario $s$, as described in Section  \ref{subsec:deterministic}, with $n_\text{dam} = k$, $E_{0, k} = E_{n_\text{rtm}, k-1}$ (obtained from forward pass) and using the loads in scenario $s$. Modify the original objective function (say, $f^b_{k,i}$) by adding a $\theta_{k+1}$ (capturing future costs) variable (bounded below by $\underline{\theta}$) and denote the modified objective function by $Q^{i+1}_{s,k+1}(E_{0, k})$. Denote the resulting optimization problem by $\mathcal{P}^b_{k}$. 
+\item Add a cut to the optimization problems $\mathcal{P}^f_{k}$ and $\mathcal{P}^b_{k}$: $\theta_{k+1} \geq \overline{v}^i_{k+1} - \overline{\rho}_{k+1}E_{n_\text{rtm}, k}$
+\item Solve the problem $\mathcal{P}^b_{k}$. Get the optimal objective value $Q^{i+1}_{s,k+1}(E_{0, k})$ and the duals corresponding to each of the ${n_\text{rtm}}$ constraints linking the state variables at each subinterval. Denote the sum of these duals by $\rho_{s,k+1}$ and calculate $v^i_{s,k+1} = Q^{i+1}_{s,k+1}(E_{0, k}) - \rho_{s,k+1} E_{n_\text{rtm},k-1}$
+\end{enumerate}
 \emph{end for}
+\item $\overline{v}^i_{k+1} = \frac{1}{N}\sum\limits_{s=1}^{N}{v^i_{s,k+1}}, \quad \overline{\rho}_{k+1} = \frac{1}{N}\sum\limits_{s=1}^{N}{\rho_{s,k+1}}$. Set $k=k-1$
+\item \emph{If} $k >= 1$, go to Step 10, \emph{else if} $ub - lb \geq \epsilon$, go to Step 3, \emph{else}, STOP.
 \end{enumerate}
 
 
