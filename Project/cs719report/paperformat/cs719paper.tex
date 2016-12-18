@@ -252,11 +252,9 @@ None & -10,293.23 & 10,293.23 & N/A & N/A \\
 Highest revenue is earned when the battery participates in both the real time and day-ahead markets (Table \ref{tab:rev_comp}). Whereas, if it participates in just day-ahead or real time market alone, the revenue is much less or even negative (results in loss). Consider the case when it participates in only day ahead market. It is evident from Figure \ref{fig:Pdam_onlydam} and \ref{fig:cumulative_rev_onlydam} that the battery needs to charge itself (buy energy from the grid) in order to meet the building load demands. The price of energy is on average higher in day-ahead market than that in real time markets. Thus with no participation in real time market in does not have the flexibility to buy energy from the real-time market at lower prices and sell to day-ahead market (at a higher price) to make profits. The building loads need to be met in real-time (at every 5-minute interval) while the battery has the opportunity to buy or sell energy from the grid only at every hour. Thus the battery is forced to store enough energy to meet the building requirement for an hour by buying energy in hourly intervals from the day-ahead market. Whenever it has slightly excess energy available it tries to sell that energy to the day-ahead market to minimize the overall cost. 
 
 On the other hand, when it participates in both day-ahead and real-time markets, it has the flexibility to buy from the real-time market and sell to the day-ahead market while saving sufficient energy to meet the building requirement in real-time. This is possible because the real-time electricity prices are slightly lower than the day-ahead market prices on average. The real-time prices also fall below the day-ahead market prices very often (Figures \ref{fig:Pdam_fp_st} and \ref{fig:Prtm_fp_st}) and because of its fast dynamics, the battery can capture these moments by buying from real-time market and selling in day-ahead market to make profit. 
-conclusion: market participation in both time scales is important for maximizing the economic potential. The typical problem size in a stochastic setting (considering only 50 samples of load scenarios) for 1 week planning is of the order :
-variable: 520900
-linear constraints: 722500
-time: 37.5 sec (35 - 40 by gurobi)
-if there were more number of scenarios, the problem size would grow exponentially. thus for this simultaneous type of problem, we use advanced stochastic techniques to solve these kind of problem. and compare their performance wrt time and expected revenue.
+Thus market participation in both time scales is important for maximizing the economic potential. The typical problem in a stochastic setting (considering only 50 samples of load scenarios) for 1 week planning consists of 520900 variables, 722500 linear constraints, and takes Gurobi 35-40 seconds to solve it. 
+If the number of scenarios is increased, the problem size would grow exponentially. While on increasing the planning period the problem size increases linearly. Thus for problems involving simultaneous participation in both real time and day-ahead market, we use advanced stochastic techniques for solving. We also compare their performance with respect to solution time and the expected revenue obtained.
+
 \begin{figure}[h!]
 \begin{center}
 \includegraphics[scale=0.4]{Figures/Plots/fullproblem_stoch/cumulative_rev_fp_st.pdf} \caption{Trajectory of cumulative revenues when battery participates in both day-ahead and real-time markets}\label{fig:cumulative_rev_fp_st}\end{center}
@@ -303,7 +301,10 @@ if there were more number of scenarios, the problem size would grow exponentiall
 {Figures/Plots/onlydam/cumulative_rev_fp_st.pdf} \caption{Trajectory of cumulative revenue when battery participates only in day-ahead market}\label{fig:cumulative_rev_onlydam}\end{center}
 \end{figure}
 
-
+\subsection{Sample Average Approximation for the Full Extensive Form}
+we solve for 100 different sets of 50 sample paths from the scenario tree and obtain the expected value and confidence interval over it. 
+Expected objective over 100 runs for stochastic fullproblem = -712.9901530720865
+Confidence interval on objective over 100 runs = (-713.3345792874304,-712.6457268567426)
 \subsubsection{Upper Bound from Mean Value Problem}
 total cost: -697.61
 
@@ -316,6 +317,25 @@ expected cost: -698.92
 final lower bound : -554.88
 final upper bound : -554.79 confidence interval: [-554.57, -555.02]
 time : 825.8 sec
+
+Our state variable $E_{i,k}$ (energy-level of battery at any time) captures the history of load demands realized and the decisions made in the previous stages; thus providing stage-wise independent scenarios realizations. The stochastic dual dynamic programming (SDDP) is applicable in this case. 
+
+We consider our root node to be between t = 0 and t = -1. 
+
+The stochastic problem at each node is for making the energy commitment decisions from that hour to the next hour i.e we formulate a problem for decisions in future (where we have not yet observed any realizations). This is because we only have samples of scenarios for that future hour. To get a lower bound, we have to the solve the problem at root node at which the realized scenario for random data has to be known. In our case we consider the root node problem to be the stochastic program between t = -1 hr and 0 hr. Since we are not participating before t = 0 hr, we know that the random data (load in our case) is 0 between t = -1 hr and t = 0 hr. Hence the stochastic program at our root node is minimizing the $\theta_{1}$ variable (capturing the future costs), such that $\theta_{1} \geq \underline{\theta_{1}}$. The solution to this gives a starting lower bound. We give a lower-limit ($\underline{\theta_{1}}$) for $\theta_1$ because our cost is negative since we are maximizing revenue (or minimizing the cost). In case of root node, just $\theta_1$. Problem becomes unbounded thus we need to provide initial lower bound for $\theta_1$. $\underline{\theta_{1}}$ is found by assuming energy-market participation with a full capacity of battery in both markets for the full planning period i.e. for negative electricity prices, battery participates in full negative capacity (buying power) and for positive prices it sells power at full capacity. Thus at root node, $\theta_1$ will be the maximum revenue that is achievable.   
+
+In our multi-scale problem, the state variables ($E_{i,k}$) are defined at 12 sub-intervals (of 5 minutes each) within a stage.  In standard (one timescale) SDDP algorithm, we take dual of the constraint which links the current state variable at the current stage to the state variable at the previous stage. This does not work in case of multi-scale problems since the state variables vary at a time scale of 5 minutes within a stage, while the stages are realized at every one hour. The value of the state variable that is carried forward to the next stage is only the state at the last sub-interval of each stage i.e the state variables are linked within each sub-intervals and not directly between the stages. We therefore use the sum of duals of the constraints inter-linking these state variables at all sub-intervals within the stage; this sum in effect links the final value of the state variables between consecutive stages. With this modified approach we implement our version of the SDDP algorithm as follows:    
+
+
+so we cannot use directly the dual of the constraint corresponding to the link between stage at last sub-interval and the one before it in any stage. 
+
+We implement SDDP by following the following steps:
+\begin{itemize}
+\item Generate a compact scenario tree
+\item  
+\end{itemize}
+\
+
 \begin{figure}[h!]
 \begin{center}
 \includegraphics[scale=0.4]
@@ -323,7 +343,7 @@ time : 825.8 sec
 \end{figure}
 
 \FloatBarrier
-\subsection{Receding Horizon Heuristic}
+\subsection{Receding Horizon Scheme}
 In practical situations, we may not have the sample scenarios for load profiles available for full week or a longer planning period that we want to schedule our market participation policy for. In situations when we have the profiles for load scenarios are available for less time periods, a receding horizon scheme is useful and can be implemented to minimize the cost looking at only that much ahead in future for which we have the sample load scenarios. The receding horizon scheme is expected to do worse than the case when we have sample scenarios for load profiles available for the full planning period, but it still outperforms a policy obtained using mean-value counterpart in the same situation (when we have information available for less period of time in future). 
 
 We assume that at every hour $\tau$, we have a set of samples for the scenarios for load profiles available only for the next $T$ hours while we want to plan for a period $T_{P}$. At $\tau$, we can solve a stochastic program $\mathcal{P}_{\tau}$, where $\mathcal{P}_{\tau}$ is the extensive form of the stochastic program described in Section \ref{subsec:opt_unc} with $n_\text{dam} = T$. To solve this stochastic program, it requires the inputs $L_{i,k,s}$, $\pi_{i,k}$ and $\pi_k$ $\forall i \in \mathcal{T_R}, k \in \{\tau+1, ..., \tau+T\}, s \in \mathcal{S}$ and the initial energy level of the battery at that hour $\tau$, $E_{\tau}$. For compact representation, let $L_{\tau}(\xi_{\tau})$ denote the set of load profiles in all scenarios for future $T$ hours and $\pi_{\tau}$ be the set of prices in day-ahead and real-time markets for hour $\tau+1$ to $\tau+T$. We can now solve the $T$-hour horizon stoachastic program $\mathcal{P}_{\tau}\left(E_{\tau}, \pi_{\tau}, L_{\tau}(\xi_{\tau})\right)$.
@@ -343,8 +363,6 @@ The receding horizon scheme which we implement on the building-battery system is
 
 We sample 50 paths upto next 24 hours horizon
 \section{Conclusions}
-Expected objective over 100 runs for stochastic fullproblem = -712.9901530720865
-Confidence interval on objective over 100 runs = (-713.3345792874304,-712.6457268567426)
 
 \section{Future Work}
 
