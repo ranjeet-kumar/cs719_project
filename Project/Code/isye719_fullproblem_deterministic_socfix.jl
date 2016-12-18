@@ -67,7 +67,7 @@ if generate_new_sample_paths == 1
   (paths,loadperm) = generate_sample_paths(load,NS,"samplepaths.csv","sampleloadperm.csv");
 end
 # Take the NS sample paths for loads generated earlier
-paths = readcsv("samplepaths.csv");
+paths = Matrix{Int64}(readcsv("samplepaths.csv"));
 loadperm = zeros(nrtm,ndam,ndays_planning,NS);
 for s in S
   j = 1;
@@ -102,8 +102,8 @@ mv_sf = Model(solver = GurobiSolver(Threads=2))
 		@constraint(mv_sf, UnmetLoad[i in rtm,k in dam,l in day], suppliedload[i,k,l] + unmetload[i,k,l] >=  loadperm_mv[i,k,l])
 		@constraint(mv_sf, BoundSupplied[i in rtm,k in dam,l in day], suppliedload[i,k,l] <= loadperm_mv[i,k,l])
 		@constraint(mv_sf, BoundUnmet[i in rtm,k in dam,l in day], unmetload[i,k,l] <= loadperm_mv[i,k,l])
-		@constraint(mv_sf, NetDischarge1[i in rtm,k in dam,l in day,s in S], Pnet[i,k,l,s] <= P_max)
-    @constraint(mv_sf, NetDischarge2[i in rtm,k in dam,l in day,s in S], Pnet[i,k,l,s] >= -P_max)
+		@constraint(mv_sf, NetDischarge1[i in rtm,k in dam,l in day], Pnet[i,k,l] <= P_max)
+    @constraint(mv_sf, NetDischarge2[i in rtm,k in dam,l in day], Pnet[i,k,l] >= -P_max)
 		#=    @constraint(mv_sf, RTMRamp1[i in rtm[2:end],k in dam,l in day], Pnet[i,k,l]  - Pnet[i-1,k,l] <= rampmax*dtrtm)   #Ramp discharge constraint at each time
 		@constraint(mv_sf, RTMRamp2[i in rtm[2:end],k in dam,l in day], Pnet[i,k,l]  - Pnet[i-1,k,l] >= -rampmax*dtrtm)   #Ramp discharge constraint at each time
 		@constraint(mv_sf, DAMRamp1[i in rtm[1],k in dam[2:end],iend=rtm[end],l in day], Pnet[i,k,l] - Pnet[iend,k-1,l] <= rampmax*dtrtm)   #Ramp discharge constraint at each time

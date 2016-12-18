@@ -68,7 +68,7 @@ if generate_new_sample_paths == 1
   (paths,loadperm) = generate_sample_paths(load,NS,"samplepaths.csv","sampleloadperm.csv");
 end
 # Take the NS sample paths for loads generated earlier
-paths = readcsv("samplepaths.csv");
+paths = Matrix{Int64}(readcsv("samplepaths.csv"));
 loadperm = zeros(nrtm,ndam,ndays_planning,NS);
 for s in S
   j = 1;

@@ -98,7 +98,9 @@ In this work we assume uncertainty only in the load demands and consider the day
 
 \section{Optimization Model for Building-Battery System}\label{sec:model}
 \subsection{Deterministic Setting}\label{subsec:deterministic}
-First, we formulate an optimization problem to minimize the cost (or maximize revenue) for the building-battery system operating in the electricity market in a deterministic setting assuming no uncertainty in any of the market and demand quantities. In this formulation, the building-battery system participates in the market at two timescales, hourly and 5-minute intervals. Since the price and load signals are discrete, real-time prices and loads available at 5-minute intervals and day-ahead prices at hourly intervals, we make the zero-order hold assumption, i.e. these time-varying signals are constant within an interval of corresponding duration of their timescale. We also assume that the energy stored in the battery before beginning of market participation is fixed at $E_{0}$. With these assumptions, we develop the optimization problem formulation for the system is described below.
+First, we formulate an optimization problem to minimize the cost (or maximize revenue) for the building-battery system operating in the electricity market in a deterministic setting assuming no uncertainty in any of the market and demand quantities. In this formulation, the building-battery system participates in the market at two timescales, hourly and 5-minute intervals. Since the price and load signals are discrete, real-time prices and loads available at 5-minute intervals and day-ahead prices at hourly intervals, we make the zero-order hold assumption, i.e. these time-varying signals are constant within an interval of corresponding duration of their timescale. We also assume that the energy stored in the battery before beginning of market participation is fixed at $E_{0}$. The building-battery system is illustrated with a schematic diagram in Figure \ref{fig:system}.
+
+With these assumptions, we develop the optimization problem formulation for the system is described below.
 \subsubsection{Sets used in the model}
 \begin{center}
 $\mathcal{T_R} := \{1,..,n_{\textrm{rtm}}\}$\\$ \mathcal{T_D} :=  \{1,..,n_{\textrm{dam}}\}$
@@ -108,6 +110,13 @@ Here, $\mathcal{T_R}$ is the set of time indices corresponding to each 5-minute 
 A time instance for a day-ahead market variable in the model is represented by only the index $k$ ($k \in \mathcal{T_D}$) which corresponds to the interval between hours $k-1$ and $k$. On the other hand, a time instance for a real-time variable in the model is represented by index $(i,k)$, where $i \in \mathcal{T_R}$ and $ k \in \mathcal{T_D}$. The indices $i$ and $k$ in a time instance $(i,k)$ for a real-time variable correspond to the end of the respective 5-minute interval. For example, the time instance ($5,7$) corresponds to the end of the interval between $4^{\text{th}}$ and $5^{\text{th}}$ 5-minute interval within the $7^\textrm{th}$ hour. 
 
 So, if a variable or time-varying parameter is indexed by only one index $k$ it implies that it varies at hourly intervals and belongs to the day-ahead market, whereas a variable or time-varying parameter indexed by $(i,k)$ is a real-time variable. 
+
+The time discretization and zero-order hold have been illustrated for the battery power in real-time and day-ahead markets in Figure \ref{fig:discretization}.
+\begin{figure}[h!]
+\begin{center}
+\includegraphics[scale=0.7]{Figures/discretization1.pdf} \caption{Time Discretization and Zero-Order Hold for Variables}\label{fig:discretization}\end{center}
+\end{figure}
+\FloatBarrier
 \subsubsection{Parameters in the model:}
 \begin{itemize}
 \item\textbf{Market parameters:}
@@ -140,7 +149,11 @@ So, if a variable or time-varying parameter is indexed by only one index $k$ it 
 \item[\textbullet] $E_{i,k}, \forall i \in \mathcal{T_R}, k \in \mathcal{T_D}$: Energy stored in the battery at time $(i,k)$ (at the end of $i^{th}$ 5-minute interval within $k^\text{th}$ hour) 
 \end{itemize}
 \end{itemize}
-
+\begin{figure}[h!]
+\begin{center}
+\includegraphics[scale=0.6]{Figures/system_blocks-crop.pdf} \caption{Illustration of Battery-Building System Interconnected with Power Grid}\label{fig:system}\end{center}
+\end{figure}
+\FloatBarrier
 \subsubsection{Constraints and objective function}\label{subsec:const_obj}
 \begin{itemize}
 \item Net discharge (power) from the battery at any time has to be less than the maximum discharge capacity of the battery, $P_{max}$.
@@ -313,7 +326,7 @@ time : 825.8 sec
 \subsection{Receding Horizon Heuristic}
 In practical situations, we may not have the sample scenarios for load profiles available for full week or a longer planning period that we want to schedule our market participation policy for. In situations when we have the profiles for load scenarios are available for less time periods, a receding horizon scheme is useful and can be implemented to minimize the cost looking at only that much ahead in future for which we have the sample load scenarios. The receding horizon scheme is expected to do worse than the case when we have sample scenarios for load profiles available for the full planning period, but it still outperforms a policy obtained using mean-value counterpart in the same situation (when we have information available for less period of time in future). 
 
-We assume that at every hour $\tau$, we have a set of samples for the scenarios for load profiles available only for the next $T$ hours while we want to plan for a period $T_{P}$. At $\tau$, we can solve a stochastic program $\mathcal{P}_{\tau}$, where $\mathcal{P}_{\tau}$ is the extensive form of the stochastic program described in Section \ref{subsec:opt_unc} with $n_d = T$. To solve this stochastic program, it requires the inputs $L_{i,k,s}$, $\pi_{i,k}$ and $\pi_k$ $\forall i \in \mathcal{T_R}, k \in \{\tau+1, ..., \tau+T\}, s \in \mathcal{S}$ and the initial energy level of the battery at that hour $\tau$, $E_{\tau}$. For compact representation, let $L_{\tau}(\xi_{\tau})$ denote the set of load profiles in all scenarios for future $T$ hours and $\pi_{\tau}$ be the set of prices in day-ahead and real-time markets for hour $\tau+1$ to $\tau+T$. We can now solve the $T$-hour horizon stoachastic program $\mathcal{P}_{\tau}\left(E_{\tau}, \pi_{\tau}, L_{\tau}(\xi_{\tau})\right)$.
+We assume that at every hour $\tau$, we have a set of samples for the scenarios for load profiles available only for the next $T$ hours while we want to plan for a period $T_{P}$. At $\tau$, we can solve a stochastic program $\mathcal{P}_{\tau}$, where $\mathcal{P}_{\tau}$ is the extensive form of the stochastic program described in Section \ref{subsec:opt_unc} with $n_\text{dam} = T$. To solve this stochastic program, it requires the inputs $L_{i,k,s}$, $\pi_{i,k}$ and $\pi_k$ $\forall i \in \mathcal{T_R}, k \in \{\tau+1, ..., \tau+T\}, s \in \mathcal{S}$ and the initial energy level of the battery at that hour $\tau$, $E_{\tau}$. For compact representation, let $L_{\tau}(\xi_{\tau})$ denote the set of load profiles in all scenarios for future $T$ hours and $\pi_{\tau}$ be the set of prices in day-ahead and real-time markets for hour $\tau+1$ to $\tau+T$. We can now solve the $T$-hour horizon stoachastic program $\mathcal{P}_{\tau}\left(E_{\tau}, \pi_{\tau}, L_{\tau}(\xi_{\tau})\right)$.
 
 The receding horizon scheme which we implement on the building-battery system is described below.
 \begin{enumerate}
@@ -330,8 +343,13 @@ The receding horizon scheme which we implement on the building-battery system is
 
 We sample 50 paths upto next 24 hours horizon
 \section{Conclusions}
+Expected objective over 100 runs for stochastic fullproblem = -712.9901530720865
+Confidence interval on objective over 100 runs = (-713.3345792874304,-712.6457268567426)
+
 \section{Future Work}
+
 \subsection{Price Uncertainty}
+
 \subsection{Three Layer Markets}
 
 
