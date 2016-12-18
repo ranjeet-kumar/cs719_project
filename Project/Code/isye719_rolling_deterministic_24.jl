@@ -223,9 +223,9 @@ for p in 1:nhours_planning # Starting rolling horizon for mean-value problem
     @variable(m_rold, profittotal[S])		        	#Total profit in the day, USD
     @variable(m_rold, unmetcost[rtm,dam,S])
 
-    @constraint(m_rold, InitialEnergy[s in S], ebat[1,1,s] == ebat0 - 1/eff*Pnet[1,1,s]*dtrtm)	#Inital energy in the battery
-    @constraint(m_rold, rtmEBalance[i in rtm[2:end],k in dam,s in S], ebat[i,k,s] == ebat[i-1,k,s] - 1/eff*Pnet[i,k,s]*dtrtm)	#Dynamics constraint
-    @constraint(m_rold, damEBalance[i=rtm[1],k in dam[2:end],iend=rtm[end],s in S], ebat[i,k,s] == ebat[iend,k-1,s] - 1/eff*Pnet[i,k,s]*dtrtm)	#Dynamics constraint
+    @constraint(m_rold, InitialEnergy[s in S], ebat[1,1,s] == ebat0 - Pnet[1,1,s]*dtrtm)	#Inital energy in the battery
+    @constraint(m_rold, rtmEBalance[i in rtm[2:end],k in dam,s in S], ebat[i,k,s] == ebat[i-1,k,s] - Pnet[i,k,s]*dtrtm)	#Dynamics constraint
+    @constraint(m_rold, damEBalance[i=rtm[1],k in dam[2:end],iend=rtm[end],s in S], ebat[i,k,s] == ebat[iend,k-1,s] - Pnet[i,k,s]*dtrtm)	#Dynamics constraint
     @constraint(m_rold, UnmetLoad[i in rtm,k in dam,s in S], suppliedload[i,k,s] + unmetload[i,k,s] >=  load[i,k,s])
     @constraint(m_rold, BoundSupplied[i in rtm,k in dam,s in S], suppliedload[i,k,s] <= load[i,k,s])
     @constraint(m_rold, BoundUnmet[i in rtm,k in dam,s in S], unmetload[i,k,s] <= load[i,k,s])
