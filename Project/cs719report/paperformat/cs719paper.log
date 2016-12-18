@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.14159265-2.6-1.40.16 (TeX Live 2015/Debian) (preloaded format=pdflatex 2016.8.3)  17 DEC 2016 22:35
+This is pdfTeX, Version 3.14159265-2.6-1.40.16 (TeX Live 2015/Debian) (preloaded format=pdflatex 2016.8.3)  17 DEC 2016 23:24
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -552,50 +552,41 @@ LaTeX Font Info:    Font shape `OT1/ppl/bx/n' in size <10> not available
 (Font)              Font shape `OT1/ppl/b/n' tried instead on input line 56.
 LaTeX Font Info:    Font shape `OT1/ppl/bx/n' in size <14.4> not available
 (Font)              Font shape `OT1/ppl/b/n' tried instead on input line 61.
+ [1
 
-<Figures/damprices.pdf, id=98, 578.16pt x 433.62pt>
+{/var/lib/texmf/fonts/map/pdftex/updmap/pdftex.map}]
+<Figures/damprices.pdf, id=106, 578.16pt x 433.62pt>
 File: Figures/damprices.pdf Graphic file (type pdf)
 
 <use Figures/damprices.pdf>
-Package pdftex.def Info: Figures/damprices.pdf used on input line 65.
+Package pdftex.def Info: Figures/damprices.pdf used on input line 66.
 (pdftex.def)             Requested size: 154.9507pt x 116.2122pt.
 
-<Figures/qhmprices.pdf, id=99, 578.16pt x 433.62pt>
+<Figures/qhmprices.pdf, id=107, 578.16pt x 433.62pt>
 File: Figures/qhmprices.pdf Graphic file (type pdf)
 
 <use Figures/qhmprices.pdf>
-Package pdftex.def Info: Figures/qhmprices.pdf used on input line 66.
+Package pdftex.def Info: Figures/qhmprices.pdf used on input line 67.
 (pdftex.def)             Requested size: 154.9507pt x 116.2122pt.
 
-<Figures/rtmprices.pdf, id=100, 578.16pt x 433.62pt>
+<Figures/rtmprices.pdf, id=108, 578.16pt x 433.62pt>
 File: Figures/rtmprices.pdf Graphic file (type pdf)
 
 <use Figures/rtmprices.pdf>
-Package pdftex.def Info: Figures/rtmprices.pdf used on input line 67.
+Package pdftex.def Info: Figures/rtmprices.pdf used on input line 68.
 (pdftex.def)             Requested size: 154.9507pt x 116.2122pt.
- [1
 
-{/var/lib/texmf/fonts/map/pdftex/updmap/pdftex.map}] <Figures/scenario_tree-cro
-p.pdf, id=109, 701.62125pt x 351.3125pt>
+<Figures/scenario_tree-crop.pdf, id=109, 701.62125pt x 351.3125pt>
 File: Figures/scenario_tree-crop.pdf Graphic file (type pdf)
 
 <use Figures/scenario_tree-crop.pdf>
-Package pdftex.def Info: Figures/scenario_tree-crop.pdf used on input line 78.
+Package pdftex.def Info: Figures/scenario_tree-crop.pdf used on input line 77.
 (pdftex.def)             Requested size: 289.07999pt x 144.752pt.
 
 
 LaTeX Warning: `!h' float specifier changed to `!ht'.
 
-
-<Figures/Plots/fullproblem_stoch/loads_scenarios.pdf, id=113, 1156.32pt x 599.8
-4097pt>
-File: Figures/Plots/fullproblem_stoch/loads_scenarios.pdf Graphic file (type pd
-f)
- <use Figures/Plots/fullproblem_stoch/loads_scenarios.pdf>
-Package pdftex.def Info: Figures/Plots/fullproblem_stoch/loads_scenarios.pdf us
-ed on input line 84.
-(pdftex.def)             Requested size: 289.07999pt x 149.95987pt.
- [2 <./Figures/damprices.pdf> <./Figures/qhmprices.pdf
+[2 <./Figures/damprices.pdf> <./Figures/qhmprices.pdf
 
 pdfTeX warning: pdflatex (file ./Figures/qhmprices.pdf): PDF inclusion: multipl
 e pdfs with page group included in a single page
@@ -604,12 +595,21 @@ e pdfs with page group included in a single page
 pdfTeX warning: pdflatex (file ./Figures/rtmprices.pdf): PDF inclusion: multipl
 e pdfs with page group included in a single page
 >]
-LaTeX Font Info:    Try loading font information for OMS+ppl on input line 92.
- (/usr/share/texlive/texmf-dist/tex/latex/psnfss/omsppl.fd
+<Figures/Plots/fullproblem_stoch/loads_scenarios.pdf, id=226, 1156.32pt x 599.8
+4097pt>
+File: Figures/Plots/fullproblem_stoch/loads_scenarios.pdf Graphic file (type pd
+f)
+ <use Figures/Plots/fullproblem_stoch/loads_scenarios.pdf>
+Package pdftex.def Info: Figures/Plots/fullproblem_stoch/loads_scenarios.pdf us
+ed on input line 84.
+(pdftex.def)             Requested size: 289.07999pt x 149.95987pt.
+LaTeX Font Info:    Try loading font information for OMS+ppl on input line 89.
+
+(/usr/share/texlive/texmf-dist/tex/latex/psnfss/omsppl.fd
 File: omsppl.fd 
 )
 LaTeX Font Info:    Font shape `OMS/ppl/m/n' in size <10.95> not available
-(Font)              Font shape `OMS/cmsy/m/n' tried instead on input line 92.
+(Font)              Font shape `OMS/cmsy/m/n' tried instead on input line 89.
  [3 <./Figures/scenario_tree-crop.pdf> <./Figures/Plots/fullproblem_stoch/loads
 _scenarios.pdf
 
@@ -617,65 +617,65 @@ pdfTeX warning: pdflatex (file ./Figures/Plots/fullproblem_stoch/loads_scenario
 s.pdf): PDF inclusion: multiple pdfs with page group included in a single page
 >]
 LaTeX Font Info:    Font shape `OT1/ppl/bx/n' in size <10.95> not available
-(Font)              Font shape `OT1/ppl/b/n' tried instead on input line 95.
+(Font)              Font shape `OT1/ppl/b/n' tried instead on input line 92.
  [4] [5] [6] [7] [8]
-<Figures/Plots/fullproblem_stoch/cumulative_rev_fp_st.pdf, id=335, 1156.32pt x 
+<Figures/Plots/fullproblem_stoch/cumulative_rev_fp_st.pdf, id=336, 1156.32pt x 
 599.84097pt>
 File: Figures/Plots/fullproblem_stoch/cumulative_rev_fp_st.pdf Graphic file (ty
 pe pdf)
  <use Figures/Plots/fullproblem_stoch/cumulative_rev_fp_st.pdf>
 Package pdftex.def Info: Figures/Plots/fullproblem_stoch/cumulative_rev_fp_st.p
-df used on input line 249.
+df used on input line 240.
 (pdftex.def)             Requested size: 462.5198pt x 239.93213pt.
 
-<Figures/Plots/fullproblem_stoch/Pdam_fp_st.pdf, id=336, 1156.32pt x 599.84097p
+<Figures/Plots/fullproblem_stoch/Pdam_fp_st.pdf, id=337, 1156.32pt x 599.84097p
 t>
 File: Figures/Plots/fullproblem_stoch/Pdam_fp_st.pdf Graphic file (type pdf)
  <use Figures/Plots/fullproblem_stoch/Pdam_fp_st.pdf>
 Package pdftex.def Info: Figures/Plots/fullproblem_stoch/Pdam_fp_st.pdf used on
- input line 255.
+ input line 246.
 (pdftex.def)             Requested size: 484.20988pt x 251.18095pt.
 
-<Figures/Plots/fullproblem_stoch/Prtm_fp_st.pdf, id=337, 1156.32pt x 599.84097p
+<Figures/Plots/fullproblem_stoch/Prtm_fp_st.pdf, id=338, 1156.32pt x 599.84097p
 t>
 File: Figures/Plots/fullproblem_stoch/Prtm_fp_st.pdf Graphic file (type pdf)
  <use Figures/Plots/fullproblem_stoch/Prtm_fp_st.pdf>
 Package pdftex.def Info: Figures/Plots/fullproblem_stoch/Prtm_fp_st.pdf used on
- input line 259.
+ input line 250.
 (pdftex.def)             Requested size: 484.20988pt x 251.18095pt.
 
 
 LaTeX Warning: `!h' float specifier changed to `!ht'.
 
 [9 <./Figures/Plots/fullproblem_stoch/cumulative_rev_fp_st.pdf>]
-<Figures/Plots/fullproblem_stoch/supp_unmet_fp_st.pdf, id=387, 1156.32pt x 599.
+<Figures/Plots/fullproblem_stoch/supp_unmet_fp_st.pdf, id=388, 1156.32pt x 599.
 84097pt>
 File: Figures/Plots/fullproblem_stoch/supp_unmet_fp_st.pdf Graphic file (type p
 df)
  <use Figures/Plots/fullproblem_stoch/supp_unmet_fp_st.pdf>
 Package pdftex.def Info: Figures/Plots/fullproblem_stoch/supp_unmet_fp_st.pdf u
-sed on input line 266.
+sed on input line 257.
 (pdftex.def)             Requested size: 462.5198pt x 239.93213pt.
 
 
 LaTeX Warning: `!h' float specifier changed to `!ht'.
 
 
-<Figures/Plots/fullproblem_stoch/netpower_fp_st.pdf, id=388, 1156.32pt x 599.84
+<Figures/Plots/fullproblem_stoch/netpower_fp_st.pdf, id=389, 1156.32pt x 599.84
 097pt>
 File: Figures/Plots/fullproblem_stoch/netpower_fp_st.pdf Graphic file (type pdf
 )
  <use Figures/Plots/fullproblem_stoch/netpower_fp_st.pdf>
 Package pdftex.def Info: Figures/Plots/fullproblem_stoch/netpower_fp_st.pdf use
-d on input line 273.
+d on input line 264.
 (pdftex.def)             Requested size: 484.20988pt x 251.18095pt.
 
-<Figures/Plots/fullproblem_stoch/soc_fp_st.pdf, id=389, 1156.32pt x 599.84097pt
+<Figures/Plots/fullproblem_stoch/soc_fp_st.pdf, id=390, 1156.32pt x 599.84097pt
 >
 File: Figures/Plots/fullproblem_stoch/soc_fp_st.pdf Graphic file (type pdf)
  <use Figures/Plots/fullproblem_stoch/soc_fp_st.pdf>
 Package pdftex.def Info: Figures/Plots/fullproblem_stoch/soc_fp_st.pdf used on 
-input line 277.
+input line 268.
 (pdftex.def)             Requested size: 484.20988pt x 251.18095pt.
 
 
@@ -692,29 +692,29 @@ pdfTeX warning: pdflatex (file ./Figures/Plots/fullproblem_stoch/Prtm_fp_st.pdf
 
 pdfTeX warning: pdflatex (file ./Figures/Plots/fullproblem_stoch/soc_fp_st.pdf)
 : PDF inclusion: multiple pdfs with page group included in a single page
->] <Figures/Plots/onlydam/Pdam_fp_st.pdf, id=588, 1156.32pt x 599.84097pt>
+>] <Figures/Plots/onlydam/Pdam_fp_st.pdf, id=589, 1156.32pt x 599.84097pt>
 File: Figures/Plots/onlydam/Pdam_fp_st.pdf Graphic file (type pdf)
 
 <use Figures/Plots/onlydam/Pdam_fp_st.pdf>
 Package pdftex.def Info: Figures/Plots/onlydam/Pdam_fp_st.pdf used on input lin
-e 285.
+e 276.
 (pdftex.def)             Requested size: 289.07999pt x 149.95987pt.
 
-<Figures/Plots/onlydam/cumulative_rev_fp_st.pdf, id=589, 1156.32pt x 599.84097p
+<Figures/Plots/onlydam/cumulative_rev_fp_st.pdf, id=590, 1156.32pt x 599.84097p
 t>
 File: Figures/Plots/onlydam/cumulative_rev_fp_st.pdf Graphic file (type pdf)
  <use Figures/Plots/onlydam/cumulative_rev_fp_st.pdf>
 Package pdftex.def Info: Figures/Plots/onlydam/cumulative_rev_fp_st.pdf used on
- input line 290.
+ input line 281.
 (pdftex.def)             Requested size: 289.07999pt x 149.95987pt.
 
-<Figures/Plots/dualdynamic/bounds.pdf, id=590, 1156.32pt x 598.03424pt>
+<Figures/Plots/dualdynamic/bounds.pdf, id=591, 1156.32pt x 600.74437pt>
 File: Figures/Plots/dualdynamic/bounds.pdf Graphic file (type pdf)
 
 <use Figures/Plots/dualdynamic/bounds.pdf>
 Package pdftex.def Info: Figures/Plots/dualdynamic/bounds.pdf used on input lin
-e 305.
-(pdftex.def)             Requested size: 289.07999pt x 149.5082pt.
+e 296.
+(pdftex.def)             Requested size: 462.5198pt x 240.29349pt.
 
 
 LaTeX Warning: `!h' float specifier changed to `!ht'.
@@ -727,7 +727,7 @@ ev_fp_st.pdf
 pdfTeX warning: pdflatex (file ./Figures/Plots/onlydam/cumulative_rev_fp_st.pdf
 ): PDF inclusion: multiple pdfs with page group included in a single page
 >]
-Overfull \hbox (1.72372pt too wide) in paragraph at lines 318--319
+Overfull \hbox (1.72372pt too wide) in paragraph at lines 309--310
 \OML/cmm/m/it/10.95 d[]\OT1/cmr/m/n/10.95 (\OML/cmm/m/it/10.95 ^^X[]\OT1/cmr/m/
 n/10.95 ) = \OML/cmm/m/it/10.95 L[]\OT1/cmr/m/n/10.95 (\OML/cmm/m/it/10.95 ^^X[
 ]\OT1/cmr/m/n/10.95 ) \OMS/cmsy/m/n/10.95 ^^@ \OML/cmm/m/it/10.95 P[] \OT1/cmr/
@@ -738,29 +738,29 @@ e-mand till time $\OML/cmm/m/it/10.95 ^^\ \OT1/cmr/m/n/10.95 + 1$\OT1/ppl/m/n/1
  []
 
 [14 <./Figures/Plots/dualdynamic/bounds.pdf>] (./cs719paper.bbl)
-Package atveryend Info: Empty hook `BeforeClearDocument' on input line 335.
+Package atveryend Info: Empty hook `BeforeClearDocument' on input line 326.
  [15]
-Package atveryend Info: Empty hook `AfterLastShipout' on input line 335.
+Package atveryend Info: Empty hook `AfterLastShipout' on input line 326.
 
 (./cs719paper.aux)
-Package atveryend Info: Executing hook `AtVeryEndDocument' on input line 335.
-Package atveryend Info: Executing hook `AtEndAfterFileList' on input line 335.
+Package atveryend Info: Executing hook `AtVeryEndDocument' on input line 326.
+Package atveryend Info: Executing hook `AtEndAfterFileList' on input line 326.
 Package rerunfilecheck Info: File `cs719paper.out' has not changed.
 (rerunfilecheck)             Checksum: 9D21ED60A392C55FD0D20CEBF5CE62C8;1821.
 
 
 LaTeX Warning: There were multiply-defined labels.
 
-Package atveryend Info: Empty hook `AtVeryVeryEnd' on input line 335.
+Package atveryend Info: Empty hook `AtVeryVeryEnd' on input line 326.
  ) 
 Here is how much of TeX's memory you used:
  9368 strings out of 493029
- 141423 string characters out of 6136235
- 250446 words of memory out of 5000000
+ 141427 string characters out of 6136235
+ 249446 words of memory out of 5000000
  12664 multiletter control sequences out of 15000+600000
  26288 words of font info for 74 fonts, out of 8000000 for 9000
  1141 hyphenation exceptions out of 8191
- 42i,12n,43p,2213b,471s stack positions out of 5000i,500n,10000p,200000b,80000s
+ 42i,12n,43p,2239b,467s stack positions out of 5000i,500n,10000p,200000b,80000s
 {/usr/share/texlive/texmf-dist/fonts/enc/dvips/base/8r.enc}</usr/share/texliv
 e/texmf-dist/fonts/type1/public/amsfonts/cm/cmex10.pfb></usr/share/texlive/texm
 f-dist/fonts/type1/public/amsfonts/cm/cmmi10.pfb></usr/share/texlive/texmf-dist
@@ -774,10 +774,10 @@ y6.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy8.pfb>
 texlive/texmf-dist/fonts/type1/urw/palatino/uplbi8a.pfb></usr/share/texlive/tex
 mf-dist/fonts/type1/urw/palatino/uplr8a.pfb></usr/share/texlive/texmf-dist/font
 s/type1/urw/palatino/uplri8a.pfb>
-Output written on cs719paper.pdf (15 pages, 1586640 bytes).
+Output written on cs719paper.pdf (15 pages, 1587346 bytes).
 PDF statistics:
  799 PDF objects out of 1000 (max. 8388607)
- 338 compressed objects within 4 object streams
+ 340 compressed objects within 4 object streams
  78 named destinations out of 1000 (max. 500000)
  255 words of extra memory for PDF output out of 10000 (max. 10000000)
 
