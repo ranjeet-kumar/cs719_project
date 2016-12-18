@@ -41,3 +41,11 @@ time_taken_dt_rolling
 NEW MODELS:
 Screen 13116: rolling_stochastic Running DONE
 Screen 12127: rolling_deterministic Running DONE
+
+RUNNING ON SCREENS 18/12/2016 3:10 am
+2006: Rolling_Stochastic_24
+13116: Rolling_Stochastic_12
+12127: Rolling_Deterministic_24
+11818: Rolling_Deterministic_12
+11488: Stochastic confidence interval 100 runs
+
