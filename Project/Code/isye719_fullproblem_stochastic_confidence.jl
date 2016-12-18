@@ -2,6 +2,7 @@
 using JuMP
 using PyPlot
 using Gurobi
+using StatsFuns
 
 include("helper_functions.jl")
 #############################################################################################################
@@ -142,7 +143,7 @@ obj_st_fp = getobjectivevalue(m);
 push!(objective_Vector,obj_st_fp)
 end # End FOR loop for confidence interval
 objective_Vector_mean = mean(objective_Vector);
-objective_Vector_std = mean(objective_Vector_std);
+objective_Vector_std = std(objective_Vector);
 objective_down = objective_Vector_mean - tdistinvcdf(length(objective_Vector)-1, 0.975)*std(objective_Vector)/sqrt(length(objective_Vector));
 objective_up = objective_Vector_mean + tdistinvcdf(length(objective_Vector)-1, 0.975)*std(objective_Vector)/sqrt(length(objective_Vector));
 println("Expected objective over 100 runs = $(objective_Vector_mean)")
