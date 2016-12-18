@@ -28,8 +28,8 @@ ndays_planning = 7;       #Number of days you want to plan for
 nweeks_planning = Int64(ceil((ndays_planning/weekly_ndays)));
 nhours_planning = ndays_planning*ndam;  #Number of hours we will plan the policy for
 nrtm_planning = nhours_planning*nrtm;   #Number of rtm intervals we will plan the policy for
-ndays_horizon = 1; # Number of days in horizon at every step of receding horizon scheme
-nhours_horizon = ndays_horizon*ndam; # Number of hours in horizon at every step of receding horizon scheme
+ndays_horizon = 0.5; # Number of days in horizon at every step of receding horizon scheme
+nhours_horizon = Int64(ndays_horizon*ndam); # Number of hours in horizon at every step of receding horizon scheme
 nrtm_horizon = nhours_horizon*nrtm; # Number of real-time intervals in horizon at every step of receding horizon scheme
 
 #Model Parameters

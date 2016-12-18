@@ -66,10 +66,18 @@ day = 1:ndays_planning; # {1,2,...,7}
 
 if generate_new_sample_paths == 1
 # Generate NS sample paths for realizations of loads in 7 days at hourly intervals
-  (paths,loadperm) = generate_sample_paths(load,NS,"samplepaths.csv","sampleloadperm.csv");
+for n=1:100
+  (paths,loadperm) = generate_sample_paths(load,NS,string(pwd(),"/confidence/samplepaths$n.csv"));
 end
+end
+
+objective_Vector = Vector{Float64}(); # Collect all objectives in this vector
+
+for n = 1:100 # Start FOR loop for Confidence interval
+println("Sample $n")
+
 # Take the NS sample paths for loads generated earlier
-paths = Matrix{Int64}(readcsv("samplepaths.csv"));
+paths = Matrix{Int64}(readcsv(string(pwd(),"/confidence/samplepaths$n.csv")));
 loadperm = zeros(nrtm,ndam,ndays_planning,NS);
 for s in S
   j = 1;
@@ -83,7 +91,7 @@ end
 
 ################ Model ##################
 tic()
-m = Model(solver = GurobiSolver(Threads=2))
+m = Model(solver = GurobiSolver(Threads=2,OutputFlag=0))
     @variable(m, -P_max <= Prtm[rtm,dam,day,S] <= P_max)	                #Power sold to the real time market, kW
     @variable(m, -P_max <= Pdam[dam,day,S] <= P_max)    	                #Power sold to the day ahead market, kW
     @variable(m, 0 <= ebat[rtm,dam,day,S] <= ebat_max)      	#Energy stored in the battery at the end of each real time interval, kWh
@@ -131,6 +139,15 @@ time_taken_st_fullproblem = toc();
 ###############################################################
 
 obj_st_fp = getobjectivevalue(m);
+push!(objective_Vector,obj_st_fp)
+end # End FOR loop for confidence interval
+objective_Vector_mean = mean(objective_Vector);
+objective_Vector_std = mean(objective_Vector_std);
+objective_down = objective_Vector_mean - tdistinvcdf(length(objective_Vector)-1, 0.975)*std(objective_Vector)/sqrt(length(objective_Vector));
+objective_up = objective_Vector_mean + tdistinvcdf(length(objective_Vector)-1, 0.975)*std(objective_Vector)/sqrt(length(objective_Vector));
+println("Expected objective over 100 runs = $(objective_Vector_mean)")
+println("Confidence interval on objective over 100 runs = ($(objective_down),$(objective_up))")
+
 
 if makeplots == 1
 ################# PLOTTING #################
