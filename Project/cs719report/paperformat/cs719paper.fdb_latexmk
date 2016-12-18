@@ -1,13 +1,13 @@
 # Fdb version 3
-["bibtex cs719paper"] 1482022514 "cs719paper.aux" "cs719paper.bbl" "cs719paper" 1482022515
+["bibtex cs719paper"] 1482023364 "cs719paper.aux" "cs719paper.bbl" "cs719paper" 1482024511
   "/usr/share/texlive/texmf-dist/bibtex/bst/base/plain.bst" 1292289607 20613 bd3fbfa9f64872b81ac57a0dd2ed855f ""
   "cs719.bib" 1481947801 8347 5ca2a19402ccc2a679408173e94187aa ""
-  "cs719paper.aux" 1482022515 9484 2be3c22a33a1d47ec0a9db2924619b5d ""
+  "cs719paper.aux" 1482024511 9484 f75a1905360133cbc33a945d09299eff ""
   "cs719paper.bcf" 0 -1 0 ""
   (generated)
-  "cs719paper.bbl"
   "cs719paper.blg"
-["pdflatex"] 1482022514 "cs719paper.tex" "cs719paper.pdf" "cs719paper" 1482022515
+  "cs719paper.bbl"
+["pdflatex"] 1482024510 "cs719paper.tex" "cs719paper.pdf" "cs719paper" 1482024511
   "/etc/texmf/web2c/texmf.cnf" 1470274592 1101 af7716885e081ab43982cab7b4672c1a ""
   "/usr/share/texlive/texmf-dist/fonts/enc/dvips/base/8r.enc" 1165713224 4850 80dc9bab7f31fb78a000ccfed0e27cab ""
   "/usr/share/texlive/texmf-dist/fonts/map/fontname/texfonts.map" 1272929888 3287 e6b82fe08f5336d4d5ebc73fb1152e87 ""
@@ -138,12 +138,12 @@
   "Figures/rtmprices.pdf" 1481908181 15013 64b7c72284ce1b85dd6d3c72377ffcc8 ""
   "Figures/scenario_tree-crop.pdf" 1482008775 20221 c02c96ecd5c7f5020f9f1b375cd99f17 ""
   "Figures/system_blocks-crop.pdf" 1482022406 23218 5695c7c4fe950a761495473e191f81b5 ""
-  "cs719paper.aux" 1482022515 9484 2be3c22a33a1d47ec0a9db2924619b5d ""
-  "cs719paper.bbl" 1482022514 265 c02f075781d4808cda0871b335161a4e "bibtex cs719paper"
-  "cs719paper.out" 1482022515 2064 eb58ebe73a8dd78243a57dd9dc74cc6f ""
-  "cs719paper.tex" 1482022514 28705 94a622ee8f6e34e682f959eac809220b ""
+  "cs719paper.aux" 1482024511 9484 f75a1905360133cbc33a945d09299eff ""
+  "cs719paper.bbl" 1482023364 265 c02f075781d4808cda0871b335161a4e "bibtex cs719paper"
+  "cs719paper.out" 1482024511 2064 eb58ebe73a8dd78243a57dd9dc74cc6f ""
+  "cs719paper.tex" 1482024510 28495 0e2f1b6396c1c1a78573a2a2cee8d418 ""
   (generated)
-  "cs719paper.aux"
   "cs719paper.out"
+  "cs719paper.aux"
   "cs719paper.log"
   "cs719paper.pdf"
