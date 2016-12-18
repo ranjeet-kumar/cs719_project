@@ -147,7 +147,7 @@ netobjective_realized = zeros(nhours_planning);
 tic()
 j=1;
 for p in 1:nhours_planning
-    println("Scenario $k, Step $p")
+
 
     #Load and price data
     load = loaddata1[(p-1)*nrtm+(1:nrtm_horizon),:];	#Load, MW
@@ -211,7 +211,7 @@ for p in 1:nhours_planning
     profitEdam_realized[p] = getvalue(getvariable(m_rol,:profitEdam))[dam[1],realized_sequence[p]];
     profittotal_realized[p] = sum(profitErtm_realized[:,p]) + profitEdam_realized[p];
     netobjective_realized[p] = sum(unmetcost_realized[:,p]) - profittotal_realized[p];
-
+    println("Scenario $k, Step $p, netobjective_realized = $(netobjective_realized[p])")
 #=
 
     println("\nTotal Profits on day ", p, ": ", getValue(profittotal),"\n")
