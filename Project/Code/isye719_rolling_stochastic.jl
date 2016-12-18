@@ -173,10 +173,10 @@ for p in 1:nhours_planning
     @variable(m_rol, suppliedload[rtm,dam,S] >= 0)
     @variable(m_rol, unmetload[rtm,dam,S] >= 0)
 		@expression(m_rol, Pnet[i in rtm,k in dam,s in S], Prtm[i,k,s] + Pdam[k,s] + suppliedload[i,k,s])    #Net power discharged from battery in all 5-min interval, kW
-		@variable(m_rol, profitErtm[rtm,dam,S])# >= 0)				        #Profit from the real time market, USD
-    @variable(m_rol, profitEdam[dam,S])# >= 0)	        			#Profit from the day ahead market, USD
-    @variable(m_rol, profittotal[S])# >= 0)		        	#Total profit in the day, USD
-    @variable(m_rol, unmetcost[S])
+		@variable(m_rol, profitErtm[rtm,dam,S])				        #Profit from the real time market, USD
+    @variable(m_rol, profitEdam[dam,S])	        			#Profit from the day ahead market, USD
+    @variable(m_rol, profittotal[S])		        	#Total profit in the day, USD
+    @variable(m_rol, unmetcost[rtm,dam,S])
 
     @constraint(m_rol, InitialEnergy[s in S], ebat[1,1,s] == ebat0 - Pnet[1,1,s]*dtrtm)	#Inital energy in the battery
     @constraint(m_rol, rtmEBalance[i in rtm[2:end],k in dam,s in S], ebat[i,k,s] == ebat[i-1,k,s] - Pnet[i,k,s]*dtrtm)	#Dynamics constraint
