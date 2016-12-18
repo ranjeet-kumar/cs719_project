@@ -1,141 +1,85 @@
-
 using JuMP
 using PyPlot
 using Gurobi
 
-close("all")
-
-############# Funtions to convert JuMP returned variables to arrays ################
-
-function convertToArray(x)
-	y = getvalue(x)
-	n = length(y)
-	a = zeros(n)
-	for i = 1:n
-		a[i] = y[i]
-	end
-	return a
-end
-
-function convertToArray2(AA,n)
-	AA = getvalue(A)
-	m = (n[1],n[2])
-	B = zeros(m)
-	for i in 1:n[1]
-		for j in 1:n[2]
-			B[i,j] = AA[i,j]
-		end
-	end
-	return B
-end
-
-function convertToArray3(AA,n)
-	m = (n[1],n[2],n[3])
-	B = zeros(m)
-	for i in 1:n[1]
-		for j in 1:n[2]
-			for k in 1:n[3]
-				B[i,j,k] = AA[i,j,k]
-			end
-		end
-	end
-	return B
-end
-
-function convertToArray4(AA,n)
-	m = (n[1],n[2],n[3],n[4])
-	B = zeros(m)
-	for i in 1:n[1]
-		for j in 1:n[2]
-			for k in 1:n[3]
-				for l in 1:n[4]
-					B[i,j,k,l] = AA[i,j,k,l]
-				end
-			end
-		end
-	end
-	return B
-end
-
+include("helper_functions.jl")
 #############################################################################################################
+# Read load and price data from csv files
+loadExceldata = readcsv("DATARCoast.csv");
+rtmpriceExceldata = readcsv("AggregatedData_RTM_ALTA31GT_7_B1.csv")
+dampriceExceldata = readcsv("AggregatedData_DAM_ALTA31GT_7_B1.csv")
 
-loaddata = readcsv("DATARCoast.csv");
-rtmpricedata = readcsv("AggregatedData_RTM_ALTA31GT_7_B1.csv")
-dampricedata = readcsv("AggregatedData_DAM_ALTA31GT_7_B1.csv")
+generate_new_scenarios = 0; # 0: don't generate new scenarios for load profiles; 1: generate new scenarios
+generate_new_sample_paths = 0; # 0: don't generate new sample paths for loads; 1: generate new sample paths
+participate_rtm = 1; # 0: Don't participate in RTM; 1: participate in RTM
+participate_dam = 1; # 0: Don't participate in DAM; 1: participate in DAM
+makeplots = 1; # 0: Don't generate plots, 1: Generate plots
 
+# Defining time parameters for the model and planning schedule
 dtdam = 1; 				#time interval of each day ahead market (hourly) intervals [hour]
-ndam = 24;				#No. of day ahead market (hourly) intervals in a day
+ndam = 24;				#No. of day-ahead market (hourly) intervals in a day
 dtrtm = 5/60;				#time interval of each real time interval [hour]
 nrtm = Int64(dtdam/dtrtm);		#No. of real time intervals in each hour
-
-nrtmpoints = ndam*nrtm;		        #Total number of points in RTM data in one day
-ndampoints = ndam;			#Total number of points in hourly data in one day
+nrtmpoints = ndam*nrtm;		    #Total number of points in RTM data in one day
+ndampoints = ndam;			  #Total number of points in hourly data in one day
+weekly_ndays = 7;         #Number of days in every week
+ndays = 365;              #Number of days data is available for
+ndays_planning = 7;       #Number of days you want to plan for
+nweeks_planning = Int64(ceil((ndays_planning/weekly_ndays)));
+nhours_planning = ndays_planning*ndam;  #Number of hours we will plan the policy for
+nrtm_planning = nhours_planning*nrtm;   #Number of rtm intervals we will plan the policy for
 
 #Model Parameters
 ebat_max = 0.5;	          #Battery capacity, MWh
 P_max = 1;	          #Maximum power, MW
+ebat0 = ebat_max;		   #Initial State of charge
 rampmin = -0.5*P_max;	          #Lower bound for ramp discharge, MW/5min
 rampmax = 0.5*P_max;  	  #Upper bound for ramp discharge, MW/5min
-eff = 1;                  #Discharging Efficiency of battery
-ebat0 = ebat_max;		   #Initial State of charge
-ebatend = ebat_max;		  #State of charge at the end of the day
-ndays = 365;              #Number of days data is available for
-ndays_planning = 7;       #Number of days you want to plan for
-nhours_planning = ndays_planning*ndam;
-nrtm_planning = nhours_planning*nrtm;
-
 NS = 50; # Number of scenarios you want to sample from the distrbution
 S = 1:NS;
 
+# Price data
+eprrtm = rtmpriceExceldata[1:nrtmpoints*ndays,4];	 #Real Time Market price, $/MWh
+eprdam = dampriceExceldata[1:ndampoints*ndays,4];	 #Day Ahead Market price, $/MWh
 
-
-
-#Load and price data
-load = Matrix{Float64}(loaddata[2:nrtmpoints+1,2+(1:ndays)]);	#Load, MW
-
-eprrtm = rtmpricedata[1:nrtmpoints*ndays,4];	    	#Real Time Market price, $/MWh
-eprdam = dampricedata[1:ndampoints*ndays,4];	    	#Day Ahead Market Selling price, $/MWh
-
-#Reshape the data to matrices
-rtmepr = reshape(eprrtm,nrtm,ndam,ndays);
-damepr = reshape(eprdam,ndam,ndays);
-load = reshape(load,nrtm,ndam,ndays);
-loadvec = vec(load);
-
-
-
-# Reshaping the data as weekly profiles
-reshape_ndays = 7;
-reshape_nrows = reshape_ndays*nrtmpoints;
-reshape_ncolumns = Int64(floor(length(load)/reshape_nrows));
-load_estimationdata = loadvec[1:reshape_nrows*reshape_ncolumns];
-load_weekly = reshape(load_estimationdata,reshape_nrows,reshape_ncolumns);
-
-
-
-# Loading the NS scenarios for weekly load profiles in kW generated from the fullproblem_stochastic code
-nweeks_planning = Int64(ceil((ndays_planning/reshape_ndays)));
-
-loadNSdata = readcsv("loads_scenarios_month.csv")
-
-
-ndays_data = (nweeks_planning+1)*reshape_ndays;
+# Generate new scenarios for loads
+loadNSdatafile = "loads_scenarios_month.csv";
+if generate_new_scenarios == 1
+  load = Matrix{Float64}(loadExceldata[2:nrtmpoints+1,2+(1:ndays)]);	#Load, MW
+  loadNSdata = generate_weekly_loads_scenarios(load,1:52,ndays_planning,NS,loadNSdatafile);
+end
+loadNSdata = readcsv(loadNSdatafile)
+ndays_data = (nweeks_planning+1)*weekly_ndays;
 loadNSplanningdata = reshape(loadNSdata,nrtm,ndam,ndays_data,NS);   #kW
 
-################################################################
-
-
+#Reshape the data to matrices to be used in the model
+rtmepr = reshape(eprrtm,nrtm,ndam,ndays);
+damepr = reshape(eprdam,ndam,ndays);
 load = loadNSplanningdata[:,:,1:ndays_planning,:]/1000; #MW
 
-load_mv = mean(load,4);
+#Define sets to be used in the JuMP model
+rtm = 1:nrtm; # {1,2,...,12}
+dam = 1:ndam; # {1,2,...,24}
+day = 1:ndays_planning; # {1,2,...,7}
 
-#Define sets to be used in the model defVar and addConstraint
-rtm = 1:nrtm;
-dam = 1:ndam;
-day = 1:ndays_planning;
+if generate_new_sample_paths == 1
+# Generate NS sample paths for realizations of loads in 7 days at hourly intervals
+  (paths,loadperm) = generate_sample_paths(load,NS,"samplepaths.csv","sampleloadperm.csv");
+end
+# Take the NS sample paths for loads generated earlier
+paths = readcsv("samplepaths.csv");
+loadperm = zeros(nrtm,ndam,ndays_planning,NS);
+for s in S
+  j = 1;
+  for l in day
+    for k in dam
+        loadperm[:,k,l,s] = load[:,k,l,paths[j,s]];
+        j = j+1;
+    end
+  end
+end
 
-
-
+loadperm_mv = meanperm(load,4);
 
 ################ Mean Value Model ##################
 tic()
@@ -146,19 +90,20 @@ mv_sf = Model(solver = GurobiSolver(Threads=2))
 		@variable(mv_sf, suppliedload[rtm,dam,day] >= 0)
 		@variable(mv_sf, unmetload[rtm,dam,day] >= 0)
 		@expression(mv_sf, Pnet[i in rtm,k in dam,l in day], Prtm[i,k,l] + Pdam[k,l] + suppliedload[i,k,l])    #Net power discharged from battery in all 5-min interval, kW
-		@variable(mv_sf, profitErtm[rtm,dam,day])# >= 0)				        #Profit from the real time market, USD
-		@variable(mv_sf, profitEdam[dam,day])# >= 0)	        			#Profit from the day ahead market, USD
-		@variable(mv_sf, profittotal)# >= 0)		        	#Total profit in the day, USD
+		@variable(mv_sf, profitErtm[rtm,dam,day])				        #Profit from the real time market, USD
+		@variable(mv_sf, profitEdam[dam,day])	        			#Profit from the day ahead market, USD
+		@variable(mv_sf, profittotal)		        	#Total profit in the day, USD
 		@variable(mv_sf, unmetcost)
 
-		@constraint(mv_sf, InitialEnergy[s in S], ebat[1,1,1] == ebat0 - 1/eff*Pnet[1,1,1]*dtrtm)	#Inital energy in the battery
-		#    @constraint(mv_sf, EndSOC[i in rtm,k in dam,l in day], soc[i,k,l] >= socend)		#Constraint on SOC at the end of the day
-		@constraint(mv_sf, rtmEBalance[i in rtm[2:end],k in dam,l in day], ebat[i,k,l] == ebat[i-1,k,l] - 1/eff*Pnet[i,k,l]*dtrtm)	#Dynamics constraint
-		@constraint(mv_sf, damEBalance[i=rtm[1],k in dam[2:end],iend=rtm[end],l in day], ebat[i,k,l] == ebat[iend,k-1,l] - 1/eff*Pnet[i,k,l]*dtrtm)	#Dynamics constraint
+		@constraint(mv_sf, InitialEnergy[s in S], ebat[1,1,1] == ebat0 - Pnet[1,1,1]*dtrtm)	#Inital energy in the battery
+		@constraint(mv_sf, rtmEBalance[i in rtm[2:end],k in dam,l in day], ebat[i,k,l] == ebat[i-1,k,l] - Pnet[i,k,l]*dtrtm)	#Dynamics constraint
+		@constraint(mv_sf, damEBalance[i=rtm[1],k in dam[2:end],iend=rtm[end],l in day], ebat[i,k,l] == ebat[iend,k-1,l] - Pnet[i,k,l]*dtrtm)	#Dynamics constraint
 		@constraint(mv_sf, dayEBalance[i=rtm[1],k=dam[1],iend=rtm[end],kend=dam[end],l in day[2:end]], ebat[i,k,l] == ebat[iend,kend,l-1] - 1/eff*Pnet[i,k,l]*dtrtm)	#Dynamics constraint
-		@constraint(mv_sf, UnmetLoad[i in rtm,k in dam,l in day], suppliedload[i,k,l] + unmetload[i,k,l] >=  load_mv[i,k,l])
-		@constraint(mv_sf, BoundSupplied[i in rtm,k in dam,l in day], suppliedload[i,k,l] <= load_mv[i,k,l])
-		@constraint(mv_sf, BoundUnmet[i in rtm,k in dam,l in day], unmetload[i,k,l] <= load_mv[i,k,l])
+		@constraint(mv_sf, UnmetLoad[i in rtm,k in dam,l in day], suppliedload[i,k,l] + unmetload[i,k,l] >=  loadperm_mv[i,k,l])
+		@constraint(mv_sf, BoundSupplied[i in rtm,k in dam,l in day], suppliedload[i,k,l] <= loadperm_mv[i,k,l])
+		@constraint(mv_sf, BoundUnmet[i in rtm,k in dam,l in day], unmetload[i,k,l] <= loadperm_mv[i,k,l])
+		@constraint(mv_sf, NetDischarge1[i in rtm,k in dam,l in day,s in S], Pnet[i,k,l,s] <= P_max)
+    @constraint(mv_sf, NetDischarge2[i in rtm,k in dam,l in day,s in S], Pnet[i,k,l,s] >= -P_max)
 		#=    @constraint(mv_sf, RTMRamp1[i in rtm[2:end],k in dam,l in day], Pnet[i,k,l]  - Pnet[i-1,k,l] <= rampmax*dtrtm)   #Ramp discharge constraint at each time
 		@constraint(mv_sf, RTMRamp2[i in rtm[2:end],k in dam,l in day], Pnet[i,k,l]  - Pnet[i-1,k,l] >= -rampmax*dtrtm)   #Ramp discharge constraint at each time
 		@constraint(mv_sf, DAMRamp1[i in rtm[1],k in dam[2:end],iend=rtm[end],l in day], Pnet[i,k,l] - Pnet[iend,k-1,l] <= rampmax*dtrtm)   #Ramp discharge constraint at each time
@@ -174,7 +119,6 @@ mv_sf = Model(solver = GurobiSolver(Threads=2))
 		# Non-anticipativity constraints for first stage variables
 		@constraint(mv_sf, Nonant_PDAM[k in dam,l in day], Pdam[k,l] == Pdam[k,l])
 		@objective(mv_sf, Min, -profittotal + unmetcost)
-#    print(mv_sf)
 status = solve(mv_sf)
 Pdam_mv_sf = getvalue(getvariable(mv_sf,:Pdam))
 ebat_mv_sf = getvalue(getvariable(mv,:ebat))[rtm[end],:,:]
@@ -193,19 +137,20 @@ m_sfd = Model(solver = GurobiSolver(Threads=2))
 		@variable(m_sfd, suppliedload[rtm,dam,day,S] >= 0)
 		@variable(m_sfd, unmetload[rtm,dam,day,S] >= 0)
 		@expression(m_sfd, Pnet[i in rtm,k in dam,l in day,s in S], Prtm[i,k,l,s] + Pdam[k,l,s] + suppliedload[i,k,l,s])    #Net power discharged from battery in all 5-min interval, kW
-		@variable(m_sfd, profitErtm[rtm,dam,day,S])# >= 0)				        #Profit from the real time market, USD
-		@variable(m_sfd, profitEdam[dam,day,S])# >= 0)	        			#Profit from the day ahead market, USD
-		@variable(m_sfd, profittotal[S])# >= 0)		        	#Total profit in the day, USD
+		@variable(m_sfd, profitErtm[rtm,dam,day,S])				        #Profit from the real time market, USD
+		@variable(m_sfd, profitEdam[dam,day,S])	        			#Profit from the day ahead market, USD
+		@variable(m_sfd, profittotal[S])		        	#Total profit in the day, USD
 		@variable(m_sfd, unmetcost[S])
 
-		@constraint(m_sfd, InitialEnergy[s in S], ebat[1,1,1,s] == ebat0 - 1/eff*Pnet[1,1,1,s]*dtrtm)	#Inital energy in the battery
-		#    @constraint(m_sfd, EndSOC[i in rtm,k in dam,l in day,s in S], soc[i,k,l,s] >= socend)		#Constraint on SOC at the end of the day
-		@constraint(m_sfd, rtmEBalance[i in rtm[2:end],k in dam,l in day,s in S], ebat[i,k,l,s] == ebat[i-1,k,l,s] - 1/eff*Pnet[i,k,l,s]*dtrtm)	#Dynamics constraint
-		@constraint(m_sfd, damEBalance[i=rtm[1],k in dam[2:end],iend=rtm[end],l in day,s in S], ebat[i,k,l,s] == ebat[iend,k-1,l,s] - 1/eff*Pnet[i,k,l,s]*dtrtm)	#Dynamics constraint
+		@constraint(m_sfd, InitialEnergy[s in S], ebat[1,1,1,s] == ebat0 - Pnet[1,1,1,s]*dtrtm)	#Inital energy in the battery
+		@constraint(m_sfd, rtmEBalance[i in rtm[2:end],k in dam,l in day,s in S], ebat[i,k,l,s] == ebat[i-1,k,l,s] - Pnet[i,k,l,s]*dtrtm)	#Dynamics constraint
+		@constraint(m_sfd, damEBalance[i=rtm[1],k in dam[2:end],iend=rtm[end],l in day,s in S], ebat[i,k,l,s] == ebat[iend,k-1,l,s] - Pnet[i,k,l,s]*dtrtm)	#Dynamics constraint
 		@constraint(m_sfd, dayEBalance[i=rtm[1],k=dam[1],iend=rtm[end],kend=dam[end],l in day[2:end],s in S], ebat[i,k,l,s] == ebat[iend,kend,l-1,s] - 1/eff*Pnet[i,k,l,s]*dtrtm)	#Dynamics constraint
-		@constraint(m_sfd, UnmetLoad[i in rtm,k in dam,l in day, s in S], suppliedload[i,k,l,s] + unmetload[i,k,l,s] >=  load[i,k,l,s])
-		@constraint(m_sfd, BoundSupplied[i in rtm,k in dam,l in day,s in S], suppliedload[i,k,l,s] <= load[i,k,l,s])
-		@constraint(m_sfd, BoundUnmet[i in rtm,k in dam,l in day,s in S], unmetload[i,k,l,s] <= load[i,k,l,s])
+		@constraint(m_sfd, UnmetLoad[i in rtm,k in dam,l in day, s in S], suppliedload[i,k,l,s] + unmetload[i,k,l,s] >=  loadperm[i,k,l,s])
+		@constraint(m_sfd, BoundSupplied[i in rtm,k in dam,l in day,s in S], suppliedload[i,k,l,s] <= loadperm[i,k,l,s])
+		@constraint(m_sfd, BoundUnmet[i in rtm,k in dam,l in day,s in S], unmetload[i,k,l,s] <= loadperm[i,k,l,s])
+		@constraint(m_sfd, NetDischarge1[i in rtm,k in dam,l in day,s in S], Pnet[i,k,l,s] <= P_max)
+    @constraint(m_sfd, NetDischarge2[i in rtm,k in dam,l in day,s in S], Pnet[i,k,l,s] >= -P_max)
 		#=    @constraint(m_sfd, RTMRamp1[i in rtm[2:end],k in dam,l in day,s in S], Pnet[i,k,l,s]  - Pnet[i-1,k,l,s] <= rampmax*dtrtm)   #Ramp discharge constraint at each time
 		@constraint(m_sfd, RTMRamp2[i in rtm[2:end],k in dam,l in day,s in S], Pnet[i,k,l,s]  - Pnet[i-1,k,l,s] >= -rampmax*dtrtm)   #Ramp discharge constraint at each time
 		@constraint(m_sfd, DAMRamp1[i in rtm[1],k in dam[2:end],iend=rtm[end],l in day,s in S], Pnet[i,k,l,s] - Pnet[iend,k-1,l,s] <= rampmax*dtrtm)   #Ramp discharge constraint at each time

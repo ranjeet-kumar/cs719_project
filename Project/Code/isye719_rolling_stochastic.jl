@@ -197,6 +197,8 @@ for p in 1:nhours_planning
     @constraint(m_rol, TotalProfit[s in S], profittotal[s] ==
                         sum{profitErtm[i,k,s], i in rtm, k in dam} + sum{profitEdam[k,s], k in dam})
     @constraint(m_rol, UnmetCost[s in S], unmetcost[s] == sum{rtmepr[i,k]*unmetload[i,k,s], i in rtm, k in dam})
+    @constraint(m, NetDischarge1[i in rtm,k in dam,s in S], Pnet[i,k,s] <= P_max)
+    @constraint(m, NetDischarge2[i in rtm,k in dam,s in S], Pnet[i,k,s] >= -P_max)
     # Non-anticipativity constraints for first stage variables
     @constraint(m_rol, Nonant_PDAM[k in dam,s in S], Pdam[k,s] == (1/NS)*sum{Pdam[k,s], s in S})
     @objective(m_rol, Min, (1/NS)*sum{-profittotal[s] + unmetcost[s], s in S})
