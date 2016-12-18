@@ -111,7 +111,7 @@ A time instance for a day-ahead market variable in the model is represented by o
 
 So, if a variable or time-varying parameter is indexed by only one index $k$ it implies that it varies at hourly intervals and belongs to the day-ahead market, whereas a variable or time-varying parameter indexed by $(i,k)$ is a real-time variable. 
 
-The time discretization and zero-order hold have been illustrated for the battery power in real-time and day-ahead markets in Figure \ref{fig:discretization}.
+The time discretization and zero-order hold have been illustrated for the battery power in real-time and day-ahead markets in Figure \ref{fig:discretization}, in which the red 
 \begin{figure}[h!]
 \begin{center}
 \includegraphics[scale=0.7]{Figures/discretization1.pdf} \caption{Time Discretization and Zero-Order Hold for Variables}\label{fig:discretization}\end{center}
@@ -312,6 +312,15 @@ expected cost: -714.18 better than -711
 
 \subsubsection{Estimating Bounds with Two-Stage Approximation: Restriction}
 expected cost: -698.92
+
+For a set of 50 sample scenarios for load profiles for a week's planning period, Figure \ref{fig:histogram} shows the distribution of the revenues obtained in different scenarios. It is evident from Figure \ref{fig:histogram} that the policy from the perfect information solution always gives the highest revenues in all scenarios and the policy from the extensive form of stochastic program with the same sample scenarios also achieves much better revenues as compared to the cases with two-stage approximation with restriction on state variables and the mean-value approximation of the same sample scenarios.
+\begin{figure}[h!]
+\begin{center}
+\includegraphics[scale=0.4]
+{Figures/Plots/fullproblem_stoch/histogram_costs.pdf} \caption{Distribution of the revenues obained in a set of 50 sample scenarios}\label{fig:histogram}\end{center}
+\end{figure}
+\FloatBarrier
+
 \subsection{Stochastic Dual Dynamic Programming}
 final lower bound : -554.88
 final upper bound : -554.79 confidence interval: [-554.57, -555.02]
