@@ -84,12 +84,9 @@ end
 
 
 # Loading the NS scenarios for weekly load profiles in kW generated from the fullproblem_stochastic code
-nweeks_planning = Int64(ceil((ndays_planning/reshape_ndays)));
 
 loadNSdata = readcsv("loads_scenarios_month.csv")
-
-
-ndays_data = (nweeks_planning+1)*reshape_ndays;
+ndays_data = (nweeks_planning+1)*weekly_ndays;
 loadNSplanningdata = reshape(loadNSdata,nrtm,ndam,ndays_data,NS);   #kW
 
 ################################################################
@@ -130,7 +127,7 @@ m_rol = nothing;
 
 obj_st_rh_NS = Vector()
 
-for k in S # Loop to evaluate cost along each scenario
+for k in S[1] # Loop to evaluate cost along each scenario
 
 ebat0 = ebat_max;		  #Initial State of charge, 100 means fully charged
 
@@ -155,8 +152,8 @@ for p in 1:nhours_planning
     #Load and price data
     load = loaddata1[(p-1)*nrtm+(1:nrtm_horizon),:];	#Load, MW
 
-    eprrtm = rtmpricedata[(p-1)*nrtm+(1:nrtm_horizon),4];	    	#Real Time Market price, $/MWh
-    eprdam = dampricedata[(p-1)+(1:nhours_horizon),4];	    	#Day Ahead Market Selling price, $/MWh
+    eprrtm = rtmpriceExceldata[(p-1)*nrtm+(1:nrtm_horizon),4];	    	#Real Time Market price, $/MWh
+    eprdam = dampriceExceldata[(p-1)+(1:nhours_horizon),4];	    	#Day Ahead Market Selling price, $/MWh
 
     #Reshape the data to matrices
     rtmepr = reshape(eprrtm,nrtm,nhours_horizon);
@@ -197,8 +194,8 @@ for p in 1:nhours_planning
     @constraint(m_rol, TotalProfit[s in S], profittotal[s] ==
                         sum{profitErtm[i,k,s], i in rtm, k in dam} + sum{profitEdam[k,s], k in dam})
     @constraint(m_rol, UnmetCost[s in S], unmetcost[s] == sum{rtmepr[i,k]*unmetload[i,k,s], i in rtm, k in dam})
-    @constraint(m, NetDischarge1[i in rtm,k in dam,s in S], Pnet[i,k,s] <= P_max)
-    @constraint(m, NetDischarge2[i in rtm,k in dam,s in S], Pnet[i,k,s] >= -P_max)
+    @constraint(m_rol, NetDischarge1[i in rtm,k in dam,s in S], Pnet[i,k,s] <= P_max)
+    @constraint(m_rol, NetDischarge2[i in rtm,k in dam,s in S], Pnet[i,k,s] >= -P_max)
     # Non-anticipativity constraints for first stage variables
     @constraint(m_rol, Nonant_PDAM[k in dam,s in S], Pdam[k,s] == (1/NS)*sum{Pdam[k,s], s in S})
     @objective(m_rol, Min, (1/NS)*sum{-profittotal[s] + unmetcost[s], s in S})
