@@ -117,7 +117,7 @@ m = Model(solver = GurobiSolver(Threads=2))
                         sum{profitErtm[i,k,l,s], i in rtm, k in dam, l in day} + sum{profitEdam[k,l,s], k in dam, l in day})
     @constraint(m, UnmetCost[s in S], unmetcost[s] == sum{rtmepr[i,k,l]*unmetload[i,k,l,s], i in rtm, k in dam, l in day})
     # Non-anticipativity constraints for first stage variables
-    #@constraint(m, Nonant_PDAM[k in dam,l in day,s in S], Pdam[k,l,s] == (1/NS)*sum{Pdam[k,l,s], s in S})
+    @constraint(m, Nonant_PDAM[k in dam,l in day,s in S], Pdam[k,l,s] == (1/NS)*sum{Pdam[k,l,s], s in S})
     @objective(m, Min, (1/NS)*sum{-profittotal[s] + unmetcost[s], s in S})
     if participate_dam == 0
       @constraint(m, NoDAM[k in dam,l in day, s in S], Pdam[k,l,s] == 0)
@@ -131,6 +131,8 @@ time_taken_st_fullproblem = toc();
 ###############################################################
 
 obj_st_fp = getobjectivevalue(m);
+
+obj_st_fp_all = -convertToArray(getvalue(getvariable(m,:profittotal))) + convertToArray(getvalue(getvariable(m,:unmetcost)));
 
 if makeplots == 1
 ################# PLOTTING #################
