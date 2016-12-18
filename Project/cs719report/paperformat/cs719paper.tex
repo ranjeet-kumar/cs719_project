@@ -329,23 +329,29 @@ final lower bound : -554.88
 final upper bound : -554.79 confidence interval: [-554.57, -555.02]
 time : 825.8 sec
 
-Our state variable $E_{i,k}$ (energy-level of battery at any time) captures the history of load demands realized and the decisions made in the previous stages; thus providing stage-wise independent scenarios realizations. The stochastic dual dynamic programming (SDDP) is applicable in this case. 
+Our state variable $E_{i,k}$ (energy-level of battery at any time) captures the history of load demands realized and the decisions made in the previous stages; thus providing stage-wise independent scenario realizations. The stochastic dual dynamic programming (SDDP) is applicable in this case. 
 
-We consider our root node to be between t = 0 and t = -1. 
+The stochastic problem at each node is for making the energy commitment decisions from that hour to the next hour i.e we formulate a problem for decisions in future (where we have not yet observed any realizations). This is because we only have samples of scenarios for that future hour and not the perfect information. To get a lower bound, we have to the solve the problem at root node at which the realized scenario for random data has to be known. In our case we consider the root node problem to be the stochastic program between t = -1 hr and 0 hr. Since we are not participating before t = 0 hr, we know that the random data (load in our case) is 0 between t = -1 hr and t = 0 hr. Hence the stochastic program at our root node is minimizing the $\theta_{1}$ variable (capturing the future costs), such that $\theta_{1} \geq \underline{\theta}$. The solution to this gives a starting lower bound. We give a lower-limit $\underline{\theta}$ for $\theta_1$ because our cost is negative since we are maximizing revenue (or minimizing negative revenue). In case of root node, just $\theta_1$ is being minimized, which becomes unbounded. Thus we need to provide initial lower bound for $\theta_1$. $\underline{\theta}$ is found by assuming energy-market participation with a full capacity of battery in both markets for the full planning period i.e. for negative electricity prices, battery participates in full negative capacity (buying power) and for positive prices it sells power at full capacity. Thus at root node, $\theta_1$ will be the maximum revenue that is achievable without any constraints on battery storage capacity.   
 
-The stochastic problem at each node is for making the energy commitment decisions from that hour to the next hour i.e we formulate a problem for decisions in future (where we have not yet observed any realizations). This is because we only have samples of scenarios for that future hour. To get a lower bound, we have to the solve the problem at root node at which the realized scenario for random data has to be known. In our case we consider the root node problem to be the stochastic program between t = -1 hr and 0 hr. Since we are not participating before t = 0 hr, we know that the random data (load in our case) is 0 between t = -1 hr and t = 0 hr. Hence the stochastic program at our root node is minimizing the $\theta_{1}$ variable (capturing the future costs), such that $\theta_{1} \geq \underline{\theta_{1}}$. The solution to this gives a starting lower bound. We give a lower-limit ($\underline{\theta_{1}}$) for $\theta_1$ because our cost is negative since we are maximizing revenue (or minimizing the cost). In case of root node, just $\theta_1$. Problem becomes unbounded thus we need to provide initial lower bound for $\theta_1$. $\underline{\theta_{1}}$ is found by assuming energy-market participation with a full capacity of battery in both markets for the full planning period i.e. for negative electricity prices, battery participates in full negative capacity (buying power) and for positive prices it sells power at full capacity. Thus at root node, $\theta_1$ will be the maximum revenue that is achievable.   
+In our multi-scale problem, the state variables ($E_{i,k}$) are defined at 12 sub-intervals (of 5 minutes each) within a stage.  In standard (one timescale) SDDP algorithm, we take dual of the constraint linking the state variable at the current stage to the state variable at the previous stage. This does not work in case of multi-scale problems since the state variables vary at a time scale of 5 minutes within a stage, while the stages are realized at every one hour. The value of the state variable that is carried forward to the next stage is only the state at the last sub-interval of the current stage i.e the state variables are linked within each sub-intervals and not directly between the stages. We therefore use the sum of duals of the constraints inter-linking these state variables at all sub-intervals within the stage; this sum in effect links the final value of the state variables between consecutive stages. With this modified approach we implement our version of the SDDP algorithm as follows:    
 
-In our multi-scale problem, the state variables ($E_{i,k}$) are defined at 12 sub-intervals (of 5 minutes each) within a stage.  In standard (one timescale) SDDP algorithm, we take dual of the constraint which links the current state variable at the current stage to the state variable at the previous stage. This does not work in case of multi-scale problems since the state variables vary at a time scale of 5 minutes within a stage, while the stages are realized at every one hour. The value of the state variable that is carried forward to the next stage is only the state at the last sub-interval of each stage i.e the state variables are linked within each sub-intervals and not directly between the stages. We therefore use the sum of duals of the constraints inter-linking these state variables at all sub-intervals within the stage; this sum in effect links the final value of the state variables between consecutive stages. With this modified approach we implement our version of the SDDP algorithm as follows:    
-
-
-so we cannot use directly the dual of the constraint corresponding to the link between stage at last sub-interval and the one before it in any stage. 
-
-We implement SDDP by following the following steps:
-\begin{itemize}
-\item Generate a compact scenario tree
-\item  
+\begin{enumerate}
+\item Generate a compact scenario tree with 50 nodes at every stage (168)\\\\
+\textbf{Forward Pass:}  
+\item Solve the root node problem and get $\theta_1$. Set the current lower bound to $\theta_1$.
+\item Sample a load profile for stage j. 
+\item Formulate an optimization problem as described in Section \ref{subsec:deterministic}, with $n_\text{dam} = j$, $ E_{0, j} = E_{n_\text{rtm}, j-1}$ and using the loads sampled in Step 3. Add a $\theta_{j+1}$ (capturing future costs) variable (bounded by $\underline{\theta}$) to the objective function.   
+\item Solve the optimization problem formulated in Step 4, get $E_{n_\text{rtm}, j}$ Set $j = j +1$. 
+\item \emph{If} j <= 168, go to Step 3 \emph{else} go to Step 7 and set j = 168.\\\\
+\textbf{Backward Pass:}
+\emph{for s = 1,2,....,N}
+\begin{itemize} 
+\item Formulate a scenario sub-problem for scenario s, as described in Section  \ref{subsec:deterministic}, with $n_\text{dam} = j$, $E_{0, j} = E_{n_\text{rtm}, j-1}$ (obtained from forward pass) and using the loads in scenario s.
+\item Solve the scenario subproblem and get the duals corresponding to each of the ${n_\text{rtm}}$ constraints linking the state variables at each subintervals. 
 \end{itemize}
-\
+\emph{end for}
+\end{enumerate}
+
 
 \begin{figure}[h!]
 \begin{center}
