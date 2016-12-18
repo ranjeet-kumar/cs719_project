@@ -50,3 +50,6 @@ RUNNING ON SCREENS 18/12/2016 3:10 am
 11818: Rolling_Deterministic_12 FINISHED 5:30 am
 11488: Stochastic confidence interval 100 runs FINISHED 5:30 am
 
+Histograms of costs in ST, DT, PI
+
+
