@@ -1,13 +1,13 @@
 # Fdb version 3
-["bibtex cs719paper"] 1482033675 "cs719paper.aux" "cs719paper.bbl" "cs719paper" 1482035723
+["bibtex cs719paper"] 1482038621 "cs719paper.aux" "cs719paper.bbl" "cs719paper" 1482038695
   "/usr/share/texlive/texmf-dist/bibtex/bst/base/plain.bst" 1292289607 20613 bd3fbfa9f64872b81ac57a0dd2ed855f ""
   "cs719.bib" 1481947801 8347 5ca2a19402ccc2a679408173e94187aa ""
-  "cs719paper.aux" 1482035723 9205 1ede58a75387972408e5727ca7e45cc2 ""
+  "cs719paper.aux" 1482038695 9209 3209ada8fd3458951565f32418e66b59 ""
   "cs719paper.bcf" 0 -1 0 ""
   (generated)
   "cs719paper.bbl"
   "cs719paper.blg"
-["pdflatex"] 1482035722 "cs719paper.tex" "cs719paper.pdf" "cs719paper" 1482035723
+["pdflatex"] 1482038695 "cs719paper.tex" "cs719paper.pdf" "cs719paper" 1482038695
   "/etc/texmf/web2c/texmf.cnf" 1470274592 1101 af7716885e081ab43982cab7b4672c1a ""
   "/usr/share/texlive/texmf-dist/fonts/enc/dvips/base/8r.enc" 1165713224 4850 80dc9bab7f31fb78a000ccfed0e27cab ""
   "/usr/share/texlive/texmf-dist/fonts/map/fontname/texfonts.map" 1272929888 3287 e6b82fe08f5336d4d5ebc73fb1152e87 ""
@@ -123,7 +123,7 @@
   "/usr/share/texmf/web2c/texmf.cnf" 1458942643 31351 b32c45dce4a01cb7b53ed90c546614ca ""
   "/var/lib/texmf/fonts/map/pdftex/updmap/pdftex.map" 1470274877 1863403 bbacf662b61cdf51956e2a2e62e802f1 ""
   "/var/lib/texmf/web2c/pdftex/pdflatex.fmt" 1470274946 3853513 19013f61115ab0acbc876164f10dc955 ""
-  "Figures/Plots/dualdynamic/bounds.pdf" 1482021095 17474 07fdb14a247a7e1d312b21e6c2c9bd62 ""
+  "Figures/Plots/dualdynamic/bounds.pdf" 1482036145 18326 27a406e5aa35879ebc3d6858b07fc388 ""
   "Figures/Plots/fullproblem_stoch/Pdam_fp_st.pdf" 1482033645 18310 0ad25d0e6a5f3556f8d02e9ed22555de ""
   "Figures/Plots/fullproblem_stoch/Prtm_fp_st.pdf" 1482033645 42505 752afd4df457f88ceb4ad95bcb1ca4e0 ""
   "Figures/Plots/fullproblem_stoch/cumulative_rev_fp_st.pdf" 1482033645 65214 c3f1560ea9ed3a2ab11b7d1d800e3632 ""
@@ -137,12 +137,12 @@
   "Figures/qhmprices.pdf" 1481908181 12583 1e5f27d195ac4116cb35dbc5f06b4002 ""
   "Figures/rtmprices.pdf" 1481908181 15013 64b7c72284ce1b85dd6d3c72377ffcc8 ""
   "Figures/scenario_tree-crop.pdf" 1482008775 20221 c02c96ecd5c7f5020f9f1b375cd99f17 ""
-  "cs719paper.aux" 1482035723 9205 1ede58a75387972408e5727ca7e45cc2 ""
-  "cs719paper.bbl" 1482033676 265 c02f075781d4808cda0871b335161a4e "bibtex cs719paper"
-  "cs719paper.out" 1482035723 1821 9d21ed60a392c55fd0d20cebf5ce62c8 ""
-  "cs719paper.tex" 1482035722 29724 083200765358def46364d6313adfc363 ""
+  "cs719paper.aux" 1482038695 9209 3209ada8fd3458951565f32418e66b59 ""
+  "cs719paper.bbl" 1482038621 265 c02f075781d4808cda0871b335161a4e "bibtex cs719paper"
+  "cs719paper.out" 1482038695 1821 9d21ed60a392c55fd0d20cebf5ce62c8 ""
+  "cs719paper.tex" 1482038695 29875 65787714ac58bc734ef0bac4443dc119 ""
   (generated)
-  "cs719paper.pdf"
   "cs719paper.out"
+  "cs719paper.pdf"
   "cs719paper.log"
   "cs719paper.aux"
