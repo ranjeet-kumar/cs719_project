@@ -225,6 +225,9 @@ INPUT /usr/share/texlive/texmf-dist/fonts/vf/adobe/palatino/pplb7t.vf
 INPUT /usr/share/texlive/texmf-dist/fonts/tfm/adobe/palatino/pplb8r.tfm
 INPUT /usr/share/texlive/texmf-dist/tex/latex/psnfss/omsppl.fd
 INPUT /usr/share/texlive/texmf-dist/tex/latex/psnfss/omsppl.fd
+INPUT Figures/system_blocks-crop.pdf
+INPUT ./Figures/system_blocks-crop.pdf
+INPUT ./Figures/system_blocks-crop.pdf
 INPUT Figures/Plots/fullproblem_stoch/cumulative_rev_fp_st.pdf
 INPUT ./Figures/Plots/fullproblem_stoch/cumulative_rev_fp_st.pdf
 INPUT ./Figures/Plots/fullproblem_stoch/cumulative_rev_fp_st.pdf
