@@ -84,7 +84,8 @@ We divide an annual dataset for electricity loads (available over 5-minute inter
 \includegraphics[width=4in]{Figures/Plots/fullproblem_stoch/loads_scenarios.pdf} \caption{Load scenarios for a week}\label{fig:loads_scenarios}\end{center}
 \end{figure}
 
-
+explain scenarios of loads, 12 between any two hours one scenario represents a profile of loads in 12 subintervals. participation begins at time t = 0 and we can take decision latest till 1.5 hours before any hour (according to market rule). so our decision making starts at -1.5 as shown in figure 2 and our participation begins at 0.  so we consider battery and building as one system (building-battery system) just after goal. who try to min their total cost of operation and maximize the total revenue.
+under spikes figure - can use fast dynamic systems to capture the spikes to max the revenue potential. as seen from figure, dam is more smooth and less volatile. and average price is higher in dam. 
 
 Cosidering the price data for a full year to be known (deterministic) we can solve the optimization problem to maximize the annual revenues by operating a battery in the power grid for the whole year. In this work, we aim to solve this deterministic optimization problem with two approaches:
 \begin{enumerate}
@@ -94,7 +95,14 @@ Cosidering the price data for a full year to be known (deterministic) we can sol
 
 At the end, we will compare the two solutions and investigate the advantages and disadvantages of the two approaches.
 
-Understanding the economic incentives provided by generation and load flexibility requires of careful consideration of wholesale electricity market structures and diverse products. Figure \ref{fig:market_control_structure} shows the multiscale control structure currently used to balance the power grid. Resources can participate by buying/selling electrical energy and/or providing ancillary services (regulation, reserves). Figure \ref{fig:energy_AS_prices} shows time-varying prices from the California Independent System Operator (CAISO) for three consecutive days. Energy is transacted at three timescales: in the integrated forward market (day-ahead market with 1-hour intervals), in the fifteen minute market, and through the real-time dispatch process (5-minute intervals). Table \ref{tab:caiso_products} lists the different products transacted at each timescale. Histograms for energy prices at different markets are presented in Figure \ref{fig:CAISO_prices2}. As can be seen, prices are less volatile in the day-ahead market and the average price is higher. In the real-time market (FMM, RTD) prices are frequently negative and occasionally exceed \$150/MWh. Energy systems with fast dynamics (e.g., flywheels, batteries) can exploit these fast price fluctuations.
+investigate economic potential of various markets in stochastic setting
+i.e. compare expected revenue from different market and emphasize why participation in both is imp
+investigation of various solution methods
+subsection- sample avg approx of extensive form
+sussubset - upper and lower bound estimations
+stochastic dual dynamic programming
+receding horizon
+
 
 In the U.S., generators/loads provide the hierarchical market structure with addition flexibility via \emph{regulation} and \emph{reserve} ancillary service products. 
 
