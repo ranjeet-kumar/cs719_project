@@ -83,15 +83,6 @@ for s in S
 end
 
 
-# Loading the NS scenarios for weekly load profiles in kW generated from the fullproblem_stochastic code
-
-loadNSdata = readcsv("loads_scenarios_month.csv")
-ndays_data = (nweeks_planning+1)*weekly_ndays;
-loadNSplanningdata = reshape(loadNSdata,nrtm,ndam,ndays_data,NS);   #kW
-
-################################################################
-
-
 load1 = loadNSplanningdata/1000; #MW
 loaddata1 = reshape(load1,nrtm*ndam*ndays_data,NS);
 
@@ -133,8 +124,8 @@ for k in S[1] # Loop to evaluate cost along each scenario
 ebat0 = ebat_max;		  #Initial State of charge, 100 means fully charged
 
 
-realized_sequence = Vector{Int64}(k*ones(nhours_planning));
-
+#realized_sequence = Vector{Int64}(k*ones(nhours_planning));
+realized_sequence = paths[:,k];
 
 Prtm_realized = zeros(nrtm,nhours_planning);
 unmetload_realized = zeros(nrtm,nhours_planning)

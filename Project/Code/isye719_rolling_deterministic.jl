@@ -83,14 +83,6 @@ for s in S
 end
 
 
-# Loading the NS scenarios for weekly load profiles in kW generated from the fullproblem_stochastic code
-
-loadNSdata = readcsv("loads_scenarios_month.csv")
-ndays_data = (nweeks_planning+1)*weekly_ndays;
-loadNSplanningdata = reshape(loadNSdata,nrtm,ndam,ndays_data,NS);   #kW
-
-################################################################
-
 load1 = loadNSplanningdata/1000; #MW
 loaddata1 = reshape(load1,nrtm*ndam*ndays_data,NS);
 
@@ -132,6 +124,8 @@ obj_dt_rh_NS = Vector()
 mv_rol = nothing; m_rold = nothing;
 
 for k in S[1] # Loop to evaluate cost along each scenario
+
+realized_sequence = paths[:,k];
 
 ebat0_mv = ebat_max;		  #Initial State of charge for mean-value problem, 100 means fully charged
 ebat0 = ebat_max;               #Initial State of charge for all scenarios, 100 means fully charged
@@ -177,14 +171,14 @@ for p in 1:nhours_planning # Starting rolling horizon for mean-value problem
         @variable(mv_rol, suppliedload[rtm,dam] >= 0)
         @variable(mv_rol, unmetload[rtm,dam] >= 0)
     		@expression(mv_rol, Pnet[i in rtm,k in dam], Prtm[i,k] + Pdam[k] + suppliedload[i,k])    #Net power discharged from battery in all 5-min interval, kW
-    		@variable(mv_rol, profitErtm[rtm,dam])# >= 0)				        #Profit from the real time market, USD
-        @variable(mv_rol, profitEdam[dam])# >= 0)	        			#Profit from the day ahead market, USD
-        @variable(mv_rol, profittotal)# >= 0)		        	#Total profit in the day, USD
+    		@variable(mv_rol, profitErtm[rtm,dam])				        #Profit from the real time market, USD
+        @variable(mv_rol, profitEdam[dam])	        			#Profit from the day ahead market, USD
+        @variable(mv_rol, profittotal)		        	#Total profit in the day, USD
         @variable(mv_rol, unmetcost[rtm,dam])
 
-        @constraint(mv_rol, InitialEnergy, ebat[1,1] == ebat0 - 1/eff*Pnet[1,1]*dtrtm)	#Inital energy in the battery
-        @constraint(mv_rol, rtmEBalance[i in rtm[2:end],k in dam], ebat[i,k] == ebat[i-1,k] - 1/eff*Pnet[i,k]*dtrtm)	#Dynamics constraint
-        @constraint(mv_rol, damEBalance[i=rtm[1],k in dam[2:end],iend=rtm[end]], ebat[i,k] == ebat[iend,k-1] - 1/eff*Pnet[i,k]*dtrtm)	#Dynamics constraint
+        @constraint(mv_rol, InitialEnergy, ebat[1,1] == ebat0 - Pnet[1,1]*dtrtm)	#Inital energy in the battery
+        @constraint(mv_rol, rtmEBalance[i in rtm[2:end],k in dam], ebat[i,k] == ebat[i-1,k] - Pnet[i,k]*dtrtm)	#Dynamics constraint
+        @constraint(mv_rol, damEBalance[i=rtm[1],k in dam[2:end],iend=rtm[end]], ebat[i,k] == ebat[iend,k-1] - Pnet[i,k]*dtrtm)	#Dynamics constraint
         @constraint(mv_rol, UnmetLoad[i in rtm,k in dam], suppliedload[i,k] + unmetload[i,k] >=  load_mv[i,k])
         @constraint(mv_rol, BoundSupplied[i in rtm,k in dam], suppliedload[i,k] <= load_mv[i,k])
         @constraint(mv_rol, BoundUnmet[i in rtm,k in dam], unmetload[i,k] <= load_mv[i,k])
@@ -224,9 +218,9 @@ for p in 1:nhours_planning # Starting rolling horizon for mean-value problem
     @variable(m_rold, suppliedload[rtm,dam,S] >= 0)
     @variable(m_rold, unmetload[rtm,dam,S] >= 0)
 		@expression(m_rold, Pnet[i in rtm,k in dam,s in S], Prtm[i,k,s] + Pdam[k,s] + suppliedload[i,k,s])    #Net power discharged from battery in all 5-min interval, kW
-		@variable(m_rold, profitErtm[rtm,dam,S])# >= 0)				        #Profit from the real time market, USD
-    @variable(m_rold, profitEdam[dam,S])# >= 0)	        			#Profit from the day ahead market, USD
-    @variable(m_rold, profittotal[S])# >= 0)		        	#Total profit in the day, USD
+		@variable(m_rold, profitErtm[rtm,dam,S])				        #Profit from the real time market, USD
+    @variable(m_rold, profitEdam[dam,S])	        			#Profit from the day ahead market, USD
+    @variable(m_rold, profittotal[S])		        	#Total profit in the day, USD
     @variable(m_rold, unmetcost[rtm,dam,S])
 
     @constraint(m_rold, InitialEnergy[s in S], ebat[1,1,s] == ebat0 - 1/eff*Pnet[1,1,s]*dtrtm)	#Inital energy in the battery
@@ -257,7 +251,7 @@ for p in 1:nhours_planning # Starting rolling horizon for mean-value problem
     ebat0 = getvalue(getvariable(m_rold,:ebat))[rtm[end],dam[1],realized_sequence[p]];
     Prtm_realized[:,p] = getvalue(getvariable(m_rold,:Prtm))[1:rtm[end],dam[1],realized_sequence[p]];
     unmetload_realized[:,p] = getvalue(getvariable(m_rold,:unmetload))[1:rtm[end],dam[1],realized_sequence[p]];
-    unmetcost_realized[p] = sum(unmetload_realized.*eprrtm[1:rtm[end]]);
+    unmetcost_realized[:,p] = getvalue(getvariable(m_rold,:unmetcost))[1:rtm[end],dam[1],realized_sequence[p]];
     profitErtm_realized[:,p] = getvalue(getvariable(m_rold,:profitErtm))[1:rtm[end],dam[1],realized_sequence[p]];
     profitEdam_realized[p] = getvalue(getvariable(m_rold,:profitEdam))[dam[1],realized_sequence[p]];
     profittotal_realized[p] = sum(profitErtm_realized[:,p]) + profitEdam_realized[p];
