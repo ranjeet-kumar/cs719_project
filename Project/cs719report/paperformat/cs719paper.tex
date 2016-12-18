@@ -87,21 +87,20 @@ We divide an annual dataset for electricity loads (available over 5-minute inter
 explain scenarios of loads, 12 between any two hours one scenario represents a profile of loads in 12 subintervals. participation begins at time t = 0 and we can take decision latest till 1.5 hours before any hour (according to market rule). so our decision making starts at -1.5 as shown in figure 2 and our participation begins at 0.  so we consider battery and building as one system (building-battery system) just after goal. who try to min their total cost of operation and maximize the total revenue.
 under spikes figure - can use fast dynamic systems to capture the spikes to max the revenue potential. as seen from figure, dam is more smooth and less volatile. and average price is higher in dam. 
 
-Cosidering the price data for a full year to be known (deterministic) we can solve the optimization problem to maximize the annual revenues by operating a battery in the power grid for the whole year. In this work, we aim to solve this deterministic optimization problem with two approaches:
-\begin{enumerate}
-\item Simultaneous approach: In this approach, we formulate a single giant optimization problem for a full year and solve it to produce the optimal power and regulation capacities that the battery should operate with in each time interval in all the three markets. 
-\item Rolling (1 day) horizon approach: In this approach, we formulate an optimization problem for a day and solve it to produce the optimal power and regulation capacities for that day, then take the solutions at the end time-point of that day as the initial point for the next day, then formulate the optimization problem for the next day with those initial values and solve for the second day and sequentially we solve for the 365 days. It is called rolling horizon because in this approach we consider a horizon of 1 day and keep shifting the horizon to to the next day after solving the current day.
-\end{enumerate}
+In this work we will :
+\begin{itemize}
+\item Investigate the economic potential of participating in various markets within a stochastic programming setting i.e. compare expected revenue from different markets and explore the benefits of participating in both real time and day-ahead markets
+\item Employ different multi-stage stochastic optimization solution methods and compare their performance. The methods compared are:
+\begin{itemize}
+\item Sample average approximation of extensive form
+\item Upper and lower bound estimations using perfect information and two-stage approximation (restriction)
+\item Stochastic dual dynamic programming (SDDP)
+\item Receding horizon 
+\end{itemize}
+\end{itemize}
 
 At the end, we will compare the two solutions and investigate the advantages and disadvantages of the two approaches.
 
-investigate economic potential of various markets in stochastic setting
-i.e. compare expected revenue from different market and emphasize why participation in both is imp
-investigation of various solution methods
-subsection- sample avg approx of extensive form
-sussubset - upper and lower bound estimations
-stochastic dual dynamic programming
-receding horizon
 
 
 In the U.S., generators/loads provide the hierarchical market structure with addition flexibility via \emph{regulation} and \emph{reserve} ancillary service products. 
@@ -299,12 +298,12 @@ On the other hand, when it participates in both day-ahead and real-time markets,
 \subsubsection{Estimating Bounds with Two-Stage 	Approximation: Restriction}
  
 \subsection{Stochastic Dual Dynamic Programming}
+221 iterations, upper bound -544.79, lower bound -554.88, time taken 825.8 s (varies a lot depending on scenario runs)
 \begin{figure}[h!]
 \begin{center}
 \includegraphics[width=4in]
 {Figures/Plots/dualdynamic/bounds.pdf} \caption{Trajectory of the lowerand upper bounds obtained at every iteration of stochastic dual dynamic programming}\label{fig:bounds}\end{center}
 \end{figure}
-
 \FloatBarrier
 \subsection{Receding Horizon Heuristic}
 In practical situations, we may not have the sample scenarios for load profiles available for full week or a longer planning period that we want to schedule our market participation policy for. In situations when we have the profiles for load scenarios are available for less time periods, a receding horizon scheme is useful and can be implemented to minimize the cost looking at only that much ahead in future for which we have the sample load scenarios. The receding horizon scheme is expected to do worse than the case when we have sample scenarios for load profiles available for the full planning period, but it is still expected to outperform a policy obtained using mean-value approximation of the uncertainty.
