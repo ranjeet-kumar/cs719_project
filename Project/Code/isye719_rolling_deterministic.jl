@@ -1,106 +1,95 @@
 using JuMP
-using Gurobi
 using PyPlot
-close("all")
+using Gurobi
 
-
-
-############# Funtions to convert JuMP returned variables to arrays ################
-
-
-function convertToArray(x)
-    y = getvalue(x)
-    n = length(y)
-    a = zeros(n)
-    for i = 1:n
-	a[i] = y[i]
-    end
-    return a
-end
-
-function convertToArray2(A,n)
-    AA = getvalue(A)
-    m = (n[1],n[2])
-    B = zeros(m)
-    for i in 1:n[1]
-	for j in 1:n[2]
-	    B[i,j] = AA[i,j]
-	end
-    end
-    return B
-end
-
-function convertToArray3(A,n)
-    AA = getvalue(A)
-    m = (n[1],n[2],n[3])
-    B = zeros(m)
-    for i in 1:n[1]
-	for j in 1:n[2]
-	    for k in 1:n[3]
-		B[i,j,k] = AA[i,j,k]
-	    end
-	end
-    end
-    return B
-end
-
+include("helper_functions.jl")
 #############################################################################################################
+# Read load and price data from csv files
+loadExceldata = readcsv("DATARCoast.csv");
+rtmpriceExceldata = readcsv("AggregatedData_RTM_ALTA31GT_7_B1.csv")
+dampriceExceldata = readcsv("AggregatedData_DAM_ALTA31GT_7_B1.csv")
 
-loaddata = readcsv("DATARCoast.csv");
-rtmpricedata = readcsv("AggregatedData_RTM_ALTA31GT_7_B1.csv")
-dampricedata = readcsv("AggregatedData_DAM_ALTA31GT_7_B1.csv")
+generate_new_scenarios = 0; # 0: don't generate new scenarios for load profiles; 1: generate new scenarios
+generate_new_sample_paths = 0; # 0: don't generate new sample paths for loads; 1: generate new sample paths
+participate_rtm = 1; # 0: Don't participate in RTM; 1: participate in RTM
+participate_dam = 1; # 0: Don't participate in DAM; 1: participate in DAM
+makeplots = 0; # 0: Don't generate plots, 1: Generate plots
 
+# Defining time parameters for the model and planning schedule
 dtdam = 1; 				#time interval of each day ahead market (hourly) intervals [hour]
-ndam = 24;				#No. of day ahead market (hourly) intervals in a day
+ndam = 24;				#No. of day-ahead market (hourly) intervals in a day
 dtrtm = 5/60;				#time interval of each real time interval [hour]
 nrtm = Int64(dtdam/dtrtm);		#No. of real time intervals in each hour
-
-nrtmpoints = ndam*nrtm;		        #Total number of points in RTM data in one day
-ndampoints = ndam;			#Total number of points in hourly data in one day
+nrtmpoints = ndam*nrtm;		    #Total number of points in RTM data in one day
+ndampoints = ndam;			  #Total number of points in hourly data in one day
+weekly_ndays = 7;         #Number of days in every week
+ndays = 365;              #Number of days data is available for
+ndays_planning = 7;       #Number of days you want to plan for
+nweeks_planning = Int64(ceil((ndays_planning/weekly_ndays)));
+nhours_planning = ndays_planning*ndam;  #Number of hours we will plan the policy for
+nrtm_planning = nhours_planning*nrtm;   #Number of rtm intervals we will plan the policy for
+ndays_horizon = 1; # Number of days in horizon at every step of receding horizon scheme
+nhours_horizon = ndays_horizon*ndam; # Number of hours in horizon at every step of receding horizon scheme
+nrtm_horizon = nhours_horizon*nrtm; # Number of real-time intervals in horizon at every step of receding horizon scheme
 
 #Model Parameters
 ebat_max = 0.5;	          #Battery capacity, MWh
 P_max = 1;	          #Maximum power, MW
+ebat0 = ebat_max;		   #Initial State of charge
 rampmin = -0.5*P_max;	          #Lower bound for ramp discharge, MW/5min
 rampmax = 0.5*P_max;  	  #Upper bound for ramp discharge, MW/5min
-eff = 1;                  #Discharging Efficiency of battery
-ebat0 = ebat_max;		   #Initial State of charge
-ebatend = ebat_max;		  #State of charge at the end of the day
-ndays = 365;              #Number of days data is available for
-ndays_planning = 7;       #Number of days you want to plan for
-nhours_planning = ndays_planning*ndam;
-nrtm_planning = nhours_planning*nrtm;
-nhours_horizon = 24;
-nrtm_horizon = nhours_horizon*nrtm;
-
 NS = 50; # Number of scenarios you want to sample from the distrbution
 S = 1:NS;
 
+# Price data
+eprrtm = rtmpriceExceldata[1:nrtmpoints*ndays,4];	 #Real Time Market price, $/MWh
+eprdam = dampriceExceldata[1:ndampoints*ndays,4];	 #Day Ahead Market price, $/MWh
 
+# Generate new scenarios for loads
+loadNSdatafile = "loads_scenarios_month.csv";
+if generate_new_scenarios == 1
+  load = Matrix{Float64}(loadExceldata[2:nrtmpoints+1,2+(1:ndays)]);	#Load, MW
+  loadNSdata = generate_weekly_loads_scenarios(load,1:52,ndays_planning,NS,loadNSdatafile);
+end
+loadNSdata = readcsv(loadNSdatafile)
+ndays_data = (nweeks_planning+1)*weekly_ndays;
+loadNSplanningdata = reshape(loadNSdata,nrtm,ndam,ndays_data,NS);   #kW
 
-load = Matrix{Float64}(loaddata[2:nrtmpoints+1,2+(1:ndays)]);	#Load, MW
-load = reshape(load,nrtm,ndam,ndays);
-loadvec = vec(load);
+#Reshape the data to matrices to be used in the model
+rtmepr = reshape(eprrtm,nrtm,ndam,ndays);
+damepr = reshape(eprdam,ndam,ndays);
+load = loadNSplanningdata[:,:,1:ndays_planning,:]/1000; #MW
 
-# Reshaping the data as weekly profiles
-reshape_ndays = 7;
-reshape_nrows = reshape_ndays*nrtmpoints;
-reshape_ncolumns = Int64(floor(length(load)/reshape_nrows));
-load_estimationdata = loadvec[1:reshape_nrows*reshape_ncolumns];
-load_weekly = reshape(load_estimationdata,reshape_nrows,reshape_ncolumns);
+#Define sets to be used in the JuMP model
+rtm = 1:nrtm; # {1,2,...,12}
+dam = 1:ndam; # {1,2,...,24}
+day = 1:ndays_planning; # {1,2,...,7}
+
+if generate_new_sample_paths == 1
+# Generate NS sample paths for realizations of loads in 7 days at hourly intervals
+  (paths,loadperm) = generate_sample_paths(load,NS,"samplepaths.csv","sampleloadperm.csv");
+end
+# Take the NS sample paths for loads generated earlier
+paths = Matrix{Int64}(readcsv("samplepaths.csv"));
+loadperm = zeros(nrtm,ndam,ndays_planning,NS);
+for s in S
+  j = 1;
+  for l in day
+    for k in dam
+        loadperm[:,k,l,s] = load[:,k,l,paths[j,s]];  #MW
+        j = j+1;
+    end
+  end
+end
 
 
 # Loading the NS scenarios for weekly load profiles in kW generated from the fullproblem_stochastic code
-nweeks_planning = Int64(ceil((ndays_planning/reshape_ndays)));
 
 loadNSdata = readcsv("loads_scenarios_month.csv")
-
-
-ndays_data = (nweeks_planning+1)*reshape_ndays;
+ndays_data = (nweeks_planning+1)*weekly_ndays;
 loadNSplanningdata = reshape(loadNSdata,nrtm,ndam,ndays_data,NS);   #kW
 
 ################################################################
-
 
 load1 = loadNSplanningdata/1000; #MW
 loaddata1 = reshape(load1,nrtm*ndam*ndays_data,NS);
@@ -132,38 +121,37 @@ Pdam_mv_rol = zeros(nhours_planning);
 
 Prtm_realized = zeros(nrtm,nhours_planning);
 unmetload_realized = zeros(nrtm,nhours_planning)
-unmetcost_realized = zeros(nhours_planning);
+unmetcost_realized = zeros(nrtm,nhours_planning);
 profitErtm_realized = zeros(nrtm,nhours_planning);
 profitEdam_realized = zeros(nhours_planning);
+profitE_realized = zeros(nhours_planning);
 profittotal_realized = zeros(nhours_planning);
 netobjective_realized = zeros(nhours_planning);
-
-
-
-
-
-#=
-realized_sequence = rand(S,nhours_planning);
-writecsv("realized_sequence.csv",realized_sequence)
-=#
-
-# realized_sequence = readcsv("realized_sequence.csv")
-# realized_sequence = Vector{Int64}(ones(nhours_planning));
-
 obj_dt_rh_NS = Vector()
 
-for k in S # Loop to evaluate cost along each scenario
+mv_rol = nothing; m_rold = nothing;
+
+for k in S[1] # Loop to evaluate cost along each scenario
 
 ebat0_mv = ebat_max;		  #Initial State of charge for mean-value problem, 100 means fully charged
 ebat0 = ebat_max;               #Initial State of charge for all scenarios, 100 means fully charged
 
 realized_sequence = Vector{Int64}(k*ones(nhours_planning));
 
+Prtm_realized = zeros(nrtm,nhours_planning);
+unmetload_realized = zeros(nrtm,nhours_planning)
+unmetcost_realized = zeros(nrtm,nhours_planning);
+profitErtm_realized = zeros(nrtm,nhours_planning);
+profitEdam_realized = zeros(nhours_planning);
+profitE_realized = zeros(nhours_planning);
+profittotal_realized = zeros(nhours_planning);
+netobjective_realized = zeros(nhours_planning);
+
 
 j=1;
 tic()
 for p in 1:nhours_planning # Starting rolling horizon for mean-value problem
-    println("Scenario $k, Step $p")
+
 
     #Load and price data
     load_mv = loaddata1_mv[(p-1)*nrtm+(1:nrtm_horizon)];	#Load, MW
@@ -192,10 +180,9 @@ for p in 1:nhours_planning # Starting rolling horizon for mean-value problem
     		@variable(mv_rol, profitErtm[rtm,dam])# >= 0)				        #Profit from the real time market, USD
         @variable(mv_rol, profitEdam[dam])# >= 0)	        			#Profit from the day ahead market, USD
         @variable(mv_rol, profittotal)# >= 0)		        	#Total profit in the day, USD
-        @variable(mv_rol, unmetcost)
+        @variable(mv_rol, unmetcost[rtm,dam])
 
         @constraint(mv_rol, InitialEnergy, ebat[1,1] == ebat0 - 1/eff*Pnet[1,1]*dtrtm)	#Inital energy in the battery
-    #    @constraint(mv_rol, EndSOC[i in rtm,k in dam], soc[i,k] >= socend)		#Constraint on SOC at the end of the day
         @constraint(mv_rol, rtmEBalance[i in rtm[2:end],k in dam], ebat[i,k] == ebat[i-1,k] - 1/eff*Pnet[i,k]*dtrtm)	#Dynamics constraint
         @constraint(mv_rol, damEBalance[i=rtm[1],k in dam[2:end],iend=rtm[end]], ebat[i,k] == ebat[iend,k-1] - 1/eff*Pnet[i,k]*dtrtm)	#Dynamics constraint
         @constraint(mv_rol, UnmetLoad[i in rtm,k in dam], suppliedload[i,k] + unmetload[i,k] >=  load_mv[i,k])
@@ -210,9 +197,10 @@ for p in 1:nhours_planning # Starting rolling horizon for mean-value problem
         @constraint(mv_rol, DAMEProfits[k in dam], profitEdam[k] == damepr[k]*Pdam[k]*dtdam)	#Economic calculation
         @constraint(mv_rol, TotalProfit, profittotal ==
                             sum{profitErtm[i,k], i in rtm, k in dam} + sum{profitEdam[k], k in dam})
-        @constraint(mv_rol, UnmetCost, unmetcost == sum{rtmepr[i,k]*unmetload[i,k], i in rtm, k in dam})
-        @objective(mv_rol, Min, -profittotal + unmetcost)
-        #    print(mv_rol)
+        @constraint(mv_rol, UnmetCost[i in rtm, k in dam], unmetcost[i,k] == rtmepr[i,k]*unmetload[i,k])
+        @constraint(mv_rol, NetDischarge1[i in rtm,k in dam], Pnet[i,k] <= P_max)
+        @constraint(mv_rol, NetDischarge2[i in rtm,k in dam], Pnet[i,k] >= -P_max)
+        @objective(mv_rol, Min, -profittotal + sum{unmetcost[i,k],i in rtm, k in dam})
         status = solve(mv_rol)
 
 ##########################################################################
@@ -239,10 +227,9 @@ for p in 1:nhours_planning # Starting rolling horizon for mean-value problem
 		@variable(m_rold, profitErtm[rtm,dam,S])# >= 0)				        #Profit from the real time market, USD
     @variable(m_rold, profitEdam[dam,S])# >= 0)	        			#Profit from the day ahead market, USD
     @variable(m_rold, profittotal[S])# >= 0)		        	#Total profit in the day, USD
-    @variable(m_rold, unmetcost[S])
+    @variable(m_rold, unmetcost[rtm,dam,S])
 
     @constraint(m_rold, InitialEnergy[s in S], ebat[1,1,s] == ebat0 - 1/eff*Pnet[1,1,s]*dtrtm)	#Inital energy in the battery
-#    @constraint(m_rold, EndSOC[i in rtm,k in dam,s in S], soc[i,k,s] >= socend)		#Constraint on SOC at the end of the day
     @constraint(m_rold, rtmEBalance[i in rtm[2:end],k in dam,s in S], ebat[i,k,s] == ebat[i-1,k,s] - 1/eff*Pnet[i,k,s]*dtrtm)	#Dynamics constraint
     @constraint(m_rold, damEBalance[i=rtm[1],k in dam[2:end],iend=rtm[end],s in S], ebat[i,k,s] == ebat[iend,k-1,s] - 1/eff*Pnet[i,k,s]*dtrtm)	#Dynamics constraint
     @constraint(m_rold, UnmetLoad[i in rtm,k in dam,s in S], suppliedload[i,k,s] + unmetload[i,k,s] >=  load[i,k,s])
@@ -257,11 +244,12 @@ for p in 1:nhours_planning # Starting rolling horizon for mean-value problem
     @constraint(m_rold, DAMEProfits[k in dam,s in S], profitEdam[k,s] == damepr[k]*Pdam[k,s]*dtdam)	#Economic calculation
     @constraint(m_rold, TotalProfit[s in S], profittotal[s] ==
                         sum{profitErtm[i,k,s], i in rtm, k in dam} + sum{profitEdam[k,s], k in dam})
-    @constraint(m_rold, UnmetCost[s in S], unmetcost[s] == sum{rtmepr[i,k]*unmetload[i,k,s], i in rtm, k in dam})
+    @constraint(m_rold, UnmetCost[i in rtm, k in dam, s in S], unmetcost[i,k,s] == rtmepr[i,k]*unmetload[i,k,s])
+    @constraint(m_rold, NetDischarge1[i in rtm,k in dam,s in S], Pnet[i,k,s] <= P_max)
+    @constraint(m_rold, NetDischarge2[i in rtm,k in dam,s in S], Pnet[i,k,s] >= -P_max)
     # Fixing first stage variables at solutions from rolling horizon with mean-value
     @constraint(m_rold, Fix_PDAM[k in dam[1],s in S], Pdam[k,s] == Pdam_mv_rol[p])
-    @objective(m_rold, Min, (1/NS)*sum{-profittotal[s] + unmetcost[s], s in S})
-    #    print(m_rold)
+    @objective(m_rold, Min, (1/NS)*sum{-profittotal[s] + sum{unmetcost[i,k,s],i in rtm, k in dam}, s in S})
     status = solve(m_rold)
 
 ##########################################################################
@@ -273,8 +261,8 @@ for p in 1:nhours_planning # Starting rolling horizon for mean-value problem
     profitErtm_realized[:,p] = getvalue(getvariable(m_rold,:profitErtm))[1:rtm[end],dam[1],realized_sequence[p]];
     profitEdam_realized[p] = getvalue(getvariable(m_rold,:profitEdam))[dam[1],realized_sequence[p]];
     profittotal_realized[p] = sum(profitErtm_realized[:,p]) + profitEdam_realized[p];
-    netobjective_realized[p] = unmetcost_realized[p] - profittotal_realized[p];
-
+    netobjective_realized[p] = sum(unmetcost_realized[:,p]) - profittotal_realized[p];
+    println("Scenario $k, Step $p, netobjective_realized = $(netobjective_realized[p])")
 
 
 

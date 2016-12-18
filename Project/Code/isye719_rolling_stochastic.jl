@@ -114,14 +114,15 @@ totalpower = zeros(nrtm,ndam,ndays);
 totalpowerplot = zeros(nrtm,ndam,ndays);
 
 
+Prtm_realized = zeros(nrtm,nhours_planning);
+unmetload_realized = zeros(nrtm,nhours_planning)
+unmetcost_realized = zeros(nrtm,nhours_planning);
+profitErtm_realized = zeros(nrtm,nhours_planning);
+profitEdam_realized = zeros(nhours_planning);
+profitE_realized = zeros(nhours_planning);
+profittotal_realized = zeros(nhours_planning);
+netobjective_realized = zeros(nhours_planning);
 
-#=
-realized_sequence = rand(S,nhours_planning);
-writecsv("realized_sequence.csv",realized_sequence)
-=#
-
-# realized_sequence = readcsv("realized_sequence.csv")
-# realized_sequence = Vector{Int64}(ones(nhours_planning));
 
 m_rol = nothing;
 
