@@ -105,9 +105,9 @@ With these assumptions, we develop the optimization problem formulation for the 
 \begin{center}
 $\mathcal{T_R} := \{1,..,n_{\textrm{rtm}}\}$\\$ \mathcal{T_D} :=  \{1,..,n_{\textrm{dam}}\}$
 \end{center}
-Here, $\mathcal{T_R}$ is the set of time indices corresponding to each 5-minute subintervals in the real-time market within each hour, so $n_{rtm}=12$. $\mathcal{T_D}$ is the set of time indices corresponding to the hourly intervals of the day-ahead market. $n_d$ can be chosen appropriately for any number of hours we plan to schedule the market participation policy for the building-battery system.
+Here, $\mathcal{T_R}$ is the set of time indices corresponding to each 5-minute subintervals in the real-time market within each hour, so $n_{rtm}=12$. $\mathcal{T_D}$ is the set of time indices corresponding to the hourly intervals of the day-ahead market. $n_\text{dam}$ can be chosen appropriately for any number of hours we plan to schedule the market participation policy for the building-battery system.
 \subsubsection{Time discretization used in the model}
-A time instance for a day-ahead market variable in the model is represented by only the index $k$ ($k \in \mathcal{T_D}$) which corresponds to the interval between hours $k-1$ and $k$. On the other hand, a time instance for a real-time variable in the model is represented by index $(i,k)$, where $i \in \mathcal{T_R}$ and $ k \in \mathcal{T_D}$. The indices $i$ and $k$ in a time instance $(i,k)$ for a real-time variable correspond to the end of the respective 5-minute interval. For example, the time instance ($5,7$) corresponds to the end of the interval between $4^{\text{th}}$ and $5^{\text{th}}$ 5-minute interval within the $7^\textrm{th}$ hour. 
+A time instance for a day-ahead market variable in the model is represented by only the index $k$ ($k \in \mathcal{T_D}$) which corresponds to the interval between hours $k-1$ and $k$. On the other hand, a time instance for a real-time variable in the model is represented by index $(i,k)$, where $i \in \mathcal{T_R}$ and $ k \in \mathcal{T_D}$. The indices $i$ and $k$ in a time instance $(i,k)$ for a real-time variable correspond to the end of the respective 5-minute subinterval. For example, the time instance ($5,7$) corresponds to the end of the subinterval between $4^{\text{th}}$ and $5^{\text{th}}$ subintervals within the $7^\textrm{th}$ hour. 
 
 So, if a variable or time-varying parameter is indexed by only one index $k$ it implies that it varies at hourly intervals and belongs to the day-ahead market, whereas a variable or time-varying parameter indexed by $(i,k)$ is a real-time variable. 
 
@@ -302,7 +302,9 @@ If the number of scenarios is increased, the problem size would grow exponential
 \end{figure}
 
 \subsection{Sample Average Approximation for the Full Extensive Form}
-we solve for 100 different sets of 50 sample paths from the scenario tree and obtain the expected value and confidence interval over it. 
+If we consider all the paths in the scenario tree over 168 stages (1 week planning period) taking 50 realizations of load profile at every stage, the total number of possible scenarios is $50^(168)$. The problem size for the full scenario tree is huge which will take enormous amount of time and will not be practically useful for the decision-maker. 
+
+To tackle this difficulty of huge size of the stochastic program, we sample 100 different sets of 50 random paths along the scenario tree  we solve for 100 different sets of 50 sample paths from the scenario tree and obtain the expected value and confidence interval over it. 
 Expected objective over 100 runs for stochastic fullproblem = -709.7378158668587
 Confidence interval on objective over 100 runs = (-710.082381978717,-709.3932497550004)
 \subsubsection{Upper Bound from Mean Value Problem}
