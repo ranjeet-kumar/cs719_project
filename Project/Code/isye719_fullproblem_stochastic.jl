@@ -12,10 +12,10 @@ dampriceExceldata = readcsv("AggregatedData_DAM_ALTA31GT_7_B1.csv")
 
 generate_new_scenarios = 0; # 0: don't generate new scenarios for load profiles; 1: generate new scenarios
 generate_new_sample_paths = 0; # 0: don't generate new sample paths for loads; 1: generate new sample paths
-participate_rtm = 0; # 0: Don't participate in RTM; 1: participate in RTM
+participate_rtm = 1; # 0: Don't participate in RTM; 1: participate in RTM
 participate_dam = 1; # 0: Don't participate in DAM; 1: participate in DAM
 makeplots = 1; # 0: Don't generate plots, 1: Generate plots
-figuredirectory = string(pwd(),"/cs719figures/onlydam");
+figuredirectory = string(pwd(),"/cs719figures/both");
 
 # Defining time parameters for the model and planning schedule
 dtdam = 1; 				#time interval of each day ahead market (hourly) intervals [hour]
@@ -101,6 +101,8 @@ m = Model(solver = GurobiSolver(Threads=2))
     @constraint(m, UnmetLoad[i in rtm,k in dam,l in day, s in S], suppliedload[i,k,l,s] + unmetload[i,k,l,s] >=  loadperm[i,k,l,s])
     @constraint(m, BoundSupplied[i in rtm,k in dam,l in day,s in S], suppliedload[i,k,l,s] <= loadperm[i,k,l,s])
     @constraint(m, BoundUnmet[i in rtm,k in dam,l in day,s in S], unmetload[i,k,l,s] <= loadperm[i,k,l,s])
+    @constraint(m, NetDischarge1[i in rtm,k in dam,l in day,s in S], Pnet[i,k,l,s] <= P_max)
+    @constraint(m, NetDischarge2[i in rtm,k in dam,l in day,s in S], Pnet[i,k,l,s] >= -P_max)
 #=  Commenting ramping constraints
     @constraint(m, RTMRamp1[i in rtm[2:end],k in dam,l in day,s in S], Pnet[i,k,l,s]  - Pnet[i-1,k,l,s] <= rampmax*dtrtm)   #Ramp discharge constraint at each time
 		@constraint(m, RTMRamp2[i in rtm[2:end],k in dam,l in day,s in S], Pnet[i,k,l,s]  - Pnet[i-1,k,l,s] >= -rampmax*dtrtm)   #Ramp discharge constraint at each time
@@ -238,7 +240,7 @@ xlim(0,nhours_planning)
 ylabel("Supplied & unmet loads (MW)",size = 24)
 xlabel("Time (hours)",size = 24)
 tick_params(labelsize=14)
-#legend(loc="upper right",fancybox="True", shadow="True", fontsize = 15)
+legend(loc="upper right",fancybox="True", shadow="True", fontsize = 15)
 savefig(string(figuredirectory,"/supp_unmet_fp_st.pdf"))
 close("all")
 
@@ -351,7 +353,7 @@ xlim(0,nhours_planning)
 ylabel("Expected Cumulative Revenue (\$)",size = 24)
 xlabel("Time (hours)",size = 24)
 tick_params(labelsize=20)
-legend(loc="lower left",fancybox="True", shadow="True", fontsize = 15)
+legend(loc="upper left",fancybox="True", shadow="True", fontsize = 15)
 savefig(string(figuredirectory,"/cumulative_rev_fp_st.pdf"))
 close("all")
 

@@ -14,7 +14,7 @@ generate_new_scenarios = 0; # 0: don't generate new scenarios for load profiles;
 generate_new_sample_paths = 0; # 0: don't generate new sample paths for loads; 1: generate new sample paths
 participate_rtm = 1; # 0: Don't participate in RTM; 1: participate in RTM
 participate_dam = 1; # 0: Don't participate in DAM; 1: participate in DAM
-makeplots = 1; # 0: Don't generate plots, 1: Generate plots
+makeplots = 0; # 0: Don't generate plots, 1: Generate plots
 
 # Defining time parameters for the model and planning schedule
 dtdam = 1; 				#time interval of each day ahead market (hourly) intervals [hour]
@@ -80,6 +80,8 @@ function forwardmodel(ebat0,L)
     @variable(m, theta >= thetalimit)
     @constraint(m, InitialEnergy, ebat[1] == ebat0 - Pnet[1]*dtrtm)	#Inital energy in the battery
     @constraint(m, rtmEBalance[i in rtm[2:end]], ebat[i] == ebat[i-1] - Pnet[i]*dtrtm)	#Dynamics constraint
+    @constraint(m, NetDischarge1[i in rtm], Pnet[i] <= P_max)
+    @constraint(m, NetDischarge2[i in rtm], Pnet[i] >= -P_max)
     #=  Commenting ramping constraints
         @constraint(m, RTMRamp1[i in rtm[2:end]], Pnet[i]  - Pnet[i-1] <= rampmax*dtrtm)   #Ramp discharge constraint at each time
     		@constraint(m, RTMRamp2[i in rtm[2:end]], Pnet[i]  - Pnet[i-1] >= -rampmax*dtrtm)   #Ramp discharge constraint at each time
@@ -110,6 +112,8 @@ function scenariosubproblem(ebat0,s)
     @variable(m, theta >= thetalimit)
     @constraint(m, InitialEnergy, ebat[1] == ebat0 - Pnet[1]*dtrtm)	#Inital energy in the battery
     @constraint(m, rtmEBalance[i in rtm[2:end]], ebat[i] == ebat[i-1] - Pnet[i]*dtrtm)	#Dynamics constraint
+    @constraint(m, NetDischarge1[i in rtm], Pnet[i] <= P_max)
+    @constraint(m, NetDischarge2[i in rtm], Pnet[i] >= -P_max)
     #=  Commenting ramping constraints
         @constraint(m, RTMRamp1[i in rtm[2:end]], Pnet[i]  - Pnet[i-1] <= rampmax*dtrtm)   #Ramp discharge constraint at each time
     		@constraint(m, RTMRamp2[i in rtm[2:end]], Pnet[i]  - Pnet[i-1] >= -rampmax*dtrtm)   #Ramp discharge constraint at each time

@@ -143,7 +143,7 @@ So, if a variable or time-varying parameter is indexed by only one index $k$ it 
 \begin{itemize}
 \item[\textbullet] $P_{k}, \forall k \in \mathcal{T_D}$: Power committed by battery in day-ahead market in the interval between hour $k-1$ to $k$
 \item[\textbullet] $P_{i,k}, \forall i \in \mathcal{T_R}, k \in \mathcal{T_D}$: Power committed by battery in real-time market in the 5-minute interval between $(i-1,k)$ and $(i,k)$ within $k^\text{th}$ hour
-\item[\textbullet] $L_{s_{i,k}}, \forall i \in \mathcal{T_R}, k \in \mathcal{T_D}$: Power supplied by battery to the building in the 5-minute interval between $(i-1,k)$ and $(i,k)$ within $k^\text{th}$ hour 
+\item[\textbullet] $L^{sup}_{i,k}, \forall i \in \mathcal{T_R}, k \in \mathcal{T_D}$: Power supplied by battery to the building in the 5-minute interval between $(i-1,k)$ and $(i,k)$ within $k^\text{th}$ hour 
 \end{itemize}
 \item \textbf{State variables:}
 \begin{itemize}
@@ -151,115 +151,77 @@ So, if a variable or time-varying parameter is indexed by only one index $k$ it 
 \end{itemize}
 \end{itemize}
 
-\subsubsection{Constraints and objective function}
+\subsubsection{Constraints and objective function}\label{subsec:const_obj}
 \begin{itemize}
-\item Net discharge (power) from the battery at any time:
-\begin{align}
-&P_{{net}_{i,k}} = P_{i} + P_{i,k} + L_{s_{i,k}}
+\item Net discharge (power) from the battery at any time has to be less than the maximum discharge capacity of the battery, $P_{max}$.
+\begin{align}\label{eq:Pnet}
+&P_{{net}_{i,k}} = P_{k} + P_{i,k} + L^{sup}_{i,k}, \quad \forall i \in \mathcal{T_R}, k \in \mathcal{T_D}
 \end{align}
-\label{eq:Pnet}
 \item Balance on the energy stored in the battery at each time
-\begin{align}
+\begin{align}\label{eq:ebalance}
 E_{i,k} =& E_{i-1,k}- P_{{net}_{i,k}}\Delta t_r, \quad \forall i \in \mathcal{T_R}, k \in \mathcal{T_D}
 \end{align}
-\label{eq:ebalance}
 In \ref{eq:ebalance}, $E_{0,k} = E_{0}$ for $k \in \lbrace1\rbrace$ and $E_{0,k} = E_{n_{rtm},k-1}$ for $k \in \mathcal{T_R}\setminus{\lbrace1\rbrace}$. 
 \item Bounds on variables:
-\begin{subequations}
+\begin{subequations}\label{eq:bounds}
 \begin{align}
 0 & \leq E_{i,j,k} \leq E_{max}, \forall i \in \mathcal{T_R}, k \in \mathcal{T_D}\\
 -P_{max} & \leq P_{i,k} \leq P_{max}, \forall i \in \mathcal{T_R}, k \in \mathcal{T_D}\\
 -P_{max} & \leq P_{k}\phantom{i,} \leq P_{max}, \forall k \in \mathcal{T_D}\\
+-P_{max} & \leq P_{{net}_{i,k}} \leq P_{max}, \forall i \in \mathcal{T_R}, k \in \mathcal{T_D}\\
+0 & \leq L^{sup}_{i,k} \leq L_{i,k}, \forall i \in \mathcal{T_R}, k \in \mathcal{T_D}
 \end{align}
-\label{eq:bounds}
 \end{subequations}
 \item Objective Function:
-\begin{align}
-\min \quad -\sum\limits_{i \in \mathcal{T_R}}\sum\limits_{k \in \mathcal{T_R}} \pi_{i,k}P_{i,k}\Delta t_r - \sum\limits_{k \in \mathcal{T_D}}\pi_{k}P_{k}\Delta t_r n_{rtm} + \sum\limits_{i \in \mathcal{T_R}}\sum\limits_{k \in \mathcal{T_R}} \pi_{i,k}(L_{i,k}-L_{s_{i,k}})\Delta t_r
+\begin{align}\label{objective}
+\min \quad -\sum\limits_{i \in \mathcal{T_R}}\sum\limits_{k \in \mathcal{T_R}} \pi_{i,k}P_{i,k}\Delta t_r - \sum\limits_{k \in \mathcal{T_D}}\pi_{k}P_{k}\Delta t_r n_{rtm} + \sum\limits_{i \in \mathcal{T_R}}\sum\limits_{k \in \mathcal{T_R}} \pi_{i,k}(L_{i,k}-L^{sup}_{i,k})\Delta t_r
 \end{align}
-\label{objective}
 \end{itemize}
 
-\subsection{Optimization Under Uncertainty}
-Now, we consider uncertainty in the building loads and extend the optimization formulation in deterministic setting \ref{subsec:deterministic} to formulate an extensive form of stochastic optimization problem to minimize the expected cost (or maximize expected revenue) for the building-battery system. In the formulation of the problem under uncertainty, we assume all the the market participating conditions are same as in the deterministic setting except for the uncertainty in the loads. The extensive form of the stochastic optimization problem for the system is described below.
-\subsubsection{Sets used in the model}
-\begin{center}
-$\mathcal{T_R} := \{1,..,n_{\textrm{rtm}}\}$\\$ \mathcal{T_D} :=  \{1,..,n_{\textrm{dam}}\}$
-\end{center}
-Here, $\mathcal{T_R}$ is the set of time indices corresponding to each 5-minute subintervals in the real-time market within each hour, so $n_{rtm}=12$. $\mathcal{T_D}$ is the set of time indices corresponding to the hourly intervals of the day-ahead market. $n_d$ can be chosen appropriately for any number of hours we plan to schedule the market participation policy for the building-battery system.
-\subsubsection{Time discretization used in the model}
-A time instance for a day-ahead market variable in the model is represented by only the index $k$ ($k \in \mathcal{T_D}$) which corresponds to the interval between hours $k-1$ and $k$. On the other hand, a time instance for a real-time variable in the model is represented by index $(i,k)$, where $i \in \mathcal{T_R}$ and $ k \in \mathcal{T_D}$. The indices $i$ and $k$ in a time instance $(i,k)$ for a real-time variable correspond to the end of the respective 5-minute interval. For example, the time instance ($5,7$) corresponds to the end of the interval between $4^{\text{th}}$ and $5^{\text{th}}$ 5-minute interval within the $7^\textrm{th}$ hour. 
-
-So, if a variable or time-varying parameter is indexed by only one index $k$ it implies that it varies at hourly intervals and belongs to the day-ahead market, whereas a variable or time-varying parameter indexed by $(i,k)$ is a real-time variable. 
-\subsubsection{Parameters in the model:}
-\begin{itemize}
-\item\textbf{Market parameters:}
-\begin{itemize}
-\item[\textbullet] $\pi_{k}, \forall k \in \mathcal{T_D}$: Electricity price in day-ahead market in the interval between hour $k-1$ to $k$
-\item[\textbullet] $\pi_{i,k}, \forall i \in \mathcal{T_R}, k \in \mathcal{T_D}$: Electricity price in real-time market in the 5-minute interval between $(i-1,k)$ and $(i,k)$ within $k^\text{th}$ hour
-\item[\textbullet] $\Delta t$: Time interval (in unit of hours) in the real-time market (which is 5 minutes)
-\end{itemize}
-\item\textbf{Battery parameters:}
-\begin{itemize}
-\item[\textbullet] $E_{max} = 0.5$ MWh: Energy storage capacity of the battery
-\item[\textbullet] $P_{max} = 0.5$ MW: Maximum discharging or charging rate of the battery
-\item[\textbullet] $E_{0} = E_{max}$: Energy stored in the battery before beginning of market participation
-\end{itemize}
-\item\textbf{Building loads:}
-\begin{itemize}
-\item[\textbullet] $L_{i,k}, \forall i \in \mathcal{T_R}, k \in \mathcal{T_D}$: Building loads in the 5-minute interval between $(i-1,k)$ and $(i,k)$ within $k^\text{th}$ hour
-\end{itemize}
-\end{itemize}
-\subsubsection{Variables in the model:}
+\subsection{Optimization Model Under Uncertainty} \label{subsec:opt_unc}
+Now, we consider uncertainty in the building loads and extend the optimization formulation in deterministic setting \ref{subsec:deterministic} to formulate an extensive form of stochastic optimization problem to minimize the expected cost (or maximize expected revenue) for the building-battery system. In the formulation for the optimization problem under uncertainty, we consider all the the market participating conditions to be the same as in the deterministic setting except for the uncertainty in the loads. We use the same sets of time indices, time-discretization approach and variable/parameter notations as developed in \ref{subsec:deterministic} with the exception that uncertainty has to be added to all real-time variables because of the uncertain loads. We represent this uncertainty with a sample space $\Xi$ and an outcome from this space is denoted by $\xi$. As described in \ref{sec:setting}, we consider that when a scenario $\xi \in \Xi$ realizes at an hour $k$ the loads at all real-time subintervals between hour $k-1$ and $k$ become known and the scenario-tree grows at every hour. So, the uncertain load at every time is denoted as $L_{i,k}(\xi)$. Similarly, we denote the resulting uncertainty in all real-time variables, namely the energy transacted by the battery with real-time market ($P_{i,k}(\xi)$), the energy supplied by the battery to the building ($L^{sup}_{i,k}(\xi)$) and the energy stored in the battery at every time ($E_{i,k}(\xi)$). The day-ahead energy participation by the battery is a first-stage decision which needs to be made before the realization of uncertainty. Furthermore, for the extensive form of the sochastic programming model, we assume that the uncertainty can be represented by a set of $N$ possible scenarios $\mathcal{S}$ and all possible realizations of uncertainty lies in this set. So, $s \in \mathcal{S}$ represents a possible scenario of the realization of uncertainty. Also, we make the assume that the scenarios are equiprobable. We use these assumptions to build the extensive form of the stochastic program to minimize the expected cost (maximize expected revenue) for the system and is described below.
+\subsubsection{Variables in the extensive form model}\label{subsubsec:var_ext}
 \begin{itemize}
 \item \textbf{Decision variables:}
 \begin{itemize}
-\item[\textbullet] $P_{k}, \forall k \in \mathcal{T_D}$: Power committed by battery in day-ahead market in the interval between hour $k-1$ to $k$
-\item[\textbullet] $P_{i,k}, \forall i \in \mathcal{T_R}, k \in \mathcal{T_D}$: Power committed by battery in real-time market in the 5-minute interval between $(i-1,k)$ and $(i,k)$ within $k^\text{th}$ hour
-\item[\textbullet] $L_{s_{i,k}}, \forall i \in \mathcal{T_R}, k \in \mathcal{T_D}$: Power supplied by battery to the building in the 5-minute interval between $(i-1,k)$ and $(i,k)$ within $k^\text{th}$ hour 
+\item[\textbullet] $P_{k,s}, \forall k \in \mathcal{T_D}, \forall s \in \mathcal{S}$: Power committed by battery in day-ahead market in the interval between hour $k-1$ to $k$ in scenario $s$
+\item[\textbullet] $P_{i,k,s}, \forall i \in \mathcal{T_R}, k \in \mathcal{T_D}, \forall s \in \mathcal{S}$: Power committed by battery in real-time market in the 5-minute interval between $(i-1,k)$ and $(i,k)$ within $k^\text{th}$ hour in scenario $s$
+\item[\textbullet] $L^{sup}_{i,k,s}, \forall i \in \mathcal{T_R}, k \in \mathcal{T_D}, \forall s \in \mathcal{S}$: Power supplied by battery to the building in the 5-minute interval between $(i-1,k)$ and $(i,k)$ within $k^\text{th}$ hour in scenario $s$
 \end{itemize}
 \item \textbf{State variables:}
 \begin{itemize}
-\item[\textbullet] $E_{i,k}, \forall i \in \mathcal{T_R}, k \in \mathcal{T_D}$: Energy stored in the battery at time $(i,k)$ (at the end of $i^{th}$ 5-minute interval within $k^\text{th}$ hour) 
+\item[\textbullet] $E_{i,k,s}, \forall i \in \mathcal{T_R}, k \in \mathcal{T_D}, \forall s \in \mathcal{S}$: Energy stored in the battery at time $(i,k)$ (at the end of $i^{th}$ 5-minute interval within $k^\text{th}$ hour)  in scenario $s$
 \end{itemize}
 \end{itemize}
 
-\begin{figure}[h!]
-\begin{center}
-\includegraphics[scale = 0.4]{Figures/system_blocks-crop.pdf} \caption{Illustration of Building-Battery System interconnected with Power Grid}\label{fig:system}\end{center}
-\end{figure}
-
-\subsubsection{Constraints and objective function}
+\subsubsection{Constraints and objective function}\label{subsubsec:const_obj}
 \begin{itemize}
-\item Net discharge (power) from the battery at any time:
-\begin{align}
-&P_{{net}_{i,k}} = P_{i} + P_{i,k} + L_{s_{i,k}}
+\item Net discharge (power) from the battery at any time has to be less than the maximum discharge capacity of the battery, $P_{max}$.
+\begin{align}\label{eq:Pnet}
+&P_{{net}_{i,k,s}} = P_{k,s} + P_{i,k,s} + L^{sup}_{i,k,s}, \quad \forall i \in \mathcal{T_R}, k \in \mathcal{T_D}, s \in \mathcal{S}
 \end{align}
-\label{eq:Pnet}
 \item Balance on the energy stored in the battery at each time
-\begin{align}
-E_{i,k} =& E_{i-1,k}- P_{{net}_{i,k}}\Delta t_r, \quad \forall i \in \mathcal{T_R}, k \in \mathcal{T_D}
+\begin{align}\label{eq:ebalance}
+E_{i,k,s} =& E_{i-1,k,s}- P_{{net}_{i,k,s}}\Delta t_r, \quad \forall i \in \mathcal{T_R}, k \in \mathcal{T_D}, s \in \mathcal{S}
 \end{align}
-\label{eq:ebalance}
-In \ref{eq:ebalance}, $E_{0,k} = E_{0}$ for $k \in \lbrace1\rbrace$ and $E_{0,k} = E_{n_{rtm},k-1}$ for $k \in \mathcal{T_R}\setminus{\lbrace1\rbrace}$. 
+In \ref{eq:ebalance}, $E_{0,k,s} = E_{0}$ for $k \in \lbrace1\rbrace$ and $E_{0,k,s} = E_{n_{rtm},k-1,s}$ for $k \in \mathcal{T_R}\setminus{\lbrace1\rbrace}$. 
 \item Bounds on variables:
-\begin{subequations}
+\begin{subequations}\label{eq:bounds}
 \begin{align}
-0 & \leq E_{i,j,k} \leq E_{max}, \forall i \in \mathcal{T_R}, k \in \mathcal{T_D}\\
--P_{max} & \leq P_{i,k} \leq P_{max}, \forall i \in \mathcal{T_R}, k \in \mathcal{T_D}\\
--P_{max} & \leq P_{k}\phantom{i,} \leq P_{max}, \forall k \in \mathcal{T_D}\\
+0 & \leq E_{i,j,k,s} \leq E_{max}, \forall i \in \mathcal{T_R}, k \in \mathcal{T_D}\\
+-P_{max} & \leq P_{i,k,s} \leq P_{max}, \forall i \in \mathcal{T_R}, k \in \mathcal{T_D}, s \in \mathcal{S}\\
+-P_{max} & \leq P_{k,s}\phantom{i,} \leq P_{max}, \forall k \in \mathcal{T_D}, s \in \mathcal{S}\\
+-P_{max} & \leq P_{{net}_{i,k,s}} \leq P_{max}, \forall i \in \mathcal{T_R}, k \in \mathcal{T_D}, s \in \mathcal{S}\\
+0 & \leq L^{sup}_{i,k,s} \leq L_{i,k,s}, \forall i \in \mathcal{T_R}, k \in \mathcal{T_D}, s \in \mathcal{S}
 \end{align}
-\label{eq:bounds}
 \end{subequations}
 \item Objective Function:
-\begin{align}
-\min \quad -\sum\limits_{i \in \mathcal{T_R}}\sum\limits_{k \in \mathcal{T_R}} \pi_{i,k}P_{i,k}\Delta t_r - \sum\limits_{k \in \mathcal{T_D}}\pi_{k}P_{k}\Delta t_r n_{rtm} + \sum\limits_{i \in \mathcal{T_R}}\sum\limits_{k \in \mathcal{T_R}} \pi_{i,k}(L_{i,k}-L_{s_{i,k}})\Delta t_r
+\begin{align}\label{objective}
+\min \quad \frac{1}{N} \sum\limits_{s \in \mathcal{S}} \left[-\sum\limits_{i \in \mathcal{T_R}}\sum\limits_{k \in \mathcal{T_R}} \pi_{i,k}P_{i,k,s}\Delta t_r - \sum\limits_{k \in \mathcal{T_D}}\pi_{k}P_{k,s}\Delta t_r n_{rtm} + \sum\limits_{i \in \mathcal{T_R}}\sum\limits_{k \in \mathcal{T_R}} \pi_{i,k}(L_{i,k,s}-L^{sup}_{i,k,s})\Delta t_r \right]
 \end{align}
-\label{objective}
 \end{itemize}
 
 \section{Computational Experiments}\label{sec:exp}
-
 
 \subsection{Full Problem}
 In this case study, we sample 50 scenario paths (out of the $50^{168}$ possibilities) for a week's time period. We then construct a full model for for this week and use real price signals from 01/01/2015 to 01/07/2015 in California ISO \footnote{http://oasis.caiso.com/mrioasis/logon.do}. For every 1 hour interval in the model, we sample a scenario, and use the load data corresponding to that scenario for the 12 intervals (5 minutes each) in that hour. This helps to reduce the size of scenario tree (from $50^{168 \times 12}$ to $50^{168}$). We solve this model (with 50 sampled paths) 100 times to get a confidence interval on the expected revenue. We then compare this expected revenue (obtained by participating in both real time and day-ahead market) to the cases when the battery participates only in either real time or day-ahead market alone.
@@ -269,11 +231,11 @@ In this case study, we sample 50 scenario paths (out of the $50^{168}$ possibili
 \hline 
 Market Participated  & Total Revenue (\$) & Unmet Load Cost (\$) & DAM Revenue  (\$) & RTM Revenue (\$) \\
 \hline 
-DAM + RTM & 739.73 & -8.75 & 815.74 & -84.76 \\ 
+DAM + RTM & 711.08 & -8.75 & 793.12 & -90.79 \\ 
 \hline 
-DAM & -921.61 & 76.93 & -844.68 & N/A \\ 
+DAM & -921.73 & 77.00 & -844.73 & N/A \\ 
 \hline 
-RTM & 70.03 & -9.10 & N/A & 60.93 \\ 
+RTM & -31.32 & -9.10 & N/A & -40.42 \\ 
 \hline 
 None & -10,293.23 & 10,293.23 & N/A & N/A \\ 
 \hline 
@@ -335,14 +297,33 @@ On the other hand, when it participates in both day-ahead and real-time markets,
 
 \subsubsection{Estimating Bounds with Perfect Information}
 \subsubsection{Estimating Bounds with Two-Stage 	Approximation: Restriction}
-\subsection{Receding Horizon Heuristic}
-We sample 50 paths upto next 24 hours horizon 
+ 
 \subsection{Stochastic Dual Dynamic Programming}
 \begin{figure}[h!]
 \begin{center}
 \includegraphics[width=4in]
 {Figures/Plots/dualdynamic/bounds.pdf} \caption{Trajectory of the lowerand upper bounds obtained at every iteration of stochastic dual dynamic programming}\label{fig:bounds}\end{center}
 \end{figure}
+
+\FloatBarrier
+\subsection{Receding Horizon Heuristic}
+In practical situations, we may not have the sample scenarios for load profiles available for full week or a longer planning period that we want to schedule our market participation policy for. In situations when we have the profiles for load scenarios are available for less time periods, a receding horizon scheme is useful and can be implemented to minimize the cost looking at only that much ahead in future for which we have the sample load scenarios. The receding horizon scheme is expected to do worse than the case when we have sample scenarios for load profiles available for the full planning period, but it is still expected to outperform a policy obtained using mean-value approximation of the uncertainty.
+
+Assuming that at every hour, we have a set of samples for the scenarios for load profiles available only for the next $T$ hours, we can solve a stochastic program $\mathcal{P}_{\tau}$, where $\mathcal{P}_{\tau}$ is the same stochastic program in extensive form in \ref{subsec:opt_unc}.
+
+The receding horizon scheme which we implement on the building-battery system is described below.
+\begin{enumerate}
+\item Consider $\tau = 0$.
+\item The initial battery energy level is $E_\tau$ and we have a set of samples for the scenarios of load profiles available from $\tau+1$ to $\tau+T$. solve the stochastic program $\mathcal{P}_{\tau}\left(E_{\tau},P_{\tau},L(\xi_{\tau})\right)$ over a 24 hour horizon, where $\xi_\tau$ represents a set of scenarios realized at each time till $\tau$  
+\item Implement commitments for next hour (power and participation levels), evolve battery storage level to $E_{\tau+1}$
+\item Using realized scenario for load (random), calculate net demand $d_{\tau+1}(\xi_{\tau+1})$ at time $\tau+1$, $d_{\tau+1}(\xi_{\tau+1}) = L_{\tau+1}(\xi_{\tau+1}) - P_{\tau+1} + F_{\tau+1}$, and update the peak demand till time $\tau+1$, $D_{\tau+1}(\xi_{\tau+1}) = \max\{D_{\tau}(\xi_{\tau}),d_{\tau+1}(\xi_{\tau+1})\}$             
+\item Solve stochastic problem $\mathcal{P}_{\tau+1}\left(E_{\tau+1},P_{\tau+1},D_{\tau+1}(\xi_{\tau+1})\right)$. \item Repeat from 2.
+\end{enumerate}
+
+
+
+
+We sample 50 paths upto next 24 hours horizon
 \section{Conclusions}
 \section{Future Work}
 \subsection{Price Uncertainty}
