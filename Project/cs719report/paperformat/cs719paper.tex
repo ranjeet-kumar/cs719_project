@@ -34,8 +34,14 @@
 \newcommand{\Z}{\mathbb{Z}}
 \newcommand{\Q}{\mathbb{Q}}
 \newcommand{\R}{\mathbb{R}}
+\usepackage{placeins}
 \usepackage{lineno}
 %\linenumbers
+\usepackage{array}
+\newcolumntype{L}[1]{>{\raggedright\let\newline\\\arraybackslash\hspace{0pt}}m{#1}}
+\newcolumntype{C}[1]{>{\centering\let\newline\\\arraybackslash\hspace{0pt}}m{#1}}
+\newcolumntype{R}[1]{>{\raggedleft\let\newline\\\arraybackslash\hspace{0pt}}m{#1}}
+\usepackage{graphicx}
 
 \begin{document}
 
@@ -53,7 +59,7 @@ Electricity markets operate at multiple timescales (from hours to milliseconds) 
 
 
 \section{Introduction}
-A diverse set of energy systems such as generators, batteries, wind turbines and flywheels can participate in electricity markets. This participation is governed by rules set by ISOs (Independent System Operators) such as California ISO, PJM (Pennsylvania-New Jersey-Maryland) Interconnection and Midcontinent ISO, under whose jurisdiction the market falls. The markets are structured at multiple time levels, namely day ahead (hourly market commitments) and real time markets (commitments ranging from minutes to seconds). In day-ahead markets the electricity is traded in intervals of 1 hour with the prices being constant in each interval of 1 hour and varying with intervals. Real time markets, on the other hand can have varying time scales depending on the ISO operating it. The frequency of energy price variation is different for day-ahead and real time markets (Figure \ref{eprices}). 
+A diverse set of energy systems such as generators, batteries, wind turbines and flywheels can participate in electricity markets. This participation is governed by rules set by ISOs (Independent System Operators) such as California ISO, PJM (Pennsylvania-New Jersey-Maryland) Interconnection and Midcontinent ISO, under whose jurisdiction the market falls. The markets are structured at multiple time levels, namely day ahead (hourly market commitments) and real time markets (commitments ranging from minutes to seconds). In day-ahead markets the electricity is traded in intervals of 1 hour with the prices being constant in each interval of 1 hour and varying with intervals. Real time markets, on the other hand can have varying time scales depending on the ISO operating it. The real-lime market is a spot market in which utilities can buy power to meet the last few increments of demand not covered in their day ahead schedules. It is also the market that secures energy reserves, held ready and available for ISO use if needed, and the energy needed to regulate transmission line stability \footnote{http://www.caiso.com/market/Pages/MarketProcesses.aspx}.The frequency of energy price variation is different for day-ahead and real time markets (Figure \ref{eprices}). 
 \begin{figure}[h!tp]
 \centering
 \begin{subfigure}[b]{0.32\textwidth} \includegraphics[width=\textwidth]{Figures/damprices.pdf} \caption{Day-ahead market}\label{damprices} \end{subfigure} \hfill
@@ -65,22 +71,8 @@ A diverse set of energy systems such as generators, batteries, wind turbines and
 
 
 Apart from price variations, the introduction of more renewable power sources in the grid such as wind and solar energy, there are greater variations and uncertainties in the net load as well. Since these sources depend on intermittent conditions such as weather, they introduce slow dynamics to the grid. Thus systems with faster dynamic responses such as battery and building systems are becoming increasingly important to balance these fluctuations and provide dynamic flexibility to the power grid. Also, factors such as transmission losses, generation cost and congestion affect the value of products (energy, regulation, spinning , non-spinning reserves) offered at different timescales. These fluctuations being inherently uncertain, determining the optimal participation policy requires analysis using stochastic optimization techniques.
-\begin{itemize}
-\item \textbf{Day-ahead market :}
-The day-ahead market is made up of three market processes that run sequentially. First, the ISO runs a market power mitigation test. Bids that fail the test are revised to predetermined limits. Then the integrated forward market establishes the generation needed to meet forecast demand. And last, the residual unit commitment process designates additional power plants that will be needed for the next day and must be ready to generate electricity. Market prices set are based on bids.
-
-A major component of the market is the full network model, which analyzes the active transmission and generation resources to find the least cost energy to serve demand. The model produces prices that show the cost of producing and delivering energy from individual nodes, or locations on the grid where transmission lines and generation interconnect.
-
-Scheduling coordinators (SCs) are pre-qualified entities authorized to transact in the ISO market. The day-ahead market opens for bids and schedules seven days before and closes the day prior to the trade date. Results are published at 1:00 p.m.
-
-\item \textbf{Real-time market :} 
-The real-lime market is a spot market in which utilities can buy power to meet the last few increments of demand not covered in their day ahead schedules. It is also the market that secures energy reserves, held ready and available for ISO use if needed, and the energy needed to regulate transmission line stability.
-
-The market opens at 1:00 p.m. prior to the trading day and closes 75 minutes before the start of the trading hour. The results are published about 45 minutes prior to the start of the trading hour. The real-time market system dispatches power plants every 15 and 5 minutes, although under certain grid conditions the ISO can dispatch for a single 1-minute interval.
-
-\end{itemize}
 \section{Problem Definition and Decision-Making Setting}\label{sec:setting}
-We consider a rechargeable Li-ion battery with a building that is inter-connected to the power grid for providing electricity services. Electricity services imply that batteries can provide power to or draw power from the grid. In our current setting, we do not consider participation in regulation or other ancillary services. The operator of the power grid (ISO) compensates the battery-owners for the electricity services provided. The goal for the battery-owners is to maximize the revenues generated by providing services to the grid and at the same time meeting the load demands from building. Any unmet load demand from the building is penalized.\\
+We consider a rechargeable Li-ion battery with a building that is inter-connected to the power grid for providing electricity services. Electricity services imply that batteries can provide power to or draw power from the grid. In our current setting, we do not consider participation in regulation or other ancillary services. The operator of the power grid (ISO) compensates the battery-owners for the electricity services provided. The goal for the battery-owners is to maximize the revenues generated by providing services to the grid and at the same time meeting the load demands from building. Any unmet load demand from the building is penalized with the corresponding electricity price in real time market.\\
 \begin{figure}[h!]
 \begin{center}
 \includegraphics[width=4in]{Figures/scenario_tree-crop.pdf} \caption{Scenario tree at the beginning of market participation}\label{scenario_tree}\end{center}
@@ -140,6 +132,12 @@ $E_{i,k} \forall i \in \mathcal{T_R}, k \in \mathcal{T_D} $
 \end{align}
 \label{eq:Pnet}
 \end{subequations}
+
+\begin{figure}[h!]
+\begin{center}
+\includegraphics[width=4in]{Figures/system_blocks-crop.pdf} \caption{Illustration of Building-Battery System interconnected with Power Grid}\label{fig:loads_scenarios}\end{center}
+\end{figure}
+\FloatBarrier
 
 \paragraph{Constraints for each day in the model:}
 \begin{subequations}
@@ -233,24 +231,15 @@ Rev_E =& \sum_{i \in R} \sum_{k \in D} \Delta t_r(\pi^E_{i,k}P_{i,k}) + \sum_{k 
 Here, the decision variables are $E$, the energy of the battery at every time interval, $P$, the net power of the battery going to the power grid in the three markets, $R^U$, the regulation up capacities in the two levels of regulation markets, $R^D$, the regulation down capacities in the two levels of regulation markets and $Rev^E$ and $Rev^R$, the revenues from the energy and regulation markets respectively. The three subscripted indices in $P$, $R^U$ and $R^D$ variables mean that they are for the real-time market, the two subscripted indices in $P$, $R^U$ and $R^D$ variables mean that they are for the quarter-hourly market and the one subscripted index in $P$, $R^U$ and $R^D$ variables mean that they are for the day-ahead market. $\pi$'s are the prices which are known parameters in the model, the superscript on $\pi$ denotes the quantity which it is the price of and subscripts on $\pi$ denotes the level of market of which it is the price.
 
 \section{Computational Experiments}\label{sec:exp}
-List of figures
+
 
 \subsection{Full Problem}
 In this case study, we sample 50 scenario paths (out of the $50^{168}$ possibilities) for a week's time period. We then construct a full model for for this week and use real price signals from 01/01/2015 to 01/07/2015 in California ISO \footnote{http://oasis.caiso.com/mrioasis/logon.do}. For every 1 hour interval in the model, we sample a scenario, and use the load data corresponding to that scenario for the 12 intervals (5 minutes each) in that hour. This helps to reduce the size of scenario tree (from $50^{168 \times 12}$ to $50^{168}$). We solve this model (with 50 sampled paths) 100 times to get a confidence interval on the expected revenue. We then compare this expected revenue (obtained by participating in both real time and day-ahead market) to the cases when the battery participates only in either real time or day-ahead market alone.
-\begin{itemize}
-\item Supplied and unmet load for a sample path
-\item Prtm
-\item Pdam
-\item SOC 
-\item Net discharge
-\item revenue from energy : \$ 739.73, \\ from dam: 815.74 \\ from rtm:  -84.76 (loss) \\unmet cost: - 8.75   (i.e. buy from outside when prices are negative)
-get's more flexibility to dam participation. 
-\item only rtm: total revenue: \$ 70.03 , unmet = -9.10, profit from rtm market =  60.93
-\item only dam: total revenue: \$ - 921.61, unmet cost = 76.93, profit edam = -844.68. (needs to buy energy to supply to battery) 
-\end{itemize}
-\begin{tabular}{|c|c|c|c|c|}
+\begin{table}[!ht]\centering
+\caption{Revenue Breakup from Participation in Different Markets}
+\begin{tabular}{|C{3cm}|C{2.5cm}|C{3.5cm}|C{3cm}|C{2.5cm}|} 
 \hline 
-Market Participated  & Total Revenue (\$) & Unmet Load Cost (\$) & DAM Revenue  (\$) & RTM Revenue (\$) \\ 
+Market Participated  & Total Revenue (\$) & Unmet Load Cost (\$) & DAM Revenue  (\$) & RTM Revenue (\$) \\
 \hline 
 DAM + RTM & 739.73 & -8.75 & 815.74 & -84.76 \\ 
 \hline 
@@ -258,37 +247,49 @@ DAM & -921.61 & 76.93 & -844.68 & N/A \\
 \hline 
 RTM & 70.03 & -9.10 & N/A & 60.93 \\ 
 \hline 
-None & -10,293.23 & 10,293.23 & • & • \\ 
+None & -10,293.23 & 10,293.23 & N/A & N/A \\ 
 \hline 
-\end{tabular} 
+\end{tabular} \label{tab:rev_comp} 
+\end{table}
+Highest revenue is earned when the battery participates in both the real time and day-ahead markets (Table \ref{tab:rev_comp}). Whereas, if it participates in just day-ahead or real time market alone, the revenue is much less or even negative (results in loss). Consider the case when it participates in only day ahead market. It is evident from Figure \ref{fig:Pdam_onlydam} and \ref{fig:cumulative_rev_onlydam} that the battery needs to charge itself (buy energy from the grid) in order to meet the building load demands. The price of energy is on average higher in day-ahead market than that in real time markets. Thus with no participation in real time market in does not have the flexibility to buy energy from the real-time market at lower prices and sell to day-ahead market (at a higher price) to make profits. The building loads need to be met in real-time (at every 5-minute interval) while the battery has the opportunity to buy or sell energy from the grid only at every hour. Thus the battery is forced to store enough energy to meet the building requirement for an hour by buying energy in hourly intervals from the day-ahead market. Whenever it has slightly excess energy available it tries to sell that energy to the day-ahead market to minimize the overall cost. 
 
+On the other hand, when it participates in both day-ahead and real-time markets, it has the flexibility to buy from the real-time market and sell to the day-ahead market while saving sufficient energy to meet the building requirement in real-time. This is possible because the real-time electricity prices are slightly lower than the day-ahead market prices on average. The real-time prices also fall below the day-ahead market prices very often (Figures \ref{fig:Pdam_fp_st} and \ref{fig:Prtm_fp_st}) and because of its fast dynamics, the battery can capture these moments by buying from real-time market and selling in day-ahead market to make profit. 
 
 \begin{figure}[h!]
 \begin{center}
-\includegraphics[width=4in]{Figures/Plots/fullproblem_stoch/cumulative_rev_fp_st.pdf} \caption{Trajectory of cumulative revenues when battery participates in both day-ahead and real-time markets}\label{fig:cumulative_rev_fp_st}\end{center}
+\includegraphics[scale=0.4]{Figures/Plots/fullproblem_stoch/cumulative_rev_fp_st.pdf} \caption{Trajectory of cumulative revenues when battery participates in both day-ahead and real-time markets}\label{fig:cumulative_rev_fp_st}\end{center}
 \end{figure}
+
+\begin{figure}[h!]
+\begin{subfigure}{\textwidth}
+\centering
+\includegraphics[width=\linewidth]{Figures/Plots/fullproblem_stoch/Pdam_fp_st.pdf} \caption{Day-ahead market}\label{fig:Pdam_fp_st}
+\end{subfigure}
+\begin{subfigure}{\textwidth}
+\centering
+\includegraphics[width=\linewidth]{Figures/Plots/fullproblem_stoch/Prtm_fp_st.pdf} \caption{Real-time market}\label{fig:Prtm_fp_st}
+\end{subfigure}
+\caption{Energy participation policy when battery participates in both day-ahead and real-time markets}
+\end{figure}
+\FloatBarrier
 \begin{figure}[h!]
 \begin{center}
-\includegraphics[width=4in]{Figures/Plots/fullproblem_stoch/netpower_fp_st.pdf} \caption{Net battery discharge when battery participates in both day-ahead and real-time markets}\label{fig:netpower_fp_st}\end{center}
+\includegraphics[scale = 0.4]{Figures/Plots/fullproblem_stoch/supp_unmet_fp_st.pdf} \caption{Power supplied to building and unmet load when battery participates in both day-ahead and real-time markets}\label{fig:supp_unmet_fp_st}
+\end{center}
 \end{figure}
+
 \begin{figure}[h!]
-\begin{center}
-\includegraphics[width=4in]{Figures/Plots/fullproblem_stoch/Pdam_fp_st.pdf} \caption{Energy participation policy in day-ahead market when battery participates in both day-ahead and real-time markets}\label{fig:Pdam_fp_st}\end{center}
+\begin{subfigure}{\textwidth}
+\centering
+\includegraphics[width=\linewidth]{Figures/Plots/fullproblem_stoch/netpower_fp_st.pdf} \caption{Net battery discharge}\label{fig:netpower_fp_st}
+\end{subfigure}
+\begin{subfigure}{\textwidth}
+\centering
+\includegraphics[width=\linewidth]{Figures/Plots/fullproblem_stoch/soc_fp_st.pdf} \caption{State of charge trajectory}\label{fig:soc_fp_st}
+\end{subfigure}
+\caption{Operating condition of battery when participating in both day-ahead and real-time markets}
 \end{figure}
-\begin{figure}[h!]
-\begin{center}
-\includegraphics[width=4in]{Figures/Plots/fullproblem_stoch/Prtm_fp_st.pdf} \caption{Energy participation policy in real-time market when battery participates in both day-ahead and real-time markets}\label{fig:Prtm_fp_st}\end{center}
-\end{figure}
-\begin{figure}[h!]
-\begin{center}
-\includegraphics[width=4in]
-{Figures/Plots/fullproblem_stoch/supp_unmet_fp_st.pdf} \caption{Power supplied to building and unmet load when battery participates in both day-ahead and real-time markets}\label{fig:supp_unmet_fp_st}\end{center}
-\end{figure}
-\begin{figure}[h!]
-\begin{center}
-\includegraphics[width=4in]
-{Figures/Plots/fullproblem_stoch/soc_fp_st.pdf} \caption{Trajectory of the state of charge of battery when battery participates in both day-ahead and real-time markets}\label{fig:soc_fp_st}\end{center}
-\end{figure}
+\FloatBarrier
 \begin{figure}[h!]
 \begin{center}
 \includegraphics[width=4in]
@@ -299,7 +300,7 @@ None & -10,293.23 & 10,293.23 & • & • \\
 \includegraphics[width=4in]
 {Figures/Plots/onlydam/cumulative_rev_fp_st.pdf} \caption{Trajectory of cumulative revenue when battery participates only in day-ahead market}\label{fig:cumulative_rev_onlydam}\end{center}
 \end{figure}
-From figures \ref{fig:Pdam_onlydam} and \ref{fig:cumulative_rev_onlydam}, it is clear that the battery is clearly trying to charge itself (buy energy from grid) in order to meet the building loads as it does not have flexibility of buying energy from the real-time market at lower prices and sell to day-ahead market which usually have much higher prices to make profits. The building loads need to be met in real-time (every 5-minutes) while the battery has the opportunity to buy or sell energy only at every hour. So, the battery is forced to store enough energy to meet the building requirement for an hour by buying energy in hourly intervals from the day-ahead market. Whenever it has slightly excess energy available it tries to sell that energy to the day-ahead market to minimize the overall cost. On the other hand, when it participates in both day-ahead and real-time markets, it has the flexibility to buy from the real-time market and sell to the day-ahead market while saving sufficient energy to meet the building requirement in real-time. This is possible because the real-time electricity prices are slightly lower than the day-ahead market prices on average. The real-time prices also fall below the day-ahead market prices very often (refer figures \ref{fig:Pdam_fp_st} and \ref{fig:Prtm_fp_st}) and the battery because of its fast dynamics can capture these moments by buying from real-time market and selling in day-ahead market to make profits. 
+
 
 \subsubsection{Upper Bound from Mean Value Problem}
 
