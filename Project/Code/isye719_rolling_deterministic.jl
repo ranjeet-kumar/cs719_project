@@ -150,8 +150,8 @@ for p in 1:nhours_planning # Starting rolling horizon for mean-value problem
     #Load and price data
     load_mv = loaddata1_mv[(p-1)*nrtm+(1:nrtm_horizon)];	#Load, MW
 
-    eprrtm = rtmpricedata[(p-1)*nrtm+(1:nrtm_horizon),4];	    	#Real Time Market price, $/MWh
-    eprdam = dampricedata[(p-1)+(1:nhours_horizon),4];	    	#Day Ahead Market Selling price, $/MWh
+    eprrtm = rtmpriceExceldata[(p-1)*nrtm+(1:nrtm_horizon),4];	    	#Real Time Market price, $/MWh
+    eprdam = dampriceExceldata[(p-1)+(1:nhours_horizon),4];	    	#Day Ahead Market Selling price, $/MWh
 
     #Reshape the data to matrices
     rtmepr = reshape(eprrtm,nrtm,nhours_horizon);
