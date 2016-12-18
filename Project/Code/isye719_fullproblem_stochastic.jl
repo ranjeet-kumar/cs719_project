@@ -14,7 +14,7 @@ generate_new_scenarios = 0; # 0: don't generate new scenarios for load profiles;
 generate_new_sample_paths = 0; # 0: don't generate new sample paths for loads; 1: generate new sample paths
 participate_rtm = 1; # 0: Don't participate in RTM; 1: participate in RTM
 participate_dam = 1; # 0: Don't participate in DAM; 1: participate in DAM
-makeplots = 1; # 0: Don't generate plots, 1: Generate plots
+makeplots = 0; # 0: Don't generate plots, 1: Generate plots
 figuredirectory = string(pwd(),"/cs719figures/both");
 
 # Defining time parameters for the model and planning schedule
@@ -69,7 +69,7 @@ if generate_new_sample_paths == 1
   (paths,loadperm) = generate_sample_paths(load,NS,"samplepaths.csv","sampleloadperm.csv");
 end
 # Take the NS sample paths for loads generated earlier
-paths = readcsv("samplepaths.csv");
+paths = Matrix{Int64}(readcsv("samplepaths.csv"));
 loadperm = zeros(nrtm,ndam,ndays_planning,NS);
 for s in S
   j = 1;
@@ -117,7 +117,7 @@ m = Model(solver = GurobiSolver(Threads=2))
                         sum{profitErtm[i,k,l,s], i in rtm, k in dam, l in day} + sum{profitEdam[k,l,s], k in dam, l in day})
     @constraint(m, UnmetCost[s in S], unmetcost[s] == sum{rtmepr[i,k,l]*unmetload[i,k,l,s], i in rtm, k in dam, l in day})
     # Non-anticipativity constraints for first stage variables
-    @constraint(m, Nonant_PDAM[k in dam,l in day,s in S], Pdam[k,l,s] == (1/NS)*sum{Pdam[k,l,s], s in S})
+    #@constraint(m, Nonant_PDAM[k in dam,l in day,s in S], Pdam[k,l,s] == (1/NS)*sum{Pdam[k,l,s], s in S})
     @objective(m, Min, (1/NS)*sum{-profittotal[s] + unmetcost[s], s in S})
     if participate_dam == 0
       @constraint(m, NoDAM[k in dam,l in day, s in S], Pdam[k,l,s] == 0)

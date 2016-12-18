@@ -14,7 +14,7 @@ generate_new_scenarios = 0; # 0: don't generate new scenarios for load profiles;
 generate_new_sample_paths = 0; # 0: don't generate new sample paths for loads; 1: generate new sample paths
 participate_rtm = 1; # 0: Don't participate in RTM; 1: participate in RTM
 participate_dam = 1; # 0: Don't participate in DAM; 1: participate in DAM
-makeplots = 1; # 0: Don't generate plots, 1: Generate plots
+makeplots = 0; # 0: Don't generate plots, 1: Generate plots
 
 # Defining time parameters for the model and planning schedule
 dtdam = 1; 				#time interval of each day ahead market (hourly) intervals [hour]
@@ -68,7 +68,7 @@ if generate_new_sample_paths == 1
   (paths,loadperm) = generate_sample_paths(load,NS,"samplepaths.csv","sampleloadperm.csv");
 end
 # Take the NS sample paths for loads generated earlier
-paths = readcsv("samplepaths.csv");
+paths = Matrix{Int64}(readcsv("samplepaths.csv"));
 loadperm = zeros(nrtm,ndam,ndays_planning,NS);
 for s in S
   j = 1;
@@ -102,8 +102,8 @@ mv = Model(solver = GurobiSolver(Threads=2))
 		@constraint(mv, UnmetLoad[i in rtm,k in dam,l in day], suppliedload[i,k,l] + unmetload[i,k,l] >=  loadperm_mv[i,k,l])
 		@constraint(mv, BoundSupplied[i in rtm,k in dam,l in day], suppliedload[i,k,l] <= loadperm_mv[i,k,l])
 		@constraint(mv, BoundUnmet[i in rtm,k in dam,l in day], unmetload[i,k,l] <= loadperm_mv[i,k,l])
-    @constraint(mv, NetDischarge1[i in rtm,k in dam,l in day,s in S], Pnet[i,k,l,s] <= P_max)
-    @constraint(mv, NetDischarge2[i in rtm,k in dam,l in day,s in S], Pnet[i,k,l,s] >= -P_max)
+    @constraint(mv, NetDischarge1[i in rtm,k in dam,l in day], Pnet[i,k,l] <= P_max)
+    @constraint(mv, NetDischarge2[i in rtm,k in dam,l in day], Pnet[i,k,l] >= -P_max)
 		#=    @constraint(mv, RTMRamp1[i in rtm[2:end],k in dam,l in day], Pnet[i,k,l]  - Pnet[i-1,k,l] <= rampmax*dtrtm)   #Ramp discharge constraint at each time
 		@constraint(mv, RTMRamp2[i in rtm[2:end],k in dam,l in day], Pnet[i,k,l]  - Pnet[i-1,k,l] >= -rampmax*dtrtm)   #Ramp discharge constraint at each time
 		@constraint(mv, DAMRamp1[i in rtm[1],k in dam[2:end],iend=rtm[end],l in day], Pnet[i,k,l] - Pnet[iend,k-1,l] <= rampmax*dtrtm)   #Ramp discharge constraint at each time

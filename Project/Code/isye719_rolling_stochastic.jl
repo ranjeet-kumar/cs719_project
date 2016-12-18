@@ -13,7 +13,7 @@ generate_new_scenarios = 0; # 0: don't generate new scenarios for load profiles;
 generate_new_sample_paths = 0; # 0: don't generate new sample paths for loads; 1: generate new sample paths
 participate_rtm = 1; # 0: Don't participate in RTM; 1: participate in RTM
 participate_dam = 1; # 0: Don't participate in DAM; 1: participate in DAM
-makeplots = 1; # 0: Don't generate plots, 1: Generate plots
+makeplots = 0; # 0: Don't generate plots, 1: Generate plots
 
 # Defining time parameters for the model and planning schedule
 dtdam = 1; 				#time interval of each day ahead market (hourly) intervals [hour]
@@ -70,7 +70,7 @@ if generate_new_sample_paths == 1
   (paths,loadperm) = generate_sample_paths(load,NS,"samplepaths.csv","sampleloadperm.csv");
 end
 # Take the NS sample paths for loads generated earlier
-paths = readcsv("samplepaths.csv");
+paths = Matrix{Int64}(readcsv("samplepaths.csv"));
 loadperm = zeros(nrtm,ndam,ndays_planning,NS);
 for s in S
   j = 1;
@@ -137,7 +137,7 @@ realized_sequence = Vector{Int64}(k*ones(nhours_planning));
 
 Prtm_realized = zeros(nrtm,nhours_planning);
 unmetload_realized = zeros(nrtm,nhours_planning)
-unmetcost_realized = zeros(nhours_planning);
+unmetcost_realized = zeros(nrtm,nhours,nhours_planning);
 profitErtm_realized = zeros(nrtm,nhours_planning);
 profitEdam_realized = zeros(nhours_planning);
 profitE_realized = zeros(nhours_planning);
@@ -193,12 +193,12 @@ for p in 1:nhours_planning
     @constraint(m_rol, DAMEProfits[k in dam,s in S], profitEdam[k,s] == damepr[k]*Pdam[k,s]*dtdam)	#Economic calculation
     @constraint(m_rol, TotalProfit[s in S], profittotal[s] ==
                         sum{profitErtm[i,k,s], i in rtm, k in dam} + sum{profitEdam[k,s], k in dam})
-    @constraint(m_rol, UnmetCost[s in S], unmetcost[s] == sum{rtmepr[i,k]*unmetload[i,k,s], i in rtm, k in dam})
+    @constraint(m_rol, UnmetCost[i in rtm, k in dam, s in S], unmetcost[i,k,s] == rtmepr[i,k]*unmetload[i,k,s])
     @constraint(m_rol, NetDischarge1[i in rtm,k in dam,s in S], Pnet[i,k,s] <= P_max)
     @constraint(m_rol, NetDischarge2[i in rtm,k in dam,s in S], Pnet[i,k,s] >= -P_max)
     # Non-anticipativity constraints for first stage variables
     @constraint(m_rol, Nonant_PDAM[k in dam,s in S], Pdam[k,s] == (1/NS)*sum{Pdam[k,s], s in S})
-    @objective(m_rol, Min, (1/NS)*sum{-profittotal[s] + unmetcost[s], s in S})
+    @objective(m_rol, Min, (1/NS)*sum{-profittotal[s] + sum{unmetcost[i,k,s],i in rtm, k in dam}, s in S})
     status = solve(m_rol)
 
 ##########################################################################
@@ -206,11 +206,11 @@ for p in 1:nhours_planning
     ebat0 = getvalue(getvariable(m_rol,:ebat))[rtm[end],dam[1],realized_sequence[p]];
     Prtm_realized[:,p] = getvalue(getvariable(m_rol,:Prtm))[1:rtm[end],dam[1],realized_sequence[p]];
     unmetload_realized[:,p] = getvalue(getvariable(m_rol,:unmetload))[1:rtm[end],dam[1],realized_sequence[p]];
-    unmetcost_realized[p] = sum(unmetload_realized.*eprrtm[1:rtm[end]]);
+    unmetcost_realized[:,p] = getvalue(getvariable(m_rol,:unmetcost))[1:rtm[end],dam[1],realized_sequence[p]];
     profitErtm_realized[:,p] = getvalue(getvariable(m_rol,:profitErtm))[1:rtm[end],dam[1],realized_sequence[p]];
     profitEdam_realized[p] = getvalue(getvariable(m_rol,:profitEdam))[dam[1],realized_sequence[p]];
     profittotal_realized[p] = sum(profitErtm_realized[:,p]) + profitEdam_realized[p];
-    netobjective_realized[p] = unmetcost_realized[p] - profittotal_realized[p];
+    netobjective_realized[p] = sum(unmetcost_realized[:,p]) - profittotal_realized[p];
 
 #=
 
