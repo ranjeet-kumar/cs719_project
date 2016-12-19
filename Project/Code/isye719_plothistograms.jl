@@ -18,7 +18,7 @@ hist1 = plt[:hist](obj_dt_fp_all,nbins*2,weights=ones(length(obj_dt_fp_all))/len
 sub2 = subplot(4,1,2)
 grid()
 hold(true)
-hist2 = plt[:hist](obj_st_fp_socfix_all,nbins,weights=ones(length(obj_st_fp_socfix_all))/length(obj_st_fp_socfix_all),color="red",label="Two Stage: Restriction");
+hist2 = plt[:hist](obj_st_fp_socfix_all,nbins,weights=ones(length(obj_st_fp_socfix_all))/length(obj_st_fp_socfix_all),color="red",label="Restriction on states");
 # PLOTTING HISTOGRAM OF PI COSTS
 sub3 = subplot(4,1,3)
 grid()

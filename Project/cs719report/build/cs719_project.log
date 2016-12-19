@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.14159265-2.6-1.40.17 (TeX Live 2016) (preloaded format=pdflatex 2016.8.2)  15 DEC 2016 19:45
+This is pdfTeX, Version 3.14159265-2.6-1.40.17 (TeX Live 2016) (preloaded format=pdflatex 2016.8.2)  18 DEC 2016 18:55
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -845,7 +845,7 @@ Package atveryend Info: Empty hook `AfterLastShipout' on input line 270.
 Package atveryend Info: Executing hook `AtVeryEndDocument' on input line 270.
 Package atveryend Info: Executing hook `AtEndAfterFileList' on input line 270.
 Package rerunfilecheck Info: File `cs719_project.out' has not changed.
-(rerunfilecheck)             Checksum: <no file>.
+(rerunfilecheck)             Checksum: 42C7F1E0A2CFCF5844DC61CCA873F6F8;571.
 Package atveryend Info: Empty hook `AtVeryVeryEnd' on input line 270.
  )
 (\end occurred inside a group at level 1)
