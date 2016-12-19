@@ -428,11 +428,10 @@ The receding horizon scheme which we implement on the building-battery system is
 \end{enumerate}
 }
 
-We implement the receding horizon scheme to plan a market participation policy for the battery-building system participating in both the real-time and day-ahead electricity markets. We use a horizon of $T=24$ hours, i.e. at any hour we have a sample set of scenarios of load profiles for only next 24 hours. We simulate the receding horizon scheme using the same set of 50 sampled scnearios for load profiles for one week as in \ref{subsec:economic}. However, to simulate the receding horizon up to 7 days, we need to generate additional sample scenarios for the $8^{th}$ day because after the simulation reaches the last day of the week, it formulates the optimization problem with the loads of next 24 hours which goes beyond the $7^{th}$ day. So, we generate the additional samples of load profiles using the method described in Section \ref{sec:setting} and use these as the scenarios for loads in $8{th}$ day.
+We implement the receding horizon scheme to plan a market participation policy for the battery-building system participating in both the real-time and day-ahead electricity markets. We use a horizon of $T=24$ hours, i.e. at any hour we have a sample set of scenarios of load profiles for only next 24 hours. We simulate the receding horizon scheme using the same set of 50 sampled scnearios for load profiles for one week as in \ref{subsec:economic}. However, to simulate the receding horizon up to 7 days, we need to generate additional sample scenarios for the $8^{th}$ day because after the simulation reaches the last day of the week, it formulates the optimization problem with the loads of next 24 hours which goes beyond the $7^{th}$ day. So, we generate the additional samples of load profiles using the method described in Section \ref{sec:setting} and use these as the scenarios for loads in $8{th}$ day. At the end of the simulation we evaluate the revenue from the obtained policy. We repeat the simulation with 50 different paths of load realizations at every hour and get an approximation of the expected revenue and a confidence interval on the same.
 
-
-
-Time taken to solve small horizon problem by Gurobi is less than 2 seconds. 
+By implementing the above procedure, the expected revenue from the market participation policy is \$697.64 with a 95\% confidence interval of [693.95, 701.35]
+Time taken to solve the 24-hour horizon problem by Gurobi is less than 2 seconds. 
 \section{Conclusions}
 
 \section{Future Work}
