@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.14159265-2.6-1.40.17 (TeX Live 2016) (preloaded format=pdflatex 2016.8.2)  19 DEC 2016 08:46
+This is pdfTeX, Version 3.14159265-2.6-1.40.17 (TeX Live 2016) (preloaded format=pdflatex 2016.8.2)  19 DEC 2016 08:57
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -766,7 +766,7 @@ Underfull \hbox (badness 10000) in paragraph at lines 394--394
 
  []
 
-<Figures/Plots/dualdynamic/bounds.pdf, id=946, 1156.32pt x 600.74437pt>
+<Figures/Plots/dualdynamic/bounds.pdf, id=947, 1156.32pt x 600.74437pt>
 File: Figures/Plots/dualdynamic/bounds.pdf Graphic file (type pdf)
 
 <use Figures/Plots/dualdynamic/bounds.pdf>
@@ -824,9 +824,6 @@ Package rerunfilecheck Info: File `cs719paper.out' has not changed.
 
 LaTeX Warning: There were undefined references.
 
-
-LaTeX Warning: Label(s) may have changed. Rerun to get cross-references right.
-
 Package atveryend Info: Empty hook `AtVeryVeryEnd' on input line 472.
  )
 (\end occurred inside a group at level 1)
@@ -836,7 +833,7 @@ Package atveryend Info: Empty hook `AtVeryVeryEnd' on input line 472.
 Here is how much of TeX's memory you used:
  9505 strings out of 493013
  144360 string characters out of 6133344
- 259056 words of memory out of 5000000
+ 259245 words of memory out of 5000000
  12770 multiletter control sequences out of 15000+600000
  29521 words of font info for 80 fonts, out of 8000000 for 9000
  1141 hyphenation exceptions out of 8191
@@ -859,10 +856,10 @@ texmf-dist/fonts/type1/urw/palatino/uplb8a.pfb></usr/local/texlive/2016/texmf-d
 ist/fonts/type1/urw/palatino/uplbi8a.pfb></usr/local/texlive/2016/texmf-dist/fo
 nts/type1/urw/palatino/uplr8a.pfb></usr/local/texlive/2016/texmf-dist/fonts/typ
 e1/urw/palatino/uplri8a.pfb>
-Output written on build/cs719paper.pdf (24 pages, 1820626 bytes).
+Output written on build/cs719paper.pdf (24 pages, 1820647 bytes).
 PDF statistics:
- 1105 PDF objects out of 1200 (max. 8388607)
- 610 compressed objects within 7 object streams
+ 1106 PDF objects out of 1200 (max. 8388607)
+ 611 compressed objects within 7 object streams
  106 named destinations out of 1000 (max. 500000)
  265 words of extra memory for PDF output out of 10000 (max. 10000000)
 
