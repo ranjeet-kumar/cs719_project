@@ -2,6 +2,7 @@
 \addtolength{\textwidth}{0.5in}
 \usepackage{epsfig,amsfonts,color}
 \usepackage{amsmath}
+\usepackage{multirow}
 \bibliographystyle{plain}
 \usepackage{amssymb, palatino, geometry,url}
 \usepackage{algorithmic}
@@ -54,7 +55,7 @@
 \maketitle
 
 \begin{abstract}
-Electricity markets operate at multiple timescales (from hours to milliseconds) to ensure that supply and demands are matched in real time. These markets involve uncertainties because future electricity prices and demands are unknown at the time of decision-making, e.g. energy sale and purchase commitments by generators. We use stochastic programming techniques to study flexibility and economic opportunities provided by a battery in these markets, namely day-ahead (1-hour timescale) and real-time (5-minute timescale) markets. In this work we consider uncertainty only in electricity loads and determine optimal participation strategies using methods like receding horizon scheme, dual dynamic programming and *fullproblem (scenario sampling)*. We also determine bounds on expected policy costs by using perfect information and two-stage approximation (with restriction on states). We compare the costs of participation in exclusively in day-ahead market and both day-ahead and real-time markets. Our results show that market participation only in day-ahead energy markets can *significantly* reduce economic flexibility as compared to participating in both levels of markets.
+Electricity markets operate at multiple timescales (from hours to milliseconds) to ensure that supply and demands are matched in real time. These markets involve uncertainties because future electricity prices and demands are unknown at the time of decision-making, e.g. energy sale and purchase commitments by generators. We use stochastic programming techniques to study flexibility and economic opportunities provided by a battery in these markets, namely day-ahead (1-hour timescale) and real-time (5-minute timescale) markets. In this work we consider uncertainty only in electricity loads and determine optimal participation strategies using methods like extensive form with sample average approximation, receding horizon scheme and dual dynamic programming. We also determine bounds on expected policy costs by using perfect information and two-stage approximation (with restriction on states). We compare the costs of participation in exclusively in day-ahead market and both day-ahead and real-time markets. Our results show that market participation only in day-ahead energy markets can significantly reduce economic flexibility as compared to participating in both levels of markets.
 \end{abstract}
 
 
@@ -311,7 +312,7 @@ Figure \ref{fig:netpower_fp_st} provides the net charge-discharge policy of the 
 Thus market participation in both time scales is important for maximizing the economic potential. The typical problem in a stochastic setting (considering only 50 samples of load scenarios) for 1 week planning consists of 520900 variables, 722500 linear constraints, and takes Gurobi 35-40 seconds to solve it. 
 If the number of scenarios is increased, the problem size would grow exponentially. While on increasing the planning period the problem size increases linearly. Therefore, for problems involving simultaneous participation in both real time and day-ahead markets, we use sample average approximations and some relaxations to estimate the bounds on the expected revenues that can be earned. For the same kind of problems we use advanced techniques for solving stochastic programming problems in Section \ref{subsec:dual} and we compare their performance with respect to solution time and the expected revenue obtained.
 
-\subsubsection{Bounds on Sample Average Approximation}
+\subsubsection{Bounds on Sample Average Approximation}\label{subsec:sampleavg}
 To estimate a confidence interval bound on the expected revenue from market participation at both timescales, we sample 100 different sets (or batches) of 50 random paths (realizations of load profiles over 168 hours) along the scenario tree. We solve the two-stage approximation of the extensive form problem with each of these 100 different sets of 50 sample paths from the scenario tree and obtain the expected value over the 100 batches of the optimal revenues of operating the battery in the setting described in \ref{subsec:opt_unc}. This expected optimal revenue over 100 batches provides a statistical lower bound of the actual optimal cost that would be obtained if we were to solve the stochastic program for the complete scenario tree. We can then obtain a confidence interval of the expected revenue by using the student's t-distribution. The confidence interval on this statistical lower bound can be tightened by taking a greater batch size. 
 
 With 100 batches of 50 random paths, the expected optimal revenue is \$709.74 with a 95\% confidence interval of [\$709.39,\$710.08]. We observe that the expected optimal revenue over 100 different batches is quite close to the expected revenue that we obtained for a single set of 50 random paths in Section \ref{subsec:economic}, which is \$711.08 with the difference being only 0.19\%. 
@@ -430,16 +431,40 @@ The receding horizon scheme which we implement on the building-battery system is
 
 We implement the receding horizon scheme to plan a market participation policy for the battery-building system participating in both the real-time and day-ahead electricity markets. We use a horizon of $T=24$ hours, i.e. at any hour we have a sample set of scenarios of load profiles for only next 24 hours. We simulate the receding horizon scheme using the same set of 50 sampled scnearios for load profiles for one week as in \ref{subsec:economic}. However, to simulate the receding horizon up to 7 days, we need to generate additional sample scenarios for the $8^{th}$ day because after the simulation reaches the last day of the week, it formulates the optimization problem with the loads of next 24 hours which goes beyond the $7^{th}$ day. So, we generate the additional samples of load profiles using the method described in Section \ref{sec:setting} and use these as the scenarios for loads in $8{th}$ day. At the end of the simulation we evaluate the revenue from the obtained policy. We repeat the simulation with 50 different paths of load realizations at every hour and get an approximation of the expected revenue and a confidence interval on the same.
 
-By implementing the above procedure, the expected revenue from the market participation policy is \$697.64 with a 95\% confidence interval of [693.95, 701.35]
-Time taken to solve the 24-hour horizon problem by Gurobi is less than 2 seconds. 
+By implementing the above procedure, the expected revenue from the policies for 50 different paths is \$697.64 with a 95\% confidence interval of [693.95, 701.35]. 
+Gurobi take less than 2 seconds (1.3-1.7 sec) to solve the 24-hour horizon problem at every stage. So, the complete simulation for a week can be performed in about 5 minutes. The problem that Gurobi solves at every stage in the receding horizon simulation with 24-hour horizon consists of 117650 linear constraints and 88850 variables, which is of much smaller than the problem for full 1 week (Section \ref{subsec:economic}.
+
+The expected revenue from the receding horizon simulations is only about 0.2\% less than that obtained from the two-stage approximations in Section \ref{subsec:sampleavg}. This indicates that implementing the policy for only the next hour, updating the state variable and re-optimizing the system for the next 24 hours at every stage helps in carrying minimizing the impact of having sample profiles of loads for lesser period. The receding horizon scheme implements a two-stage approximation at every stage. Therefore, the expected revenue from receding horizon simulations is more closer to that in \ref{subsec:sampleavg} than that obtained from stochastic dual dynamic programming (\ref{subsec:dual} which is a multi-stage implementation.
+
 \section{Conclusions}
+From our study of various revenues generated by participation of a battery-building system in different timescales of electricity markets, we conclude that the simultaneous participation in both real-time and day-ahead markets is much more profitable as compared to participation in the market at only one timescale alone. The decision-making for market participation involves forecasting of loads and that introduces uncertainty in problem. So, stochastic optimization techniques need to be used to determine the optimal participation policy over a planning period. The typical stochastic programs in extensive form for participation in both markets for one week period and assuming 50 scenarios for the uncertain loads at every stage involve over 0.5 million variables and over 0.7 million constraints. The optimization problem can easily become intractable if we consider greater number of scenarios at every stage. 
+
+So, two-stage approximation and sample average approximation become useful to estimate bounds on the optimal revenue. Techniques to solve multi-stage stochastic programs like the stochastic dual dynamic programming can estimate a much realistic estimate of the expected revenue by efficiently solving the problem at a lot more number of nodes without taking two-stage approximation. Since the SDDP solves very small linear programs, although many of them, in every iteration, it can be very efficient in solving with even larger number of scenarios. Receding horizon scheme can be very effective in situations where we do not have the scenarios for the random load data available for the full planning period.The receding horizon gives a policy that generates almost the same expected revenue as that obtained by a policy from solution of extensive form stochastic program.
+
+A comparison of problem size that Gurobi has to solve at every stage and iteration in each of the methods studied is summarized in Table \ref{tab:comparison}. 
+\begin{table}[!ht]\centering
+\caption{Problem sizes and time taken by Gurobi to solve corresponding individual problems in different methods for 1 week planning}
+\begin{tabular}{|C{3cm}|C{2.5cm}|C{2.5cm}|C{2.5cm}|C{3cm}|}  
+\hline 
+\multirow{2}{*}{Method} & \multirow{2}{*}{\parbox{2cm}{Expected Revenue (\$)}} & \multicolumn{2}{C{3cm}|}{\parbox{5cm}{Individual problem sizes at every stage and iteration}} & \multirow{2}{*}{\parbox{3cm}{Time taken to solve the individual problem}}\\
+\cline{3-4}
+  &  &   \textbf{Variables}  &  \textbf{Constraints} & \\
+\hline 
+Two-stage approximation & 711.08 & 520,900 & 722,500 & 35-40 sec \\ 
+\hline 
+Stochastic dual dynamic programming  & 554.84    & 65 & 88  & $<$0.01 sec \\ 
+\hline 
+Receding horizon & 697.64 & 88,850 & 117,650  & $<$2 sec \\ 
+\hline 
+\end{tabular} \label{tab:comparison} 
+\end{table}
+\FloatBarrier
 
 \section{Future Work}
-
 \subsection{Price Uncertainty}
-
+Future direction of this work can be to investigate the effect of price uncertainty on the expected revenue. With the optimization model developed for the system, it will be an easy extension to include uncertainty in the electricity prices. Similar to the loads, uncertainty in prices can be captured by a set of possible profiles for the price signals. The stochastic program will become even larger due to the introduction of uncertainty in prices because the total number of possible scenarios of uncertainty will now be a product of the number of scenarios of each of the random data, i.e. loads and prices. In such a case, the number of samples in the sample average approximations wil need be much higher to get a good estimate of optimal revenue. We can also investigate how the advanced techniques like SDDP perform in such problems. The problem size can be brought down by considering loads and electricity prices to be correlated so that a scenario corresponds to a realization loads and prices together.
 \subsection{Three Layer Markets}
-
+We can also investigate the revenue potential of participating in a three timescale market. Participating in a three layer market can provide more flexibility of generating higher revenues. The third timescale in California ISO operates at 15-minute intervals and is also categorized under the real-time market. So the market decisions for this timescale are also recourse decisions. So, the problem size will grow with the addition of decision variables for that timescale in each scenario. A study of performance of different methods can be carried out for the three level market under uncertainty. Becuase the problem size is bigger, it might be more practical to solve the stochastic program using a receding horizon scheme with a shorter horizon to make the problem tractable in real-time.
 
 
 \bibliography{cs719}
