@@ -1,0 +1,9 @@
+\begin{thebibliography}{1}
+
+\bibitem{ledoit2004well}
+Olivier Ledoit and Michael Wolf.
+\newblock A well-conditioned estimator for large-dimensional covariance
+  matrices.
+\newblock {\em Journal of multivariate analysis}, 88(2):365--411, 2004.
+
+\end{thebibliography}
