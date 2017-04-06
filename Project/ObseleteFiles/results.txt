@@ -1,18 +1,4 @@
-obj_st_fp
--1269.6334384346758
-time_taken_st_fullproblem
-46.853230937
 
-obj_dt_fp
--1242.020286985789
-time_taken_dt_fullproblem
-7.348406633
-
-obj_st_fp_socfix
--1254.7038129019606
-
-obj_dt_fp_socfix
-+infinity (Infeasible)
 
 expected_obj_st_rh
 -557.3684995328582 WRONG
